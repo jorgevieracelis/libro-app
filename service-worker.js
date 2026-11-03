@@ -1,11 +1,11 @@
-// Service worker de "Casa Viera Ollarves".
+// Service worker de "Libro Finanzas Hogar".
 // Guarda una copia de la cáscara de la app (HTML, manifest, íconos) para que abra
 // rápido e instale como app. Firebase, Google Fonts y las librerías externas
 // (html2canvas, jsPDF) NUNCA pasan por acá: siempre van directo a internet.
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
-// versión nueva, cambiá el número de CACHE_NAME (ej: 'cvo-shell-v2').
-const CACHE_NAME = 'cvo-shell-v2';
+// versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v3').
+const CACHE_NAME = 'lfh-shell-v3';
 const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {

@@ -1,25 +1,25 @@
 <!doctype html>
-<html lang="es-AR">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#1f3864">
-<title>Casa Viera Ollarves · Ingresos y egresos</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%92%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0f2a52">
+<title>Libro Finanzas Hogar</title>
+<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Casa V.O.">
+<meta name="apple-mobile-web-app-title" content="Libro Finanzas">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
-  --bg:#f3f5fa; --card:#ffffff; --ink:#1b2333; --muted:#6b7488; --line:#e5e9f1;
-  --brand:#1f3864; --accent:#2f5597; --soft:#e4edf9; --chip:#eef2fa;
-  --pos:#00703c; --neg:#c00000; --inc:#2f5597; --exp:#d9822b;
+  --bg:#f4f6fa; --card:#ffffff; --ink:#111827; --muted:#667085; --line:#e4e8f0;
+  --brand:#0f2a52; --accent:#1b3f7a; --soft:#e6edf8; --chip:#eef2f9;
+  --pos:#00703c; --neg:#c00000; --inc:#1b3f7a; --exp:#f28c28;
   --field:#ffffff; --danger:#c00000; --shadow:0 1px 2px rgba(20,30,60,.06),0 6px 18px rgba(20,30,60,.05);
-  --gold:#FFCC00; --gold-ink:#5c4500; --ve-blue:#00247D; --ve-red:#CF142B;
+  --gold:#f28c28; --gold-ink:#3d1f00; --ve-blue:#0f2a52; --ve-red:#111111;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -27,15 +27,15 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0f1420; --card:#171e2d; --ink:#e7ecf6; --muted:#93a0b8; --line:#26304a;
-    --brand:#a9c3ff; --accent:#6d97ee; --soft:#1e2a44; --chip:#212b42;
-    --pos:#4ade80; --neg:#ff8080; --inc:#6d97ee; --exp:#f0a35c; --field:#111828; --danger:#ff8080;
+    --brand:#ffb066; --accent:#f28c28; --soft:#1e2a44; --chip:#212b42;
+    --pos:#4ade80; --neg:#ff8080; --inc:#6d97ee; --exp:#f28c28; --field:#111828; --danger:#ff8080;
     --shadow:0 1px 2px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1420; --card:#171e2d; --ink:#e7ecf6; --muted:#93a0b8; --line:#26304a;
-  --brand:#a9c3ff; --accent:#6d97ee; --soft:#1e2a44; --chip:#212b42;
-  --pos:#4ade80; --neg:#ff8080; --inc:#6d97ee; --exp:#f0a35c; --field:#111828; --danger:#ff8080;
+  --brand:#ffb066; --accent:#f28c28; --soft:#1e2a44; --chip:#212b42;
+  --pos:#4ade80; --neg:#ff8080; --inc:#6d97ee; --exp:#f28c28; --field:#111828; --danger:#ff8080;
   --shadow:0 1px 2px rgba(0,0,0,.4);
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -49,7 +49,9 @@ body{
 }
 button{font:inherit;color:inherit;cursor:pointer}
 h1,h2,h3,p{margin:0}
-.flagbar{height:5px;background:linear-gradient(90deg,var(--gold) 0 33.33%,var(--ve-blue) 33.33% 66.66%,var(--ve-red) 66.66% 100%);}
+.flagbar{height:5px;background:linear-gradient(90deg,var(--ve-blue) 0 50%,var(--gold) 50% 100%);}
+.brand h1{display:flex; align-items:center; gap:8px}
+.logo{width:28px; height:28px; border-radius:7px; display:block}
 
 .top{
   position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
@@ -63,6 +65,8 @@ select,.btn{border:1px solid var(--line); background:var(--card); color:var(--in
 select{font-weight:600; max-width:190px}
 .btn:hover{border-color:var(--accent)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+:root[data-theme="dark"] .btn.primary{color:#1a0d00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#1a0d00}}
 .btn.danger{color:var(--danger); border-color:var(--danger); background:transparent}
 .btn.danger.solid{background:var(--danger); color:#fff}
 .btn[disabled]{opacity:.6; cursor:default}
@@ -121,8 +125,8 @@ main{max-width:1240px; margin:0 auto; padding:16px 16px 48px}
 .row:last-child{border-bottom:0}
 .r2{grid-template-columns:minmax(0,1fr) 128px 26px}
 .r3{grid-template-columns:minmax(0,1fr) 146px 100px 34px 26px}
-.r5{grid-template-columns:minmax(0,1fr) 104px 54px 92px 40px 26px}
-.head.r5 span:nth-child(3),.head.r5 span:nth-child(5){text-align:center}
+.rpl{grid-template-columns:minmax(0,1fr) 124px 48px 26px}
+.head.rpl span:nth-child(3){text-align:center}
 .head.r3 span:nth-child(2){text-align:left}
 .head.r3 span:nth-child(4){text-align:center; font-size:10.5px}
 
@@ -268,14 +272,14 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
   .crow .c-n{grid-area:n} .crow .c-c{grid-area:c} .crow .c-m{grid-area:m} .crow .c-u{grid-area:u} .crow .c-p{grid-area:p} .crow .c-x{grid-area:x}
   .kpi b{font-size:19px}
   .r2{grid-template-columns:minmax(0,1fr) 112px 24px}
-  .head.r5{display:none}
-  .r5{
-    grid-template-columns:minmax(0,1.4fr) 58px minmax(0,1fr) 62px;
-    grid-template-areas:"n n n x" "m d c r";
+  .head.rpl{display:none}
+  .rpl{
+    grid-template-columns:120px minmax(0,1fr) 24px;
+    grid-template-areas:"n n x" "m r x";
     padding:6px 4px; row-gap:2px;
   }
-  .r5 .c-n{grid-area:n} .r5 .c-m{grid-area:m} .r5 .c-d{grid-area:d}
-  .r5 .c-c{grid-area:c} .r5 .c-r{grid-area:r} .r5 .c-x{grid-area:x}
+  .rpl .c-n{grid-area:n} .rpl .c-m{grid-area:m}
+  .rpl .c-r{grid-area:r} .rpl .c-x{grid-area:x}
   .chk span{display:inline}
   .bar{grid-template-columns:64px 1fr 88px}
   .head.r3{display:none}
@@ -303,8 +307,8 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <header class="top">
   <div class="top-row">
     <div class="brand">
-      <h1>Casa Viera Ollarves</h1>
-      <p>Libro de ingresos y egresos</p>
+      <h1><img src="icon-192.png" alt="" class="logo">Libro Finanzas Hogar</h1>
+      <p>Ingresos y egresos de tu hogar</p>
     </div>
     <div class="controls" id="controls" hidden>
       <select id="mes" aria-label="Mes"></select>
@@ -363,6 +367,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <h2>Tu hogar</h2>
     <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar. Creá uno nuevo o sumate al de tu pareja.</p>
     <label>Nombre de tu hogar <input type="text" class="txt" id="nhNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
+    <label>Moneda <select id="nhMoneda"></select></label>
     <button class="btn primary" id="nhCrear" type="button">Crear mi hogar</button>
     <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
       <label>¿Tu pareja ya tiene un hogar? Escribí su código <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
@@ -393,21 +398,42 @@ const QNAME={q1:'1ra quincena',q2:'2da quincena'};
 const MIN={ingresos:12,plataformas:14,egresos:22,anticipados:18,fondo:6,retiro:6,tarjeta:10};
 const MES_RE=/^\d{4}-(0[1-9]|1[0-2])$/;
 const CATS=['Alimentación','Servicios','Transporte','Regalos','Deudas','Alquiler','Salud','Hijos','Entretenimiento','Otros'];
-const PIE_PAL=['#FFCC00','#00247D','#CF142B','#2e7d32','#8e24aa','#ef6c00','#00897b','#5d4037','#546e7a','#ad1457','#1565c0','#757575'];
+const PIE_PAL=['#f28c28','#0f2a52','#111111','#2e7d32','#8e24aa','#c75c00','#00897b','#5d4037','#546e7a','#ad1457','#1565c0','#757575'];
 
 /* ---------- Utilidades ---------- */
 const uid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
 const $=(s,r)=>(r||document).querySelector(s);
 const el=(tag,cls)=>{const e=document.createElement(tag); if(cls) e.className=cls; return e;};
 const nf=new Intl.NumberFormat('es-AR',{maximumFractionDigits:2});
-const cf=new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
+const MONEDAS=[
+  {c:'ARS',n:'Peso argentino',s:'$',d:0},
+  {c:'USD',n:'Dólar estadounidense',s:'US$',d:2},
+  {c:'VES',n:'Bolívar venezolano',s:'Bs.',d:2},
+  {c:'BRL',n:'Real brasileño',s:'R$',d:2},
+  {c:'COP',n:'Peso colombiano',s:'COL$',d:0},
+  {c:'PEN',n:'Sol peruano',s:'S/',d:2},
+  {c:'CLP',n:'Peso chileno',s:'CLP$',d:0},
+  {c:'PYG',n:'Guaraní paraguayo',s:'₲',d:0},
+  {c:'MXN',n:'Peso mexicano',s:'MX$',d:2},
+  {c:'UYU',n:'Peso uruguayo',s:'$U',d:2}
+];
+let moneda=MONEDAS[0], monedaNF=null;
+function setMoneda(code){
+  moneda=MONEDAS.find(m=>m.c===code)||MONEDAS[0];
+  monedaNF=new Intl.NumberFormat('es-AR',{minimumFractionDigits:0,maximumFractionDigits:moneda.d});
+}
+setMoneda('ARS');
+const cf={format:v=>{ const x=(typeof v==='number'&&isFinite(v))?v:0; return (x<0?'-':'')+moneda.s+' '+monedaNF.format(Math.abs(x)); }};
 const fmt=v=>v==null?'':nf.format(v);
 const num=v=>(typeof v==='number'&&isFinite(v))?v:0;
 const monthLabel=id=>{const p=id.split('-'); return MESES[Number(p[1])-1]+' '+p[0];};
 function parseMoney(s){
   s=String(s).replace(/[\s$]/g,'');
   if(!s) return null;
-  if(s.indexOf(',')>=0) s=s.replace(/\./g,'').replace(',','.');
+  if(s.indexOf(',')>=0 && s.indexOf('.')>=0){
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\./g,'').replace(',','.'); else s=s.replace(/,/g,'');
+  }
+  else if(s.indexOf(',')>=0) s=s.replace(/\./g,'').replace(',','.');
   else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
   const n=Number(s);
   return isFinite(n)?n:NaN;
@@ -426,15 +452,15 @@ function setView(v){
 
 /* ---------- Modelo de datos ---------- */
 const blank=sec=>{
-  if(sec==='plataformas') return {id:uid(),n:'',m:null,d:null,r:true,pagado:false};
+  if(sec==='plataformas') return {id:uid(),n:'',m:null,r:true,pagado:false};
   if(sec==='egresos'||sec==='anticipados') return {id:uid(),n:'',m:null,cat:'',pagado:false};
   if(sec==='tarjeta') return {id:uid(),n:'',m:null,cuotas:1,valorCuota:null,inicio:cur||null,cat:''};
   return {id:uid(),n:'',m:null};
 };
-const isBlank=(r,sec)=>!String(r.n||'').trim() && r.m==null && (sec!=='plataformas' || r.d==null);
+const isBlank=(r,sec)=>!String(r.n||'').trim() && r.m==null;
 function normRow(r,sec){
   const o={id:String(r.id||uid()), n:String(r.n==null?'':r.n), m:(typeof r.m==='number'&&isFinite(r.m))?r.m:null};
-  if(sec==='plataformas'){ o.d=(typeof r.d==='number'&&r.d>0)?r.d:null; o.r=r.r!==false; o.pagado=r.pagado===true; }
+  if(sec==='plataformas'){ o.r=r.r!==false; o.pagado=r.pagado===true; }
   if(sec==='egresos'||sec==='anticipados'){ o.cat=(typeof r.cat==='string'&&CATS.includes(r.cat))?r.cat:''; o.pagado=r.pagado===true; }
   if(sec==='tarjeta'){
     o.cuotas=(typeof r.cuotas==='number'&&CUOTAS_OPC.includes(r.cuotas))?r.cuotas:1;
@@ -445,12 +471,10 @@ function normRow(r,sec){
   return o;
 }
 const autoPlat=qd=>qd.plataformas.filter(p=>p.r && String(p.n).trim());
-const hasMama=qd=>qd.plataformas.some(p=>p.d>0);
 function padSec(qd,sec){
   const arr=qd[sec];
   let need=MIN[sec];
   if(sec==='egresos') need-=autoPlat(qd).length;
-  if(sec==='ingresos' && hasMama(qd)) need-=1;
   while(arr.length<need) arr.push(blank(sec));
   if(!arr.length || !isBlank(arr[arr.length-1],sec)) arr.push(blank(sec));
 }
@@ -545,17 +569,10 @@ function activeCuotasFor(monthId,q){
 }
 const monthTarjetaTotal=(monthId,q)=>activeCuotasFor(monthId,q).reduce((s,it)=>s+it.amount,0);
 const alquilerQuincena=md=>(md&&md.alquilerMonto!=null)?md.alquilerMonto/2:0;
-const alquilerMamaQuincena=md=>(md&&md.alquilerMonto!=null)?md.alquilerMonto/3/2:0;
 const diezmoJorgeQuincena=md=>(md&&md.diezmoJorge!=null)?md.diezmoJorge/2:0;
 const diezmoJosseQuincena=md=>(md&&md.diezmoJossely!=null)?md.diezmoJossely/2:0;
-const hasMamaAny=(qd,md)=>hasMama(qd)||(md&&md.alquilerMonto!=null);
 function calc(qd,md){
-  const cu=p=>(p.d>0&&p.m!=null)?p.m/p.d:0;
-  const mama=qd.plataformas.reduce((s,p)=>s+cu(p),0);
-  const mamaAlquiler=alquilerMamaQuincena(md);
-  const mamaTotal=(hasMama(qd)?mama:0)+mamaAlquiler;
-  const ingManual=qd.ingresos.reduce((s,r)=>s+num(r.m),0);
-  const ingresos=ingManual+mamaTotal;
+  const ingresos=qd.ingresos.reduce((s,r)=>s+num(r.m),0);
   const fijosExtra=alquilerQuincena(md)+diezmoJorgeQuincena(md)+diezmoJosseQuincena(md);
   const egresos=autoPlat(qd).reduce((s,p)=>s+num(p.m),0)+qd.egresos.reduce((s,r)=>s+num(r.m),0)+fijosExtra;
   const antic=qd.anticipados.reduce((s,r)=>s+num(r.m),0);
@@ -563,7 +580,7 @@ function calc(qd,md){
   const fondo=qd.fondo.reduce((s,r)=>s+num(r.m),0);
   const retiro=qd.retiro.reduce((s,r)=>s+num(r.m),0);
   const egresosTotales=egresos+antic;
-  return {mama,mamaAlquiler,mamaTotal,ingresos,egresos,antic,egresosTotales,fondo,retiro,balance:ingresos-egresosTotales-fondo,platTotal,pct:ingresos>0?egresosTotales/ingresos:0,
+  return {ingresos,egresos,antic,egresosTotales,fondo,retiro,balance:ingresos-egresosTotales-fondo,platTotal,pct:ingresos>0?egresosTotales/ingresos:0,
     alquilerQ:alquilerQuincena(md), diezmoJQ:diezmoJorgeQuincena(md), diezmoJoQ:diezmoJosseQuincena(md)};
 }
 
@@ -652,7 +669,17 @@ document.addEventListener('focusout',()=>{
   },80);
 });
 
-function startData(){
+const monedaRef=()=>FS.doc(db,'hogares',hogarId,'ahorro','config');
+async function loadMoneda(){
+  setMoneda('ARS');
+  try{ const s=await FS.getDoc(monedaRef()); if(s.exists()&&s.data().moneda) setMoneda(s.data().moneda); }catch(e){}
+}
+async function saveMoneda(code){
+  try{ await FS.setDoc(monedaRef(),{moneda:code,actualizado:Date.now()}); return true; }
+  catch(e){ toast('No se pudo guardar la moneda'); return false; }
+}
+function startData(){ loadMoneda().then(startData0,startData0); }
+function startData0(){
   ready=false; months={}; cur=null; dirty.clear();
   setView('loading'); $('#loadingMsg').textContent='Cargando tus datos…'; $('#loadingErr').textContent='';
   clearTimeout(loadTimer);
@@ -673,7 +700,7 @@ function startData(){
 function stopData(){
   if(unsub){ try{unsub();}catch(e){} unsub=null; }
   clearTimeout(loadTimer); clearTimeout(saveTimer); clearTimeout(retryTimer); retryTimer=null;
-  months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:'2027-03'}; cur=null; ready=false; dirty.clear(); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
+  setMoneda('ARS'); months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:'2027-03'}; cur=null; ready=false; dirty.clear(); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
 }
 
 /* ---------- Cálculos en pantalla ---------- */
@@ -689,7 +716,7 @@ function refreshComputed(){
   const mes={ingresos:C.q1.ingresos+C.q2.ingresos, egresos:C.q1.egresos+C.q2.egresos,
              antic:C.q1.antic+C.q2.antic, egresosTotales:C.q1.egresosTotales+C.q2.egresosTotales,
              fondo:C.q1.fondo+C.q2.fondo, retiro:C.q1.retiro+C.q2.retiro, tarjeta:C.q1.tarjeta+C.q2.tarjeta,
-             mama:C.q1.mama+C.q2.mama, platTotal:0};
+             platTotal:0};
   mes.balance=mes.ingresos-mes.egresosTotales-mes.fondo;
   mes.pct=mes.ingresos>0?mes.egresosTotales/mes.ingresos:0;
   mes.disponibleTarjeta=(months[cur].limiteTarjeta!=null)?(months[cur].limiteTarjeta-mes.tarjeta):0;
@@ -718,8 +745,6 @@ function refreshComputed(){
   }
   QS.forEach(q=>{
     md[q].plataformas.forEach(p=>{
-      const c=document.querySelector('[data-cu="'+p.id+'"]');
-      if(c) c.textContent=(p.d>0&&p.m!=null)?cf.format(p.m/p.d):'';
       const a=document.querySelector('[data-aut="'+p.id+'"]');
       if(a) a.textContent=cf.format(num(p.m));
     });
@@ -963,27 +988,15 @@ function tarjetaCarriedItem(it){
   return box;
 }
 function platRow(q,p){
-  const d=el('div','row r5'+(isBlank(p,'plataformas')?' blank':''));
+  const d=el('div','row rpl'+(isBlank(p,'plataformas')?' blank':''));
   const cn=el('div','c-n'); cn.append(txtInput(p.n,'Plataforma o gasto fijo',v=>{p.n=v; afterEdit(q,'plataformas',p,d);}));
   const cm=el('div','c-m'); cm.append(moneyInput(()=>p.m,v=>{p.m=v;},()=>refreshComputed(),()=>afterEdit(q,'plataformas',p,d)));
-  const dv=el('input','mid'); dv.type='text'; dv.inputMode='numeric'; dv.placeholder='Entre'; dv.setAttribute('aria-label','Dividir entre'); dv.autocomplete='off';
-  dv.value=p.d==null?'':String(p.d);
-  dv.addEventListener('focus',()=>dv.select());
-  dv.addEventListener('change',()=>{
-    const s=dv.value.trim();
-    if(s===''){ p.d=null; }
-    else if(/^\d+$/.test(s)&&Number(s)>0){ p.d=Number(s); }
-    else { dv.value=p.d==null?'':String(p.d); toast('Poné un número entero mayor a 0'); return; }
-    afterEdit(q,'plataformas',p,d);
-  });
-  const cd=el('div','c-d'); cd.append(dv);
-  const cc=el('div','cell-c c-c'); cc.setAttribute('data-cu',p.id); cc.title='Lo que le toca a cada uno';
   const cr=el('label','chk c-r'); cr.title='Reflejar en Egresos';
   const ck=el('input'); ck.type='checkbox'; ck.checked=p.r!==false; ck.setAttribute('aria-label','Reflejar en Egresos');
   ck.addEventListener('change',()=>{p.r=ck.checked; afterEdit(q,'plataformas',p,d);});
   const sp=el('span'); sp.textContent='En egresos'; cr.append(ck,sp);
   const cx=el('div','c-x'); cx.append(delBtn(()=>removeRow(q,'plataformas',p.id)));
-  d.append(cn,cm,cd,cc,cr,cx);
+  d.append(cn,cm,cr,cx);
   return d;
 }
 function autoRow(label,tag,bindAttr,bindVal,payRow){
@@ -998,7 +1011,6 @@ function renderList(q,sec){
   const qd=months[cur][q]; padSec(qd,sec);
   host.replaceChildren();
   if(sec==='egresos') autoPlat(qd).forEach(p=>host.append(autoRow(p.n,'Plataformas','data-aut',p.id,p)));
-  if(sec==='ingresos' && hasMamaAny(qd,months[cur])) host.append(autoRow('Dinero dado por Mamá','Plataformas + alquiler','data-k',q+'.mamaTotal'));
   if(sec==='tarjeta') activeCuotasFor(cur,q).filter(it=>!it.isOrigin).forEach(it=>host.append(tarjetaCarriedItem(it)));
   qd[sec].forEach(r=>host.append(rowFor(q,sec,r)));
   refreshComputed();
@@ -1056,10 +1068,10 @@ function buildFijosFijoEditable(q){
   const syncInfo=()=>{
     const md=months[cur];
     info.textContent = md.alquilerMonto!=null
-      ? ('Por quincena: '+cf.format(alquilerQuincena(md))+' · Aporte de Mamá por quincena: '+cf.format(alquilerMamaQuincena(md)))
+      ? ('Por quincena: '+cf.format(alquilerQuincena(md)))
       : 'Cargá el monto del alquiler para ver cómo se divide.';
   };
-  const mf=moneyField('Alquiler (total del mes)',()=>months[cur].alquilerMonto,v=>{months[cur].alquilerMonto=v; syncInfo();});
+  const mf=moneyField('Alquiler o vivienda (total del mes)',()=>months[cur].alquilerMonto,v=>{months[cur].alquilerMonto=v; syncInfo();});
   const fAlq=pagadoFieldName('alquiler',q);
   mf.wrap.append(payToggleField(()=>months[cur][fAlq],v=>{months[cur][fAlq]=v;}));
   box.append(mf.wrap); syncInfo(); box.append(info);
@@ -1067,15 +1079,15 @@ function buildFijosFijoEditable(q){
   const aumWrap=el('div','fijoRow');
   const aumLab=el('div','fijoLab'); aumLab.textContent='Próximo aumento (nota, no se aplica solo)'; aumWrap.append(aumLab);
   const aumIn=el('input'); aumIn.type='text'; aumIn.className='txt'; aumIn.setAttribute('aria-label','Próximo aumento del alquiler');
-  aumIn.placeholder='Ej: Nov: pasa a $900.000'; aumIn.value=months[cur].alquilerAumento||'';
+  aumIn.placeholder='Ej: En noviembre pasa a 900.000'; aumIn.value=months[cur].alquilerAumento||'';
   aumIn.addEventListener('change',()=>{ months[cur].alquilerAumento=aumIn.value; refreshComputed(); markDirty(); });
   aumWrap.append(aumIn); box.append(aumWrap);
 
-  const mj=moneyField('Diezmo Jorge (total del mes)',()=>months[cur].diezmoJorge,v=>{months[cur].diezmoJorge=v;});
+  const mj=moneyField('Diezmo o donación 1 (total del mes)',()=>months[cur].diezmoJorge,v=>{months[cur].diezmoJorge=v;});
   const fDJ=pagadoFieldName('diezmoJorge',q);
   mj.wrap.append(payToggleField(()=>months[cur][fDJ],v=>{months[cur][fDJ]=v;}));
   box.append(mj.wrap);
-  const mjo=moneyField('Diezmo Jossely (total del mes)',()=>months[cur].diezmoJossely,v=>{months[cur].diezmoJossely=v;});
+  const mjo=moneyField('Diezmo o donación 2 (total del mes)',()=>months[cur].diezmoJossely,v=>{months[cur].diezmoJossely=v;});
   const fDJo=pagadoFieldName('diezmoJosse',q);
   mjo.wrap.append(payToggleField(()=>months[cur][fDJo],v=>{months[cur][fDJo]=v;}));
   box.append(mjo.wrap);
@@ -1091,9 +1103,9 @@ function buildFijosFijoResumen(q){
     row.append(payToggleField(()=>months[cur][field],v=>{months[cur][field]=v;}));
     return row;
   };
-  box.append(mk('Alquiler (mitad)',q+'.alquilerQ',pagadoFieldName('alquiler',q)));
-  box.append(mk('Diezmo Jorge',q+'.diezmoJQ',pagadoFieldName('diezmoJorge',q)));
-  box.append(mk('Diezmo Jossely',q+'.diezmoJoQ',pagadoFieldName('diezmoJosse',q)));
+  box.append(mk('Alquiler o vivienda (mitad)',q+'.alquilerQ',pagadoFieldName('alquiler',q)));
+  box.append(mk('Diezmo o donación 1',q+'.diezmoJQ',pagadoFieldName('diezmoJorge',q)));
+  box.append(mk('Diezmo o donación 2',q+'.diezmoJoQ',pagadoFieldName('diezmoJosse',q)));
   return box;
 }
 function renderSearchResults(term,host){
@@ -1133,10 +1145,10 @@ function card(q,sec,title,totalKey,hint){
   const isRetiro=sec==='retiro';
   const isTarjeta=sec==='tarjeta';
   if(!isTarjeta){
-    const head=el('div','head '+(sec==='plataformas'?'r5':(isCat?'r3':(isRetiro?'rpick':'r2'))));
-    const labels=sec==='plataformas'?['Plataforma','Monto','Entre','C/U','En egr.']:(isCat?[sec==='egresos'?'Gasto':'Concepto','Categoría','Monto']:(isRetiro?['Elegir de Egresos variables','Concepto','Monto']:['Concepto','Monto']));
+    const head=el('div','head '+(sec==='plataformas'?'rpl':(isCat?'r3':(isRetiro?'rpick':'r2'))));
+    const labels=sec==='plataformas'?['Plataforma','Monto','En egr.']:(isCat?[sec==='egresos'?'Gasto':'Concepto','Categoría','Monto']:(isRetiro?['Elegir de Egresos variables','Concepto','Monto']:['Concepto','Monto']));
     labels.forEach(l=>{const s=el('span'); s.textContent=l; head.append(s);});
-    if(sec==='plataformas'){ head.children[2].title='Entre cuántos se divide (3 = Jorge, Josse y Mamá)'; head.children[4].title='Reflejar en Egresos'; }
+    if(sec==='plataformas'){ head.children[2].title='Reflejar en Egresos'; }
     if(isCat){ const sp=el('span'); sp.textContent='Pagado'; head.append(sp); }
     head.append(el('span'));
     c.append(head);
@@ -1157,7 +1169,7 @@ function buildQ(q){
   const g=el('div','qgrid');
   g.append(
     card(q,'ingresos','Ingresos','ingresos','Podés cambiar los montos cuando quieras; los ingresos pueden variar.'),
-    card(q,'plataformas','Plataformas y reparto','platTotal','Lo que anotes acá se refleja en <b>Egresos fijos</b> y en el aporte de Mamá: <b data-k="{q}.mama"></b>.'),
+    card(q,'plataformas','Plataformas y suscripciones','platTotal','Netflix, internet, celulares, etc. Lo que anotes acá se refleja en <b>Egresos fijos</b> (podés destildar "En egresos" si no querés que cuente).'),
     card(q,'egresos','Egresos fijos','egresos',null),
     card(q,'anticipados','Egresos variables','antic',null)
   );
@@ -1219,11 +1231,14 @@ function buildResumen(){
    '<p class="hint" id="hogarNombre"></p>'+
    '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta, verifique su correo y elija "Unirme con código" con este código.</p>'+
    '<div class="tools" id="hogarCodeTools"></div></section>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Moneda</h2></header>'+
+   '<p class="hint">Es la moneda en que se muestran todos los montos del hogar. Cambiarla no convierte los números cargados: solo cambia el símbolo.</p>'+
+   '<div class="tools" id="monedaTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Herramientas</h2></header>'+
    '<p class="hint">Bajá un respaldo de vez en cuando. También podés restaurarlo o pasar datos de otro libro.</p>'+
    '<p class="small" id="respInfo"></p>'+
    '<div class="tools" id="tools"></div>'+
-   '<p class="hint" style="margin-top:14px">Para compartir con Mamá o guardar todo el mes impreso:</p>'+
+   '<p class="hint" style="margin-top:14px">Para guardar o imprimir todo el mes:</p>'+
    '<div class="tools" id="toolsExport"></div>'+
    '<p class="small" id="sesion" style="margin-top:14px"></p></section>';
   const searchBox=$('#searchAll',v);
@@ -1242,10 +1257,9 @@ function buildResumen(){
   $('#sesion',v).after(el('div','tools')); const t3=$('#sesion',v).nextSibling; t3.append(bAcc); t3.after(priv);
   updatePapeleraBtn(v); updateRespaldoAviso(v); fillAhorro(v);
   const te=$('#toolsExport',v);
-  const m1=el('button','btn'); m1.type='button'; m1.textContent='Imagen'; m1.addEventListener('click',exportMama);
   const m3=el('button','btn primary'); m3.type='button'; m3.textContent='Descargar plantilla completa (PDF)'; m3.addEventListener('click',exportFullPDF);
   const m4=el('button','btn'); m4.type='button'; m4.textContent='Excel (.xlsx)'; m4.addEventListener('click',exportExcel);
-  te.append(m1,m3,m4);
+  te.append(m3,m4);
   $('#hogarNombre',v).textContent='Hogar: '+(hogarInfo&&hogarInfo.nombre?hogarInfo.nombre:'(sin nombre)');
   const hc=$('#hogarCodeTools',v);
   const pill=el('span','pill'); pill.style.cssText='font-weight:700; letter-spacing:.06em; font-size:14px';
@@ -1257,6 +1271,11 @@ function buildResumen(){
     catch(e){ toast('No se pudo copiar: '+code); }
   });
   hc.append(pill,copyBtn);
+  const mt=$('#monedaTools',v);
+  const sel=el('select'); sel.setAttribute('aria-label','Moneda');
+  MONEDAS.forEach(m=>{ const o=el('option'); o.value=m.c; o.textContent=m.n+' ('+m.c+')'; if(m.c===moneda.c) o.selected=true; sel.append(o); });
+  sel.addEventListener('change',async()=>{ const prev=moneda.c; setMoneda(sel.value); if(await saveMoneda(sel.value)){ render(); toast('Moneda cambiada'); } else { setMoneda(prev); sel.value=prev; } });
+  mt.append(sel);
   $('#sesion',v).textContent=me?('Sesión: '+(me.email||'')+' · ID de usuario: '+me.uid):'';
   return v;
 }
@@ -1588,14 +1607,14 @@ function fillAhorro(root){
   const c=$('#ahorroCard',root); if(!c) return;
   c.replaceChildren();
   const h=el('header'); const h2=el('h2'); h2.textContent='Ahorro en dólares'; h.append(h2); c.append(h);
-  const hint=el('p','hint'); hint.textContent='Es un acumulado del hogar (no depende del mes). Cargá lo que ya ahorraste, la cotización y tu meta.'; c.append(hint);
+  const hint=el('p','hint'); hint.textContent='Es un acumulado del hogar (no depende del mes). Cargá lo que ya ahorraste en dólares, la cotización a tu moneda y tu meta.'; c.append(hint);
   const grid=el('div','kpis'); grid.style.marginTop='4px';
   const box=(label,inp)=>{ const d=el('div','kpi'); const s=el('span'); s.textContent=label; d.append(s,inp); return d; };
   const stl=i=>{ i.style.cssText='width:100%; font-size:18px; font-weight:700; padding:0; border:0; background:transparent'; return i; };
   const mk=(key,ph)=>stl(moneyInput(()=>ahorro[key],v=>{ahorro[key]=v;},()=>calcAhorro(c),()=>{calcAhorro(c); saveAhorro();},ph));
   const fm=el('input','txt'); fm.type='month'; fm.value=ahorro.fechaMeta; fm.setAttribute('aria-label','Fecha de la meta'); stl(fm);
   fm.addEventListener('change',()=>{ if(MES_RE.test(fm.value)){ ahorro.fechaMeta=fm.value; calcAhorro(c); saveAhorro(); } });
-  grid.append(box('Total ahorrado (USD)',mk('ahorrado','USD ahorrados')),box('Cotización (ARS por USD)',mk('cotizacion','Cotización')),
+  grid.append(box('Total ahorrado (USD)',mk('ahorrado','USD ahorrados')),...(moneda.c==='USD'?[]:[box('Cotización ('+moneda.c+' por USD)',mk('cotizacion','Cotización'))]),
               box('Meta (USD)',mk('meta','Meta en USD')),box('Fecha de la meta',fm));
   c.append(grid);
   const dep=el('div','tools'); dep.style.marginTop='10px';
@@ -1612,7 +1631,7 @@ function fillAhorro(root){
 }
 function calcAhorro(c){
   const out=$('.ahorroOut',c); if(!out) return; out.replaceChildren();
-  const A=num(ahorro.ahorrado), C=num(ahorro.cotizacion), M=num(ahorro.meta);
+  const A=num(ahorro.ahorrado), C=moneda.c==='USD'?0:num(ahorro.cotizacion), M=num(ahorro.meta);
   const line=t=>{ const p=el('p','small'); p.style.margin='6px 4px'; p.textContent=t; out.append(p); };
   if(C>0) line('Equivale a '+cf.format(A*C)+' a la cotización cargada.');
   if(M<=0){ line('Cargá una meta para ver tu progreso.'); return; }
@@ -1700,10 +1719,9 @@ function exportExcel(){
       const qd=md[q], Q=q.toUpperCase(), qn=QNAME[q];
       const add=(sec,desc,cat,monto,pagado)=>detalle.push([label,qn,sec,desc,cat||'',monto,pagado==null?'':(pagado?'Sí':'No')]);
       qd.ingresos.filter(r=>!isBlank(r,'ingresos')).forEach(r=>add('Ingresos',r.n,'',num(r.m)));
-      if(C[q].mamaTotal>0) add('Ingresos','Dinero dado por Mamá','',C[q].mamaTotal);
       if(C[q].alquilerQ>0) add('Egresos fijos','Alquiler','Alquiler',C[q].alquilerQ,!!md['alquilerPagado'+Q]);
-      if(C[q].diezmoJQ>0) add('Egresos fijos','Diezmo Jorge','Otros',C[q].diezmoJQ,!!md['diezmoJorgePagado'+Q]);
-      if(C[q].diezmoJoQ>0) add('Egresos fijos','Diezmo Jossely','Otros',C[q].diezmoJoQ,!!md['diezmoJossePagado'+Q]);
+      if(C[q].diezmoJQ>0) add('Egresos fijos','Diezmo o donación 1','Otros',C[q].diezmoJQ,!!md['diezmoJorgePagado'+Q]);
+      if(C[q].diezmoJoQ>0) add('Egresos fijos','Diezmo o donación 2','Otros',C[q].diezmoJoQ,!!md['diezmoJossePagado'+Q]);
       autoPlat(qd).forEach(p=>add('Egresos fijos',p.n,'',num(p.m),p.pagado));
       qd.egresos.filter(r=>!isBlank(r,'egresos')).forEach(r=>add('Egresos fijos',r.n,r.cat,num(r.m),r.pagado));
       qd.anticipados.filter(r=>!isBlank(r,'anticipados')).forEach(r=>add('Egresos variables',r.n,r.cat,num(r.m),r.pagado));
@@ -1725,7 +1743,7 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb,ws1,'Resumen por mes');
   XLSX.utils.book_append_sheet(wb,ws2,'Detalle');
   const d=new Date();
-  XLSX.writeFile(wb,'libro-casa-viera-ollarves-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.xlsx');
+  XLSX.writeFile(wb,'libro-finanzas-hogar-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.xlsx');
   toast('Excel descargado');
 }
 function downloadBlob(blob,filename){
@@ -1733,47 +1751,6 @@ function downloadBlob(blob,filename){
   a.href=URL.createObjectURL(blob); a.download=filename;
   document.body.append(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
-}
-function buildMamaHTML(md){
-  const G='#1b2333', GOLD='#FFCC00', BLUE='#00247D', RED='#CF142B';
-  let body='<div style="font-family:system-ui,Arial,sans-serif;background:#fff;color:'+G+';width:680px;padding:28px 32px;">'+
-    '<div style="height:8px;border-radius:4px;background:linear-gradient(90deg,'+GOLD+' 0 33%,'+BLUE+' 33% 66%,'+RED+' 66% 100%);margin-bottom:18px;"></div>'+
-    '<h1 style="margin:0;font-size:22px;color:'+BLUE+';">Casa Viera Ollarves</h1>'+
-    '<p style="margin:2px 0 20px;color:#6b7488;font-size:13px;">Resumen para Mamá · '+monthLabel(cur)+'</p>';
-  let granTotal=0;
-  QS.forEach(q=>{
-    const qd=md[q]; const alqM=alquilerMamaQuincena(md);
-    if(!hasMama(qd) && alqM<=0) return;
-    const filas=qd.plataformas.filter(p=>p.d>0);
-    let sub=0;
-    body+='<h2 style="font-size:15px;color:'+G+';margin:18px 0 8px;">'+QNAME[q]+'</h2>'+
-      '<table style="width:100%;border-collapse:collapse;font-size:13px;">'+
-      '<tr style="background:'+BLUE+';color:#fff;"><th style="text-align:left;padding:6px 8px;">Plataforma</th>'+
-      '<th style="text-align:right;padding:6px 8px;">Monto</th><th style="text-align:center;padding:6px 8px;">Entre</th>'+
-      '<th style="text-align:right;padding:6px 8px;">C/U</th></tr>';
-    let i=0;
-    filas.forEach(p=>{
-      const cu=(p.m!=null)?p.m/p.d:0; sub+=cu;
-      body+='<tr style="background:'+(i%2?'#f2f5fb':'#fff')+';"><td style="padding:6px 8px;">'+(p.n||'—')+'</td>'+
-        '<td style="text-align:right;padding:6px 8px;">'+cf.format(num(p.m))+'</td>'+
-        '<td style="text-align:center;padding:6px 8px;">'+p.d+'</td>'+
-        '<td style="text-align:right;padding:6px 8px;font-weight:600;">'+cf.format(cu)+'</td></tr>';
-      i++;
-    });
-    if(alqM>0){
-      sub+=alqM;
-      body+='<tr style="background:'+(i%2?'#f2f5fb':'#fff')+';"><td style="padding:6px 8px;">Alquiler (su parte)</td>'+
-        '<td style="text-align:right;padding:6px 8px;">'+cf.format(md.alquilerMonto)+'</td>'+
-        '<td style="text-align:center;padding:6px 8px;">3</td>'+
-        '<td style="text-align:right;padding:6px 8px;font-weight:600;">'+cf.format(alqM)+'</td></tr>';
-    }
-    granTotal+=sub;
-    body+='</table><p style="text-align:right;margin:8px 4px 0;font-weight:700;">Total C/U '+QNAME[q]+': '+cf.format(sub)+'</p>';
-  });
-  body+='<div style="margin-top:20px;padding:14px 16px;background:'+GOLD+';border-radius:10px;">'+
-    '<p style="margin:0;font-size:13px;color:#5c4500;">Total C/U en '+monthLabel(cur)+'</p>'+
-    '<p style="margin:2px 0 0;font-size:26px;font-weight:800;color:#3a2c00;">'+cf.format(granTotal)+'</p></div></div>';
-  return body;
 }
 async function captureAndDeliver(innerHTML,width,filenameBase,format){
   if(typeof html2canvas==='undefined' || (format==='pdf' && !(window.jspdf&&window.jspdf.jsPDF))){
@@ -1799,10 +1776,6 @@ async function captureAndDeliver(innerHTML,width,filenameBase,format){
   }catch(e){ toast('No se pudo generar el archivo'); }
   finally{ wrap.remove(); }
 }
-function exportMama(){
-  const md=months[cur]; if(!md) return;
-  captureAndDeliver(buildMamaHTML(md),680,'resumen-mama-'+cur,'jpg');
-}
 async function exportFullPDF(){
   if(typeof html2canvas==='undefined' || !(window.jspdf&&window.jspdf.jsPDF)){
     toast('No se pudo cargar la herramienta de exportación. Revisá tu conexión a internet.'); return;
@@ -1818,7 +1791,7 @@ async function exportFullPDF(){
     const img=canvas.toDataURL('image/jpeg',0.95);
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:[canvas.width,canvas.height]});
     pdf.addImage(img,'JPEG',0,0,canvas.width,canvas.height);
-    pdf.save('libro-casa-viera-ollarves-'+cur+'.pdf');
+    pdf.save('libro-finanzas-hogar-'+cur+'.pdf');
     toast('Listo');
   }catch(e){ toast('No se pudo generar el PDF'); }
   finally{
@@ -2030,9 +2003,10 @@ $('#nhBtn').addEventListener('click',async()=>{
   catch(e){ $('#nhErr').textContent=e.message||'No se pudo vincular el código.'; }
   finally{ btn.disabled=false; }
 });
+$('#nhMoneda').replaceChildren(...MONEDAS.map(m=>{ const o=el('option'); o.value=m.c; o.textContent=m.n+' ('+m.c+')'; return o; }));
 $('#nhCrear').addEventListener('click',async()=>{
   const btn=$('#nhCrear'); $('#nhErr').textContent=''; btn.disabled=true;
-  try{ await createHogar($('#nhNombre').value); startData(); }
+  try{ await createHogar($('#nhNombre').value); await saveMoneda($('#nhMoneda').value); startData(); }
   catch(e){ $('#nhErr').textContent='No se pudo crear el hogar ('+((e&&e.code)||'error')+').'; }
   finally{ btn.disabled=false; }
 });
