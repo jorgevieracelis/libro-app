@@ -5,8 +5,8 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'cvo-shell-v2').
-const CACHE_NAME = 'cvo-shell-v1';
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+const CACHE_NAME = 'cvo-shell-v2';
+const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(

@@ -338,26 +338,37 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <h2 id="authTitle">Ingresar</h2>
     <label>Correo <input type="email" id="lEmail" autocomplete="username" required></label>
     <label>Clave <input type="password" id="lPass" autocomplete="current-password" required minlength="6"></label>
-    <label id="lCodeWrap" hidden>Código de invitación <input type="text" class="txt" id="lCode" autocomplete="off" placeholder="El que te dieron"></label>
-    <label id="lNombreWrap" hidden>Nombre de tu hogar (opcional) <input type="text" class="txt" id="lNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
     <button class="btn primary" id="lBtn" type="submit">Entrar</button>
     <p class="err" id="lErr" role="alert"></p>
     <button class="link" id="lReset" type="button">Olvidé mi clave</button>
     <button class="link" id="lToggle" type="button">¿No tenés cuenta? Creá una</button>
+    <a class="link" href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
   </form>
+</div>
+
+<div id="verify" class="center" hidden>
+  <div class="loginbox">
+    <h2>Verificá tu correo</h2>
+    <p class="small" id="vMsg"></p>
+    <p class="small">Abrí el enlace que te mandamos (mirá también en Spam) y después tocá el botón de abajo.</p>
+    <button class="btn primary" id="vOk" type="button">Ya verifiqué mi correo</button>
+    <button class="btn" id="vResend" type="button">Reenviar correo</button>
+    <p class="err" id="vErr" role="alert"></p>
+    <button class="link" id="vSalir" type="button" style="margin-top:14px">Salir</button>
+  </div>
 </div>
 
 <div id="nohogar" class="center" hidden>
   <div class="loginbox">
-    <h2>Falta vincular tu cuenta</h2>
-    <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar.</p>
-    <label>Código de invitación o de hogar <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
-    <button class="btn primary" id="nhBtn" type="button">Vincular</button>
-    <p class="err" id="nhErr" role="alert"></p>
-    <div id="nhMigrar" hidden style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
-      <p class="small">Encontramos un libro anterior con tus datos.</p>
-      <button class="btn" id="nhMigrarBtn" type="button">Migrar mi libro anterior</button>
+    <h2>Tu hogar</h2>
+    <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar. Creá uno nuevo o sumate al de tu pareja.</p>
+    <label>Nombre de tu hogar <input type="text" class="txt" id="nhNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
+    <button class="btn primary" id="nhCrear" type="button">Crear mi hogar</button>
+    <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
+      <label>¿Tu pareja ya tiene un hogar? Escribí su código <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
+      <button class="btn" id="nhBtn" type="button">Unirme con código</button>
     </div>
+    <p class="err" id="nhErr" role="alert"></p>
     <button class="link" id="nhSalir" type="button" style="margin-top:14px">Salir</button>
   </div>
 </div>
@@ -408,7 +419,7 @@ function toast(msg){
 }
 function setView(v){
   $('#loading').hidden=v!=='loading'; $('#login').hidden=v!=='login'; $('#setup').hidden=v!=='setup';
-  $('#nohogar').hidden=v!=='nohogar';
+  $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
   const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app;
   $('#tabs').hidden=!(app&&cur);
 }
@@ -1206,7 +1217,7 @@ function buildResumen(){
    '<section class="card" id="ahorroCard" style="margin-top:16px"></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Tu hogar</h2></header>'+
    '<p class="hint" id="hogarNombre"></p>'+
-   '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta en "Crear cuenta" usando este código.</p>'+
+   '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta, verifique su correo y elija "Unirme con código" con este código.</p>'+
    '<div class="tools" id="hogarCodeTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Herramientas</h2></header>'+
    '<p class="hint">Bajá un respaldo de vez en cuando. También podés restaurarlo o pasar datos de otro libro.</p>'+
@@ -1225,7 +1236,10 @@ function buildResumen(){
   const b2=el('button','btn'); b2.type='button'; b2.textContent='Importar respaldo (.json)'; b2.addEventListener('click',()=>$('#fileImp').click());
   const del=el('button','btn danger'); del.type='button'; del.textContent='Eliminar este mes'; del.addEventListener('click',askDeleteMonth);
   const bp=el('button','btn'); bp.type='button'; bp.id='btnPapelera'; bp.addEventListener('click',openPapelera);
+  const bAcc=el('button','btn danger'); bAcc.type='button'; bAcc.textContent='Eliminar mi cuenta y mis datos'; bAcc.addEventListener('click',askDeleteAccount);
   tools.append(b1,b2,del,bp);
+  const priv=el('a','link'); priv.href='privacidad.html'; priv.target='_blank'; priv.rel='noopener'; priv.textContent='Política de privacidad';
+  $('#sesion',v).after(el('div','tools')); const t3=$('#sesion',v).nextSibling; t3.append(bAcc); t3.after(priv);
   updatePapeleraBtn(v); updateRespaldoAviso(v); fillAhorro(v);
   const te=$('#toolsExport',v);
   const m1=el('button','btn'); m1.type='button'; m1.textContent='Imagen'; m1.addEventListener('click',exportMama);
@@ -1956,40 +1970,33 @@ function loginError(e){
   if(c==='auth/unauthorized-domain') return 'Este dominio no está autorizado en Firebase (ver LEEME).';
   return 'No se pudo ingresar ('+(c||'error')+').';
 }
-let pendingCode=null, pendingNombre=null;
-async function linkCodeToAccount(rawCode){
+async function joinHogarByCode(rawCode){
   const code=String(rawCode||'').trim().toUpperCase();
   if(!code) throw new Error('Escribí un código.');
-  const chSnap=await FS.getDoc(FS.doc(db,'codigosHogar',code));
-  if(chSnap.exists()){
-    const hId=chSnap.data().hogarId;
-    await FS.updateDoc(FS.doc(db,'hogares',hId),{miembros:FS.arrayUnion(me.uid)});
-    hogarId=hId;
-    try{ const hSnap=await FS.getDoc(FS.doc(db,'hogares',hId)); hogarInfo=hSnap.data(); }catch(e){}
-    return;
-  }
-  const invSnap=await FS.getDoc(FS.doc(db,'invites',code));
-  if(invSnap.exists() && invSnap.data().usado===false){
-    const hogarRef=FS.doc(FS.collection(db,'hogares'));
-    const codigoHogar=genCode(6);
-    const info={nombre:pendingNombre||'Mi hogar', creadoPor:me.uid, miembros:[me.uid], codigoHogar};
-    const batch=FS.writeBatch(db);
-    batch.set(hogarRef,info);
-    batch.set(FS.doc(db,'codigosHogar',codigoHogar),{hogarId:hogarRef.id});
-    batch.update(FS.doc(db,'invites',code),{usado:true, hogarId:hogarRef.id});
-    await batch.commit();
-    hogarId=hogarRef.id; hogarInfo=info;
-    return;
-  }
-  throw new Error('Ese código no es válido o ya fue usado.');
+  let chSnap;
+  try{ chSnap=await FS.getDoc(FS.doc(db,'codigosHogar',code)); }catch(e){ chSnap=null; }
+  if(!chSnap || !chSnap.exists()) throw new Error('Ese código no es válido.');
+  const hId=chSnap.data().hogarId;
+  try{ await FS.updateDoc(FS.doc(db,'hogares',hId),{miembros:FS.arrayUnion(me.uid)}); }
+  catch(e){ throw new Error('No se pudo sumar a ese hogar (puede estar completo).'); }
+  hogarId=hId;
+  try{ const hSnap=await FS.getDoc(FS.doc(db,'hogares',hId)); hogarInfo=hSnap.data(); }catch(e){}
+}
+async function createHogar(nombre){
+  const hogarRef=FS.doc(FS.collection(db,'hogares'));
+  const codigoHogar=genCode(6);
+  const info={nombre:String(nombre||'').trim()||'Mi hogar', creadoPor:me.uid, miembros:[me.uid], codigoHogar};
+  const batch=FS.writeBatch(db);
+  batch.set(hogarRef,info);
+  batch.set(FS.doc(db,'codigosHogar',codigoHogar),{hogarId:hogarRef.id});
+  await batch.commit();
+  hogarId=hogarRef.id; hogarInfo=info;
 }
 function setAuthMode(mode){
   authMode=mode;
   const signup=mode==='signup';
   $('#authTitle').textContent=signup?'Crear cuenta':'Ingresar';
   $('#lBtn').textContent=signup?'Crear cuenta':'Entrar';
-  $('#lCodeWrap').hidden=!signup; $('#lCode').required=signup;
-  $('#lNombreWrap').hidden=!signup;
   $('#lReset').hidden=signup;
   $('#lToggle').textContent=signup?'¿Ya tenés cuenta? Ingresá':'¿No tenés cuenta? Creá una';
   $('#lErr').textContent='';
@@ -2001,14 +2008,14 @@ $('#loginForm').addEventListener('submit',async ev=>{
   const email=$('#lEmail').value.trim(), pass=$('#lPass').value;
   try{
     if(authMode==='signup'){
-      pendingCode=$('#lCode').value; pendingNombre=$('#lNombre').value.trim();
-      await AU.createUserWithEmailAndPassword(auth,email,pass);
+      const cred=await AU.createUserWithEmailAndPassword(auth,email,pass);
+      try{ await AU.sendEmailVerification(cred.user); }catch(e){}
     } else {
       await AU.signInWithEmailAndPassword(auth,email,pass);
     }
     $('#lPass').value='';
   }
-  catch(e){ pendingCode=null; pendingNombre=null; $('#lErr').textContent=loginError(e); }
+  catch(e){ $('#lErr').textContent=loginError(e); }
   finally{ btn.disabled=false; }
 });
 $('#lReset').addEventListener('click',async()=>{
@@ -2019,28 +2026,81 @@ $('#lReset').addEventListener('click',async()=>{
 });
 $('#nhBtn').addEventListener('click',async()=>{
   const btn=$('#nhBtn'); $('#nhErr').textContent=''; btn.disabled=true;
-  try{ await linkCodeToAccount($('#nhCode').value); startData(); }
+  try{ await joinHogarByCode($('#nhCode').value); startData(); }
   catch(e){ $('#nhErr').textContent=e.message||'No se pudo vincular el código.'; }
   finally{ btn.disabled=false; }
 });
-$('#nhMigrarBtn').addEventListener('click',async()=>{
-  const btn=$('#nhMigrarBtn'); $('#nhErr').textContent=''; btn.disabled=true; btn.textContent='Migrando…';
-  try{ await migrarLibroAnterior(); startData(); toast('Tu libro anterior ya está migrado'); }
-  catch(e){ $('#nhErr').textContent='No se pudo migrar: '+(e.message||'error desconocido'); btn.disabled=false; btn.textContent='Migrar mi libro anterior'; }
+$('#nhCrear').addEventListener('click',async()=>{
+  const btn=$('#nhCrear'); $('#nhErr').textContent=''; btn.disabled=true;
+  try{ await createHogar($('#nhNombre').value); startData(); }
+  catch(e){ $('#nhErr').textContent='No se pudo crear el hogar ('+((e&&e.code)||'error')+').'; }
+  finally{ btn.disabled=false; }
 });
 $('#nhSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
-async function migrarLibroAnterior(){
-  const snap=await FS.getDocs(FS.collection(db,'libro'));
-  const hogarRef=FS.doc(FS.collection(db,'hogares'));
-  const codigoHogar=genCode(6);
-  const info={nombre:'Casa Viera Ollarves', creadoPor:me.uid, miembros:[me.uid], codigoHogar};
-  const batch=FS.writeBatch(db);
-  batch.set(hogarRef,info);
-  batch.set(FS.doc(db,'codigosHogar',codigoHogar),{hogarId:hogarRef.id});
-  snap.docs.forEach(d=>{ batch.set(FS.doc(db,'hogares',hogarRef.id,'meses',d.id), d.data()); });
-  await batch.commit();
-  hogarId=hogarRef.id; hogarInfo=info;
+
+/* ---------- Verificación de correo ---------- */
+function showVerify(){
+  setView('verify'); $('#vErr').textContent='';
+  $('#vMsg').textContent='Te mandamos un correo a '+(me.email||'')+' para confirmar que es tuyo.';
 }
+$('#vOk').addEventListener('click',async()=>{
+  $('#vErr').textContent='';
+  try{
+    await me.reload(); await me.getIdToken(true);
+    if(me.emailVerified) resolveHogar(); else $('#vErr').textContent='Todavía no figura verificado. Abrí el enlace del correo y probá de nuevo.';
+  }catch(e){ $('#vErr').textContent='No se pudo comprobar ('+((e&&e.code)||'error')+').'; }
+});
+$('#vResend').addEventListener('click',async()=>{
+  $('#vErr').textContent='';
+  try{ await AU.sendEmailVerification(me); toast('Te lo reenviamos'); }
+  catch(e){ $('#vErr').textContent=(e&&e.code==='auth/too-many-requests')?'Esperá unos minutos antes de pedir otro.':'No se pudo reenviar.'; }
+});
+$('#vSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
+
+/* ---------- Eliminar cuenta y datos ---------- */
+async function deleteAllInCol(colRef){
+  const snap=await FS.getDocs(colRef);
+  for(const d of snap.docs) await FS.deleteDoc(d.ref);
+}
+function askDeleteAccount(){
+  const body=el('div');
+  const p=el('p','small');
+  p.textContent='Se borra tu cuenta para siempre. Si sos la única persona del hogar, también se borran todos sus datos (meses, papelera, ahorro y lista de compras). Si tu pareja sigue en el hogar, ella conserva los datos. No se puede deshacer.';
+  const l=el('label'); l.append('Escribí tu clave para confirmar: ');
+  const inp=el('input'); inp.type='password'; inp.className='txt'; inp.autocomplete='current-password'; l.append(inp);
+  const err=el('p','err'); err.setAttribute('role','alert');
+  body.append(p,l,err);
+  modal('Eliminar mi cuenta',body,[
+    {label:'Cancelar'},
+    {label:'Eliminar para siempre',cls:'danger',onClick:()=>{ doDeleteAccount(inp.value,err); return false; }}
+  ]);
+}
+async function doDeleteAccount(pass,errEl){
+  errEl.textContent='';
+  if(!pass){ errEl.textContent='Escribí tu clave.'; return; }
+  try{
+    await AU.reauthenticateWithCredential(me,AU.EmailAuthProvider.credential(me.email,pass));
+  }catch(e){ errEl.textContent='La clave no es correcta.'; return; }
+  errEl.textContent='Borrando…';
+  try{
+    const hRef=FS.doc(db,'hogares',hogarId);
+    const hSnap=await FS.getDoc(hRef);
+    const miembros=hSnap.exists()?(hSnap.data().miembros||[]):[];
+    if(miembros.length<=1){
+      stopListening();
+      for(const c of ['meses','papelera','ahorro','catalogo']) await deleteAllInCol(FS.collection(db,'hogares',hogarId,c));
+      const code=hSnap.exists()?hSnap.data().codigoHogar:null;
+      if(code) await FS.deleteDoc(FS.doc(db,'codigosHogar',code));
+      await FS.deleteDoc(hRef);
+    } else {
+      stopListening();
+      await FS.updateDoc(hRef,{miembros:miembros.filter(u=>u!==me.uid)});
+    }
+    await AU.deleteUser(me);
+    closeModal(); toast('Tu cuenta fue eliminada');
+  }catch(e){ errEl.textContent='No se pudo eliminar ('+((e&&e.code)||'error')+'). Probá de nuevo.'; }
+}
+function stopListening(){ if(unsub){ try{unsub();}catch(e){} unsub=null; } clearTimeout(saveTimer); clearTimeout(retryTimer); dirty.clear(); }
 
 /* ---------- Arranque ---------- */
 async function boot(){
@@ -2056,7 +2116,7 @@ async function boot(){
     $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisá tu conexión a internet y recargá.'; return;
   }
   AU.onAuthStateChanged(auth,user=>{
-    if(user){ me=user; resolveHogar(); }
+    if(user){ me=user; if(user.emailVerified) resolveHogar(); else showVerify(); }
     else { me=null; stopData(); setView('login'); }
   });
 }
@@ -2071,22 +2131,12 @@ async function resolveHogar(){
       startData();
       return;
     }
-    if(pendingCode){
-      const code=pendingCode; pendingCode=null;
-      try{ await linkCodeToAccount(code); startData(); return; }
-      catch(e){ await showNoHogar(); $('#nhErr').textContent=e.message||'No se pudo vincular el código.'; return; }
-    }
   }catch(e){ /* sigue abajo */ }
-  await showNoHogar();
+  showNoHogar();
 }
-async function showNoHogar(){
+function showNoHogar(){
   setView('nohogar');
   $('#nhErr').textContent=''; $('#nhCode').value='';
-  $('#nhMigrar').hidden=true;
-  try{
-    const snap=await FS.getDocs(FS.collection(db,'libro'));
-    if(!snap.empty) $('#nhMigrar').hidden=false;
-  }catch(e){ /* sin acceso al libro anterior: no se muestra la opción */ }
 }
 setAuthMode('login');
 boot();
