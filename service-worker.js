@@ -4,9 +4,9 @@
 // (html2canvas, jsPDF) NUNCA pasan por acá: siempre van directo a internet.
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
-// versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v9').
-const CACHE_NAME = 'lfh-shell-v9';
-const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+// versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v11').
+const CACHE_NAME = 'lfh-shell-v11';
+const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png', './logo-biblia.jpg', './logo-paloma.jpg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(

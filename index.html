@@ -51,7 +51,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 h1,h2,h3,p{margin:0}
 .flagbar{height:5px;background:linear-gradient(90deg,var(--ve-blue) 0 50%,var(--gold) 50% 100%);}
 .brand h1{display:flex; align-items:center; gap:8px}
-.logo{width:28px; height:28px; border-radius:7px; display:block}
+.logos{display:flex; gap:6px; flex:none}
+.logo{width:28px; height:28px; border-radius:7px; display:block; object-fit:cover}
 
 .top{
   position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
@@ -102,9 +103,11 @@ body.auth #authHero{
     linear-gradient(160deg,#16396f 0%,#0f2a52 55%,#091c3a 100%);
 }
 #authHero .deco{position:absolute; right:-10px; bottom:0; width:46%; max-width:340px; opacity:.55; pointer-events:none; z-index:0}
-#authHero .heroLogo{width:88px; height:88px; border-radius:22px; box-shadow:0 12px 32px rgba(0,0,0,.35)}
+#authHero .heroLogos{display:flex; gap:14px; flex-wrap:wrap}
+#authHero .heroLogo{width:84px; height:84px; border-radius:20px; object-fit:cover; box-shadow:0 12px 32px rgba(0,0,0,.35)}
 #authHero h1{font-size:clamp(32px,3.6vw,48px); line-height:1.1; letter-spacing:-.02em}
 #authHero h1 em{font-style:normal; color:#f28c28}
+#authHero .sub{font-size:clamp(18px,1.7vw,24px); font-weight:700; color:#f28c28; margin:-6px 0 0}
 #authHero .lead{font-size:clamp(16px,1.35vw,19px); color:#d6e0f2; max-width:430px; line-height:1.5}
 #authHero ul{list-style:none; margin:0; padding:0; display:grid; gap:14px; position:relative; z-index:1}
 #authHero li{display:flex; align-items:center; gap:12px; font-size:clamp(15px,1.25vw,18px); color:#fff}
@@ -126,7 +129,8 @@ body.auth .loginbox a.link{display:block; color:var(--muted); text-decoration:un
 body.auth .loginbox .err{text-align:center}
 @media (max-width:900px){
   body.auth #authHero{position:relative; width:100%; padding:28px 22px 56px; gap:14px; flex-direction:column}
-  body.auth #authHero .heroLogo{width:60px; height:60px; border-radius:16px}
+  body.auth #authHero .heroLogos{gap:10px}
+  body.auth #authHero .heroLogo{width:52px; height:52px; border-radius:14px}
   body.auth #authHero ul, body.auth #authHero .lead{display:none}
   body.auth #authHero .deco{width:60%; opacity:.5}
   body.auth .center.auth{margin:-34px 0 0; width:100%; min-height:0; padding:0 16px 32px; position:relative; z-index:2}
@@ -381,7 +385,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <header class="top">
   <div class="top-row">
     <div class="brand">
-      <h1><img src="icon-192.png" alt="" class="logo">Libro de Finanzas</h1>
+      <h1><span class="logos"><img src="icon-192.png" alt="" class="logo"><img src="logo-biblia.jpg" alt="" class="logo"><img src="logo-paloma.jpg" alt="" class="logo"></span>Libro de Finanzas</h1>
       <p>Un hogar organizado con propósito</p>
     </div>
     <div class="controls" id="controls" hidden>
@@ -406,12 +410,13 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <circle cx="395" cy="12" r="9" fill="#fff"/>
   </svg>
   <div class="heroTxt">
-    <img class="heroLogo" src="icon-192.png" alt="">
+    <div class="heroLogos"><img class="heroLogo" src="icon-192.png" alt=""><img class="heroLogo" src="logo-biblia.jpg" alt=""><img class="heroLogo" src="logo-paloma.jpg" alt=""></div>
     <h1>Libro de <em>Finanzas</em></h1>
-    <p class="lead">Un hogar organizado con propósito: el cuaderno digital para llevar al día el dinero de tu casa, a tu ritmo.</p>
+    <p class="sub">Un hogar organizado con propósito</p>
+    <p class="lead">El cuaderno digital para llevar al día el dinero de tu casa, a tu ritmo y con una palabra que reconfortará tu día.</p>
   </div>
   <ul>
-    <li><i>✓</i>Mensual, quincenal o semanal: vos elegís</li>
+    <li><i>✓</i>Mensual, quincenal o semanal: tú eliges</li>
     <li><i>✓</i>Solo o en pareja, desde cualquier celular</li>
     <li><i>✓</i>Tu moneda, tus datos bajo tu control</li>
   </ul>
@@ -422,7 +427,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <div id="setup" class="center" hidden>
   <div class="setup">
     <h2>Falta configurar Firebase</h2>
-    <p style="margin-top:8px">Abrí el archivo <code>firebase-config.js</code> y pegá los datos de tu proyecto (paso 4 del LEEME). Después subilo de nuevo a GitHub.</p>
+    <p style="margin-top:8px">Abre el archivo <code>firebase-config.js</code> y pega los datos de tu proyecto (paso 4 del LEEME). Después subilo de nuevo a GitHub.</p>
   </div>
 </div>
 
@@ -434,16 +439,16 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <button class="btn primary" id="lBtn" type="submit">Entrar</button>
     <p class="err" id="lErr" role="alert"></p>
     <button class="link" id="lReset" type="button">Olvidé mi clave</button>
-    <button class="link" id="lToggle" type="button">¿No tenés cuenta? Creá una</button>
+    <button class="link" id="lToggle" type="button">¿No tienes cuenta? Crea una</button>
     <a class="link" href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
   </form>
 </div>
 
 <div id="verify" class="center auth" hidden>
   <div class="loginbox">
-    <h2>Verificá tu correo</h2>
+    <h2>Verifica tu correo</h2>
     <p class="small" id="vMsg"></p>
-    <p class="small">Abrí el enlace que te mandamos (mirá también en Spam) y después tocá el botón de abajo.</p>
+    <p class="small">Abre el enlace que te mandamos (mira también en Spam) y después toca el botón de abajo.</p>
     <button class="btn primary" id="vOk" type="button">Ya verifiqué mi correo</button>
     <button class="btn" id="vResend" type="button">Reenviar correo</button>
     <p class="err" id="vErr" role="alert"></p>
@@ -454,13 +459,13 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <div id="nohogar" class="center auth" hidden>
   <div class="loginbox">
     <h2>Tu hogar</h2>
-    <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar. Creá uno nuevo o sumate al de tu pareja.</p>
+    <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar. Crea uno nuevo o sumate al de tu pareja.</p>
     <label>Nombre de tu hogar <input type="text" class="txt" id="nhNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
     <label>Moneda <select id="nhMoneda"></select></label>
-    <label>¿Cómo cobrás? <select id="nhPeriodo"></select></label>
+    <label>¿Cómo cobras? <select id="nhPeriodo"></select></label>
     <button class="btn primary" id="nhCrear" type="button">Crear mi hogar</button>
     <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
-      <label>¿Tu pareja ya tiene un hogar? Escribí su código <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
+      <label>¿Tu pareja ya tiene un hogar? Escribe su código <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
       <button class="btn" id="nhBtn" type="button">Unirme con código</button>
     </div>
     <p class="err" id="nhErr" role="alert"></p>
@@ -774,7 +779,7 @@ function startData0(){
   ready=false; months={}; cur=null; dirty.clear();
   setView('loading'); $('#loadingMsg').textContent='Cargando tus datos…'; $('#loadingErr').textContent='';
   clearTimeout(loadTimer);
-  loadTimer=setTimeout(()=>{ if(!ready) $('#loadingMsg').textContent='Sigue cargando… revisá tu conexión a internet.'; },8000);
+  loadTimer=setTimeout(()=>{ if(!ready) $('#loadingMsg').textContent='Sigue cargando… revisa tu conexión a internet.'; },8000);
   unsub=FS.onSnapshot(mesesCol(),snap=>{
     const map={};
     snap.docs.forEach(d=>{ map[d.id]=JSON.parse(JSON.stringify(d.data())); });
@@ -783,7 +788,7 @@ function startData0(){
     if(!ready){
       $('#loadingMsg').textContent='No se pudieron cargar los datos.';
       $('#loadingErr').textContent=(err&&err.code==='permission-denied')
-        ? 'Tu cuenta no tiene permiso sobre este hogar. Cerrá sesión y volvé a entrar.'
+        ? 'Tu cuenta no tiene permiso sobre este hogar. Cierra sesión y vuelve a entrar.'
         : 'Error: '+((err&&err.code)||'desconocido');
     } else setStatus('error',err);
   });
@@ -935,7 +940,7 @@ function payBtn(row){
     const p=row.pagado===true;
     b.textContent=p?'✓':'×';
     b.classList.toggle('paid',p);
-    b.title=p?'Pagado — tocá para desmarcar':'Sin pagar — tocá para marcar como pagado';
+    b.title=p?'Pagado — toca para desmarcar':'Sin pagar — toca para marcar como pagado';
     b.setAttribute('aria-label',b.title);
   };
   render();
@@ -1132,7 +1137,7 @@ function payToggleField(getFn,setFn){
     const p=getFn()===true;
     b.textContent=p?'✓':'×';
     b.classList.toggle('paid',p);
-    b.title=p?'Pagado — tocá para desmarcar':'Sin pagar — tocá para marcar como pagado';
+    b.title=p?'Pagado — toca para desmarcar':'Sin pagar — toca para marcar como pagado';
     b.setAttribute('aria-label',b.title);
   };
   render();
@@ -1198,15 +1203,15 @@ function buildQ(q){
   v.append(k);
   const g=el('div','qgrid');
   g.append(
-    card(q,'ingresos','Ingresos','ingresos','Podés cambiar los montos cuando quieras; los ingresos pueden variar.'),
-    card(q,'plataformas','Plataformas y suscripciones','platTotal','Netflix, internet, celulares, etc. Lo que anotes acá se refleja en <b>Egresos fijos</b> (podés destildar "En egresos" si no querés que cuente).'),
-    card(q,'egresos','Egresos fijos','egresos','Los gastos que se repiten cada mes: vos decidís cuáles cargar (la cuota de la casa o el alquiler, el seguro del auto, el colegio, los servicios…). Cada hogar es distinto.'),
+    card(q,'ingresos','Ingresos','ingresos','Puedes cambiar los montos cuando quieras; los ingresos pueden variar.'),
+    card(q,'plataformas','Plataformas y suscripciones','platTotal','Netflix, internet, celulares, etc. Lo que anotes acá se refleja en <b>Egresos fijos</b> (puedes destildar "En egresos" si no quieres que cuente).'),
+    card(q,'egresos','Egresos fijos','egresos','Los gastos que se repiten cada mes: tú decides cuáles cargar (la cuota de la casa o el alquiler, el seguro del auto, el colegio, los servicios…). Cada hogar es distinto.'),
     card(q,'anticipados','Egresos variables','antic',null)
   );
   v.append(g);
   v.append(card(q,'fondo','Fondo de emergencia','fondo','Lo que apartes acá se resta del balance '+delP()+', como un ahorro aparte.'));
-  v.append(card(q,'retiro','Retiro de efectivo por banco','retiro','Elegí un gasto de <b>Egresos variables</b> y te completa el concepto y el monto solo (lo podés ajustar después). Es solo para saber cuánto sacar: no se resta de nuevo del balance, porque ese gasto ya está contado en Egresos fijos o Egresos variables.'));
-  const tarjCard=card(q,'tarjeta','Gastos tarjeta de crédito','tarjeta','El valor de la cuota se autocompleta (Monto ÷ cuotas), editalo si el banco cobra interés. Elegí el mes de la <b>1ª cuota</b> y las siguientes van a aparecer solas (de solo lectura) en los meses que vengan, hasta agotarse. Entra en el gráfico de torta como "Tarjeta de crédito". Es informativo: no se resta del balance, porque el pago de la tarjeta ya lo cargás aparte en Egresos.');
+  v.append(card(q,'retiro','Retiro de efectivo por banco','retiro','Elige un gasto de <b>Egresos variables</b> y te completa el concepto y el monto solo (lo puedes ajustar después). Es solo para saber cuánto sacar: no se resta de nuevo del balance, porque ese gasto ya está contado en Egresos fijos o Egresos variables.'));
+  const tarjCard=card(q,'tarjeta','Gastos tarjeta de crédito','tarjeta','El valor de la cuota se autocompleta (Monto ÷ cuotas), editalo si el banco cobra interés. Elige el mes de la <b>1ª cuota</b> y las siguientes van a aparecer solas (de solo lectura) en los meses que vengan, hasta agotarse. Entra en el gráfico de torta como "Tarjeta de crédito". Es informativo: no se resta del balance, porque el pago de la tarjeta ya lo cargas aparte en Egresos.');
   const sums=el('div','kpis'); sums.style.cssText='margin:4px 4px 0; gap:10px';
   sums.innerHTML='<div class="kpi" style="padding:10px 12px"><span>Pagos simples</span><b style="font-size:16px" data-k="'+q+'.tarjetaSimple"></b></div>'+
     '<div class="kpi" style="padding:10px 12px"><span>En cuotas</span><b style="font-size:16px" data-k="'+q+'.tarjetaCuotas"></b></div>';
@@ -1232,7 +1237,7 @@ function cambiarPeriodo(nuevo,selEl){
   };
   if(PERIODOS[nuevo].qs.length>=PERIODOS[prev].qs.length){ aplicar(); return; }
   const body=el('div'); const p=el('p');
-  p.textContent='Lo que cargaste en los períodos que dejan de mostrarse no se borra, pero no se suma en los totales mientras uses este modo (si volvés al anterior, reaparece). Los gastos fijos del mes se reparten entre la nueva cantidad de períodos.';
+  p.textContent='Lo que cargaste en los períodos que dejan de mostrarse no se borra, pero no se suma en los totales mientras uses este modo (si vuelves al anterior, reaparece). Los gastos fijos del mes se reparten entre la nueva cantidad de períodos.';
   body.append(p);
   modal('¿Cambiar a '+PERIODOS[nuevo].n.toLowerCase()+'?',body,[{label:'Cancelar',onClick:()=>{ selEl.value=prev; }},{label:'Cambiar',cls:'primary',onClick:()=>{ aplicar(); }}]);
 }
@@ -1256,14 +1261,14 @@ function buildResumen(){
    '<p class="hint">Se arma con la categoría que le pongas a cada línea de Egresos fijos y Egresos variables.</p>'+
    '<div class="pie-wrap" id="pieWrap"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Tarjeta de crédito</h2></header>'+
-   '<p class="hint">Cargá el límite una sola vez; queda guardado para los meses siguientes.</p>'+
+   '<p class="hint">Carga el límite una sola vez; queda guardado para los meses siguientes.</p>'+
    '<div class="kpis" style="margin-top:4px">'+
    '<div class="kpi"><span>Límite de la tarjeta</span><div id="limiteTarjetaWrap"></div></div>'+
    '<div class="kpi"><span>Gastado este mes</span><b data-k="mes.tarjeta"></b></div>'+
    '<div class="kpi soft"><span>Disponible</span><b data-k="mes.disponibleTarjeta"></b></div>'+
    '</div><p class="warnBox" id="tcWarn" hidden></p></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Buscar en todos los meses</h2></header>'+
-   '<p class="hint">Buscá un gasto o ingreso por nombre, en todos los meses cargados.</p>'+
+   '<p class="hint">Busca un gasto o ingreso por nombre, en todos los meses cargados.</p>'+
    '<input type="text" class="txt" id="searchAll" placeholder="Ej: Netflix" autocomplete="off" style="width:100%; margin:4px 0 10px">'+
    '<div id="searchResults" class="small"></div></section>'+
    '<section class="card" id="ahorroCard" style="margin-top:16px"></section>'+
@@ -1274,11 +1279,11 @@ function buildResumen(){
    '<section class="card" style="margin-top:16px"><header><h2>Moneda</h2></header>'+
    '<p class="hint">Es la moneda en que se muestran todos los montos del hogar. Cambiarla no convierte los números cargados: solo cambia el símbolo.</p>'+
    '<div class="tools" id="monedaTools"></div></section>'+
-   '<section class="card" style="margin-top:16px"><header><h2>Cómo cobrás</h2></header>'+
-   '<p class="hint">Elegí cada cuánto cobrás y organizás tus gastos: una vez por mes, cada 15 días o cada semana. La app arma las pestañas y los totales según tu elección.</p>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Cómo cobras</h2></header>'+
+   '<p class="hint">Elige cada cuánto cobras y organizas tus gastos: una vez por mes, cada 15 días o cada semana. La app arma las pestañas y los totales según tu elección.</p>'+
    '<div class="tools" id="periodoTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Herramientas</h2></header>'+
-   '<p class="hint">Bajá un respaldo de vez en cuando. También podés restaurarlo o pasar datos de otro libro.</p>'+
+   '<p class="hint">Baja un respaldo de vez en cuando. También puedes restaurarlo o pasar datos de otro libro.</p>'+
    '<p class="small" id="respInfo"></p>'+
    '<div class="tools" id="tools"></div>'+
    '<p class="hint" style="margin-top:14px">Para guardar o imprimir todo el mes:</p>'+
@@ -1320,7 +1325,7 @@ function buildResumen(){
   sel.addEventListener('change',async()=>{ const prev=moneda.c; setMoneda(sel.value); if(await saveMoneda(sel.value)){ render(); toast('Moneda cambiada'); } else { setMoneda(prev); sel.value=prev; } });
   mt.append(sel);
   const pt=$('#periodoTools',v);
-  const ps=el('select'); ps.setAttribute('aria-label','Cómo cobrás');
+  const ps=el('select'); ps.setAttribute('aria-label','Cómo cobras');
   PERIODO_OPC.forEach(([k,txt])=>{ const o=el('option'); o.value=k; o.textContent=txt; if(k===periodo) o.selected=true; ps.append(o); });
   ps.addEventListener('change',()=>cambiarPeriodo(ps.value,ps));
   pt.append(ps);
@@ -1432,7 +1437,7 @@ function compraRow(q,row,c){
   const sync=()=>{
     sel.value=row.cadena; ot.hidden=row.cadena!=='Otros'; ot.value=row.otra; mi.value=fmt(row.m); paintUlt();
     pb.textContent=row.ok?'✓':'×'; pb.classList.toggle('paid',row.ok);
-    pb.title=row.ok?'Comprado — tocá para desmarcar':'Sin comprar — tocá para marcar como comprado'; pb.setAttribute('aria-label',pb.title);
+    pb.title=row.ok?'Comprado — toca para desmarcar':'Sin comprar — toca para marcar como comprado'; pb.setAttribute('aria-label',pb.title);
     d.classList.toggle('done',row.ok);
   };
   ti.addEventListener('change',()=>{ row.n=ti.value.trim(); lookupCompra(row); sync(); totals(); markDirty(); });
@@ -1452,7 +1457,7 @@ function renderCompras(q){
   v.replaceChildren();
   const c=el('section','card'); c.dataset.sec='compras';
   const h=el('header'); const h2=el('h2'); h2.textContent='Compras super/otros · '+qname(q); const tot=el('span','tot'); h.append(h2,tot); c.append(h);
-  const hint=el('p','hint'); hint.innerHTML='Armá tu lista antes de salir: elegí artículos de <b>Mi lista</b> o escribí uno nuevo (queda guardado para la próxima). Al tildar ✓ como comprado, el precio pasa a ser el "último precio" de ese artículo en esa cadena. Es solo una lista: <b>no se resta del balance</b>.'; c.append(hint);
+  const hint=el('p','hint'); hint.innerHTML='Arma tu lista antes de salir: elige artículos de <b>Mi lista</b> o escribe uno nuevo (queda guardado para la próxima). Al tildar ✓ como comprado, el precio pasa a ser el "último precio" de ese artículo en esa cadena. Es solo una lista: <b>no se resta del balance</b>.'; c.append(hint);
   c.append(el('div','cresumen'));
   const head=el('div','chead'); ['Producto','Cadena','Precio','Último precio','✓',''].forEach(t=>{ const s=el('span'); s.textContent=t; head.append(s); }); c.append(head);
   const box=el('div','list'); c.append(box);
@@ -1483,7 +1488,7 @@ function openPicker(q){
     lst.replaceChildren(); const k=normTxt(s.value);
     const items=[...catalogo.values()].filter(e=>(!k||normTxt(e.n).includes(k))&&(!f.value||e.cadena===f.value))
       .sort((a,b)=>a.n.localeCompare(b.n,'es')||a.cadena.localeCompare(b.cadena,'es'));
-    if(!items.length){ const p=el('p','small'); p.textContent=catalogo.size?'No hay artículos con ese filtro.':'Tu lista está vacía. Se va armando sola: escribí un producto con su cadena en la lista de compras y queda guardado acá.'; lst.append(p); return; }
+    if(!items.length){ const p=el('p','small'); p.textContent=catalogo.size?'No hay artículos con ese filtro.':'Tu lista está vacía. Se va armando sola: escribe un producto con su cadena en la lista de compras y queda guardado acá.'; lst.append(p); return; }
     items.forEach(e=>{
       const r=el('div','pickRow'); const pn=el('div','pn'); const b=el('b'); b.textContent=e.n;
       const sm=el('small'); sm.textContent=(e.cadena||'Sin cadena')+' · '+(e.ult>0?'último '+cf.format(e.ult):'sin compras'); pn.append(b,sm);
@@ -1507,7 +1512,7 @@ function openPicker(q){
 const VERSICULOS=[
  ['Nada te faltará','Jehová es mi pastor; nada me faltará.','Salmo 23:1'],
  ['Un jardín bien regado','Y Jehová te pastoreará siempre, y en las sequías hartará tu alma, y dará vigor a tus huesos; y serás como huerto de riego, y como manadero de aguas, cuyas aguas nunca faltan.','Isaías 58:11'],
- ['Entregale tu camino','Encomienda a Jehová tu camino, y espera en él; y él hará.','Salmo 37:5'],
+ ['Entrégale tu camino','Encomienda a Jehová tu camino, y espera en él; y él hará.','Salmo 37:5'],
  ['Bondad y perdón','Antes sed los unos con los otros benignos, misericordiosos, perdonándoos los unos a los otros, como también Dios os perdonó en Cristo.','Efesios 4:32'],
  ['Edificar el hogar','La mujer sabia edifica su casa; mas la necia con sus manos la derriba.','Proverbios 14:1'],
  ['Qué es la fe','Es pues la fe la sustancia de las cosas que se esperan, la demostración de las cosas que no se ven.','Hebreos 11:1'],
@@ -1515,7 +1520,7 @@ const VERSICULOS=[
  ['De dónde viene tu ayuda','Alzaré mis ojos a los montes, de donde vendrá mi socorro. Mi socorro viene de Jehová, que hizo los cielos y la tierra.','Salmo 121:1-2'],
  ['Nada te separa de su amor','Por lo cual estoy cierto que ni la muerte, ni la vida, ni ángeles, ni principados, ni potestades, ni lo presente, ni lo por venir, ni lo alto, ni lo profundo, ni otra criatura nos podrá apartar del amor de Dios, que es en Cristo Jesús Señor nuestro.','Romanos 8:38-39'],
  ['La generosidad vuelve','Dad, y se os dará; medida buena, apretada, remecida, y rebosando darán en vuestro seno: porque con la misma medida que midiereis, os será vuelto a medir.','Lucas 6:38'],
- ['Él cuida de vos','Mirad las aves del cielo, que no siembran, ni siegan, ni allegan en alfolíes; y vuestro Padre celestial las alimenta. ¿No valéis vosotros mucho más que ellas?','Mateo 6:26'],
+ ['Él cuida de ti','Mirad las aves del cielo, que no siembran, ni siegan, ni allegan en alfolíes; y vuestro Padre celestial las alimenta. ¿No valéis vosotros mucho más que ellas?','Mateo 6:26'],
  ['Tu roca y tu refugio','Jehová, roca mía y castillo mío, y mi libertador; Dios mío, fortaleza mía, en él confiaré; mi escudo, y el cuerno de mi salud, y mi alto refugio.','Salmo 18:2'],
  ['Dormir en paz','En paz me acostaré, y asimismo dormiré; porque solo tú, Jehová, me harás estar confiado.','Salmo 4:8'],
  ['Dos en uno','Por tanto, dejará el hombre a su padre y a su madre, y se allegará a su mujer, y serán una sola carne.','Génesis 2:24'],
@@ -1526,30 +1531,30 @@ const VERSICULOS=[
  ['No tengas miedo','No temas, que yo soy contigo; no desmayes, que yo soy tu Dios que te esfuerzo: siempre te ayudaré, siempre te sustentaré con la diestra de mi justicia.','Isaías 41:10'],
  ['Luz para tu sendero','Lámpara es a mis pies tu palabra, y lumbrera a mi camino.','Salmo 119:105'],
  ['Todo en su nombre','Y todo lo que hacéis, sea de palabra o de hecho, hacedlo todo en el nombre del Señor Jesús, dando gracias a Dios Padre por medio de él.','Colosenses 3:17'],
- ['Pedí sabiduría','Y si alguno de vosotros tiene falta de sabiduría, pídala a Dios, el cual da a todos abundantemente, y no zahiere; y le será dada.','Santiago 1:5'],
+ ['Pide sabiduría','Y si alguno de vosotros tiene falta de sabiduría, pídala a Dios, el cual da a todos abundantemente, y no zahiere; y le será dada.','Santiago 1:5'],
  ['Creados con propósito','Porque somos hechura suya, creados en Cristo Jesús para buenas obras, las cuales Dios preparó para que anduviésemos en ellas.','Efesios 2:10'],
  ['Todo viene de Dios','Sino acuérdate de Jehová tu Dios: porque él te da el poder para hacer las riquezas…','Deuteronomio 8:18'],
- ['Pedí con fe','Pedid, y se os dará; buscad, y hallaréis; llamad, y se os abrirá.','Mateo 7:7'],
+ ['Pide con fe','Pedid, y se os dará; buscad, y hallaréis; llamad, y se os abrirá.','Mateo 7:7'],
  ['Vida en abundancia','El ladrón no viene sino para hurtar y matar y destruir: yo he venido para que tengan vida, y para que la tengan en abundancia.','Juan 10:10'],
- ['Buscá buenos consejos','Los pensamientos son frustrados donde no hay consejo; mas en la multitud de consejeros se afirman.','Proverbios 15:22'],
+ ['Busca buenos consejos','Los pensamientos son frustrados donde no hay consejo; mas en la multitud de consejeros se afirman.','Proverbios 15:22'],
  ['Humildad y riquezas','Riquezas, y honra, y vida, son la remuneración de la humildad y del temor de Jehová.','Proverbios 22:4'],
  ['Palabras que sanan','Panal de miel son los dichos suaves; suavidad al alma y medicina para los huesos.','Proverbios 16:24'],
  ['Una herencia para tus nietos','El bueno dejará herederos a los hijos de sus hijos; pero la riqueza del pecador está guardada para el justo.','Proverbios 13:22'],
  ['Nada es imposible','Porque ninguna cosa es imposible para Dios.','Lucas 1:37'],
- ['Conocé tus cuentas','Sé diligente en conocer el estado de tus ovejas, y mira con cuidado por tus rebaños.','Proverbios 27:23'],
+ ['Conoce tus cuentas','Sé diligente en conocer el estado de tus ovejas, y mira con cuidado por tus rebaños.','Proverbios 27:23'],
  ['Nuevas fuerzas','Mas los que esperan a Jehová tendrán nuevas fuerzas; levantarán las alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán.','Isaías 40:31'],
  ['Tu tesoro y tu corazón','Porque donde estuviere vuestro tesoro, allí estará también vuestro corazón.','Mateo 6:21'],
  ['Tu trabajo no es en vano','Así que, hermanos míos amados, estad firmes y constantes, creciendo en la obra del Señor siempre, sabiendo que vuestro trabajo no es vano en el Señor.','1 Corintios 15:58'],
- ['Amense unos a otros','Un mandamiento nuevo os doy: Que os améis unos a otros; como os he amado, que también os améis unos a otros.','Juan 13:34'],
- ['Cuidá tu corazón','Sobre toda cosa guardada guarda tu corazón; porque de él mana la vida.','Proverbios 4:23'],
+ ['Ámense unos a otros','Un mandamiento nuevo os doy: Que os améis unos a otros; como os he amado, que también os améis unos a otros.','Juan 13:34'],
+ ['Cuida tu corazón','Sobre toda cosa guardada guarda tu corazón; porque de él mana la vida.','Proverbios 4:23'],
  ['No olvides sus beneficios','Bendice, alma mía, a Jehová, y no olvides ninguno de sus beneficios.','Salmo 103:2'],
  ['Generosidad y buenos negocios','El hombre bueno tiene misericordia, y presta; gobierna sus cosas con juicio.','Salmo 112:5'],
  ['Fuerza y dignidad','Fortaleza y honor son su vestidura; y se ríe de lo por venir.','Proverbios 31:25'],
- ['Cambiá la ansiedad por oración','Por nada estéis afanosos; sino sean notorias vuestras peticiones delante de Dios en toda oración y ruego, con hacimiento de gracias. Y la paz de Dios, que sobrepuja todo entendimiento, guardará vuestros corazones y vuestros entendimientos en Cristo Jesús.','Filipenses 4:6-7'],
+ ['Cambia la ansiedad por oración','Por nada estéis afanosos; sino sean notorias vuestras peticiones delante de Dios en toda oración y ruego, con hacimiento de gracias. Y la paz de Dios, que sobrepuja todo entendimiento, guardará vuestros corazones y vuestros entendimientos en Cristo Jesús.','Filipenses 4:6-7'],
  ['Dios de esperanza','Y el Dios de esperanza os llene de todo gozo y paz creyendo, para que abundéis en esperanza por la virtud del Espíritu Santo.','Romanos 15:13'],
  ['Dios te guía','Yo te haré entender, y te enseñaré el camino en que andarás: sobre ti fijaré mis ojos.','Salmo 32:8'],
  ['Él nos amó primero','Nosotros le amamos a él, porque él nos amó primero.','1 Juan 4:19'],
- ['No atravesás la prueba solo','Cuando pasares por las aguas, yo seré contigo; y si por los ríos, no te anegarán; cuando por el fuego pasares, no te quemarás, ni la llama arderá en ti.','Isaías 43:2'],
+ ['No atraviesas la prueba solo','Cuando pasares por las aguas, yo seré contigo; y si por los ríos, no te anegarán; cuando por el fuego pasares, no te quemarás, ni la llama arderá en ti.','Isaías 43:2'],
  ['Cerca de tu corazón','Cercano está Jehová a los quebrantados de corazón; y salvará a los contritos de espíritu.','Salmo 34:18'],
  ['Lo que el Señor pide','Oh hombre, él te ha declarado qué sea lo bueno, y qué pida de ti Jehová: solamente hacer juicio, y amar misericordia, y humillarte para andar con tu Dios.','Miqueas 6:8'],
  ['Los que buscan a Dios','Los leoncillos necesitaron, y tuvieron hambre; mas los que buscan a Jehová no tendrán falta de ningún bien.','Salmo 34:10'],
@@ -1558,33 +1563,33 @@ const VERSICULOS=[
  ['Más dicha en dar','Más bienaventurado es dar que recibir.','Hechos 20:35'],
  ['Un día a la vez','Así que, no os congojéis por el día de mañana; que el día de mañana traerá su fatiga: basta al día su afán.','Mateo 6:34'],
  ['Dios no abandona','Joven fui, y he envejecido, y no he visto justo desamparado, ni su simiente que mendigue pan.','Salmo 37:25'],
- ['Deleitate en el Señor','Pon asimismo tu delicia en Jehová, y él te dará las peticiones de tu corazón.','Salmo 37:4'],
+ ['Deléitate en el Señor','Pon asimismo tu delicia en Jehová, y él te dará las peticiones de tu corazón.','Salmo 37:4'],
  ['El corazón alegre','El corazón alegre constituye buen remedio; mas el espíritu triste seca los huesos.','Proverbios 17:22'],
  ['Dios fortalece tu corazón','Mi carne y mi corazón desfallecen; mas la roca de mi corazón y mi porción es Dios para siempre.','Salmo 73:26'],
  ['Pies firmes en las alturas','Jehová el Señor es mi fortaleza, el cual pondrá mis pies como de ciervas, y me hará andar sobre mis alturas.','Habacuc 3:19'],
  ['Fiel es el que prometió','Mantengamos firme la profesión de nuestra esperanza sin fluctuar; que fiel es el que prometió.','Hebreos 10:23'],
  ['Dios termina lo que empieza','Estando persuadido de esto, que el que comenzó en vosotros la buena obra, la perfeccionará hasta el día de Jesucristo.','Filipenses 1:6'],
  ['Refugio en el día difícil','Bueno es Jehová para fortaleza en el día de la angustia; y conoce a los que en él confían.','Nahúm 1:7'],
- ['Encomendá tu trabajo','Encomienda a Jehová tus obras, y tus pensamientos serán afirmados.','Proverbios 16:3'],
- ['Dios se alegra por vos','Jehová está en medio de ti, poderoso; él salvará, se gozará sobre ti con alegría, callará de amor, se regocijará sobre ti con cantares.','Sofonías 3:17'],
- ['Trabajá de corazón','Y todo lo que hagáis, hacedlo de corazón, como al Señor, y no a los hombres.','Colosenses 3:23'],
+ ['Encomienda tu trabajo','Encomienda a Jehová tus obras, y tus pensamientos serán afirmados.','Proverbios 16:3'],
+ ['Dios se alegra por ti','Jehová está en medio de ti, poderoso; él salvará, se gozará sobre ti con alegría, callará de amor, se regocijará sobre ti con cantares.','Sofonías 3:17'],
+ ['Trabaja de corazón','Y todo lo que hagáis, hacedlo de corazón, como al Señor, y no a los hombres.','Colosenses 3:23'],
  ['Él ya venció','Estas cosas os he hablado, para que en mí tengáis paz. En el mundo tendréis aflicción: mas confiad, yo he vencido al mundo.','Juan 16:33'],
  ['Dios está de tu parte','¿Qué, pues, diremos a esto? Si Dios por nosotros, ¿quién contra nosotros?','Romanos 8:31'],
  ['Los hijos, un regalo','He aquí, heredad de Jehová son los hijos; cosa de estima el fruto del vientre.','Salmo 127:3'],
  ['Dios es poderoso para proveer','Y poderoso es Dios para hacer que abunde en vosotros toda gracia, a fin de que, teniendo siempre en todas las cosas toda suficiencia, abundéis en toda buena obra.','2 Corintios 9:8'],
  ['Firmes en la esperanza','Gozosos en la esperanza; sufridos en la tribulación; constantes en la oración.','Romanos 12:12'],
- ['Clamá y Él responde','Clama a mí, y yo te responderé, y te enseñaré cosas grandes y ocultas que tú no conoces.','Jeremías 33:3'],
+ ['Clama y Él responde','Clama a mí, y yo te responderé, y te enseñaré cosas grandes y ocultas que tú no conoces.','Jeremías 33:3'],
  ['Primero lo primero','Mas buscad primeramente el reino de Dios y su justicia, y todas estas cosas os serán añadidas.','Mateo 6:33'],
  ['Ángeles en tu camino','Porque a sus ángeles mandará acerca de ti, que te guarden en todos tus caminos.','Salmo 91:11'],
  ['El que da, prospera','El alma liberal será engordada; y el que sacia, él también será saciado.','Proverbios 11:25'],
  ['Descanso en Dios','En Dios solamente está callada mi alma: de él viene mi salud.','Salmo 62:1'],
  ['Perfecta paz','Tú guardarás en completa paz a aquel cuyo pensamiento en ti persevera; porque en ti ha confiado.','Isaías 26:3'],
- ['Dios pelea por vos','Jehová peleará por vosotros, y vosotros os estaréis quietos.','Éxodo 14:14'],
+ ['Dios pelea por ti','Jehová peleará por vosotros, y vosotros os estaréis quietos.','Éxodo 14:14'],
  ['Bendito el que confía','Bendito el varón que se fía en Jehová, y cuya confianza es Jehová.','Jeremías 17:7'],
  ['Amar profundamente','Y ante todas cosas, tened entre vosotros ferviente amor; porque el amor cubrirá multitud de pecados.','1 Pedro 4:8'],
  ['Vivir en armonía','¡Mirad cuán bueno y cuán delicioso es habitar los hermanos igualmente en uno!','Salmo 133:1'],
  ['Cuando sientas miedo','En el día que temo, yo en ti confío.','Salmo 56:3'],
- ['Descansá en Él','Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.','Mateo 11:28'],
+ ['Descansa en Él','Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.','Mateo 11:28'],
  ['Dios suple lo que falta','Mi Dios, pues, suplirá todo lo que os falta conforme a sus riquezas en gloria en Cristo Jesús.','Filipenses 4:19'],
  ['Contar bien los días','Enséñanos de tal modo a contar nuestros días, que traigamos al corazón sabiduría.','Salmo 90:12'],
  ['Su gracia te basta','Y me ha dicho: Bástate mi gracia; porque mi potencia en la debilidad se perfecciona.','2 Corintios 12:9'],
@@ -1593,38 +1598,38 @@ const VERSICULOS=[
  ['Dónde poner la confianza','El que confía en sus riquezas caerá; mas los justos reverdecerán como la hoja.','Proverbios 11:28'],
  ['No te rindas','No nos cansemos, pues, de hacer bien; que a su tiempo segaremos, si no hubiéremos desmayado.','Gálatas 6:9'],
  ['Sé valiente','Mira que te mando que te esfuerces y seas valiente; no temas ni desmayes, porque Jehová tu Dios será contigo en donde quiera que fueres.','Josué 1:9'],
- ['Permanecé en Él','Yo soy la vid, vosotros los pámpanos; el que está en mí, y yo en él, éste lleva mucho fruto: porque sin mí nada podéis hacer.','Juan 15:5'],
+ ['Permanece en Él','Yo soy la vid, vosotros los pámpanos; el que está en mí, y yo en él, éste lleva mucho fruto: porque sin mí nada podéis hacer.','Juan 15:5'],
  ['Un futuro sin lágrimas','Y limpiará Dios toda lágrima de los ojos de ellos; y la muerte no será más; y no habrá más llanto, ni clamor, ni dolor; porque las primeras cosas son pasadas.','Apocalipsis 21:4'],
  ['Ánimo, los que esperan','Esforzaos todos vosotros los que esperáis en Jehová, y tome vuestro corazón aliento.','Salmo 31:24'],
  ['Cada mañana, un comienzo','Por la misericordia de Jehová no hemos sido consumidos, porque nunca decayeron sus misericordias. Nuevas son cada mañana; grande es tu fidelidad.','Lamentaciones 3:22-23'],
  ['El Señor es tu luz','Jehová es mi luz y mi salvación; ¿de quién temeré? Jehová es la fortaleza de mi vida; ¿de quién he de atemorizarme?','Salmo 27:1'],
  ['Un amigo en la angustia','En todo tiempo ama el amigo, y es como un hermano en tiempo de angustia.','Proverbios 17:17'],
- ['Planeá, y Dios dirige','El corazón del hombre piensa su camino; mas Jehová dirige sus pasos.','Proverbios 16:9'],
+ ['Planea, y Dios dirige','El corazón del hombre piensa su camino; mas Jehová dirige sus pasos.','Proverbios 16:9'],
  ['El propósito de Dios prevalece','Muchos pensamientos hay en el corazón del hombre; mas el consejo de Jehová permanecerá.','Proverbios 19:21'],
  ['Para Dios todo es posible','Y mirándolos Jesús, les dijo: Para con los hombres esto es imposible; mas para con Dios todo es posible.','Mateo 19:26'],
  ['Para quien cree','Jesús le dijo: Si puedes creer, al que cree todo es posible.','Marcos 9:23'],
  ['Amar como Cristo amó','Maridos, amad a vuestras mujeres, así como Cristo amó a la iglesia, y se entregó a sí mismo por ella.','Efesios 5:25'],
- ['Educá con amor','Instruye al niño en su carrera: aun cuando fuere viejo no se apartará de ella.','Proverbios 22:6'],
+ ['Educa con amor','Instruye al niño en su carrera: aun cuando fuere viejo no se apartará de ella.','Proverbios 22:6'],
  ['Manos que trabajan','La mano negligente hace pobre; mas la mano de los diligentes enriquece.','Proverbios 10:4'],
  ['Siervo bueno y fiel','Y su señor le dijo: Bien, buen siervo y fiel; sobre poco has sido fiel, sobre mucho te pondré: entra en el gozo de tu señor.','Mateo 25:21'],
  ['Su paz','La paz os dejo, mi paz os doy: yo no os la doy como el mundo la da. No se turbe vuestro corazón, ni tenga miedo.','Juan 14:27'],
- ['Esperá en el Señor','Aguarda a Jehová; esfuérzate, y aliéntese tu corazón: sí, espera a Jehová.','Salmo 27:14'],
- ['Calculá antes de gastar','Porque ¿quién de vosotros, queriendo edificar una torre, no cuenta primero sentado los gastos, si tiene lo que necesita para acabarla?','Lucas 14:28'],
+ ['Espera en el Señor','Aguarda a Jehová; esfuérzate, y aliéntese tu corazón: sí, espera a Jehová.','Salmo 27:14'],
+ ['Calcula antes de gastar','Porque ¿quién de vosotros, queriendo edificar una torre, no cuenta primero sentado los gastos, si tiene lo que necesita para acabarla?','Lucas 14:28'],
  ['Más vale poco con paz','Mejor es lo poco con el temor de Jehová, que el gran tesoro donde hay turbación.','Proverbios 15:16'],
  ['Ayuda en la dificultad','Dios es nuestro amparo y fortaleza, nuestro pronto auxilio en las tribulaciones.','Salmo 46:1'],
  ['Conformarse con lo que se tiene','Empero grande ganancia es la piedad con contentamiento.','1 Timoteo 6:6'],
  ['Que se cumplan tus planes','Concédate el deseo de tu corazón, y cumpla todo tu consejo.','Salmo 20:4'],
- ['Caminá por fe','Porque por fe andamos, no por vista.','2 Corintios 5:7'],
- ['Soltá tu carga','Echa sobre Jehová tu carga, y él te sustentará: no dejará para siempre caído al justo.','Salmo 55:22'],
+ ['Camina por fe','Porque por fe andamos, no por vista.','2 Corintios 5:7'],
+ ['Suelta tu carga','Echa sobre Jehová tu carga, y él te sustentará: no dejará para siempre caído al justo.','Salmo 55:22'],
  ['Derribados, pero no destruidos','Estando atribulados en todo, mas no angustiados; en apuros, mas no desesperados; perseguidos, mas no desamparados; abatidos, mas no perdidos.','2 Corintios 4:8-9'],
  ['Contentamiento','Sean vuestras costumbres sin avaricia, contentándoos con lo presente; porque él dijo: No te dejaré ni te desampararé.','Hebreos 13:5'],
- ['Dios tiene un plan para vos','Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis.','Jeremías 29:11'],
+ ['Dios tiene un plan para ti','Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal, para daros el fin que esperáis.','Jeremías 29:11'],
  ['Fiel en lo poco','El que es fiel en lo muy poco, también en lo más es fiel; y el que en lo muy poco es injusto, también en lo más es injusto.','Lucas 16:10'],
  ['Una casa edificada con sabiduría','Con sabiduría se edificará la casa, y con prudencia se afirmará; y con ciencia se henchirán las cámaras de todo bien preciado y agradable.','Proverbios 24:3-4'],
  ['Tus preocupaciones, en sus manos','Echando toda vuestra solicitud en él, porque él tiene cuidado de vosotros.','1 Pedro 5:7'],
  ['Mente renovada','Y no os conforméis a este siglo; mas reformaos por la renovación de vuestro entendimiento, para que experimentéis cuál sea la voluntad de Dios, buena, agradable y perfecta.','Romanos 12:2'],
  ['Un regalo de Dios','El que halló esposa halló el bien, y alcanzó la benevolencia de Jehová.','Proverbios 18:22'],
- ['Acercate con confianza','Lleguémonos pues confiadamente al trono de su gracia, para alcanzar misericordia, y hallar gracia para el oportuno socorro.','Hebreos 4:16'],
+ ['Acércate con confianza','Lleguémonos pues confiadamente al trono de su gracia, para alcanzar misericordia, y hallar gracia para el oportuno socorro.','Hebreos 4:16'],
  ['Esperanza que no defrauda','Y no sólo esto, mas aun nos gloriamos en las tribulaciones; sabiendo que la tribulación produce paciencia; y la paciencia, prueba; y la prueba, esperanza.','Romanos 5:3-4'],
  ['Mejores son dos','Mejores son dos que uno; porque tienen mejor paga de su trabajo. Porque si cayeren, el uno levantará a su compañero; mas ¡ay del solo! que cuando cayere, no habrá segundo que lo levante.','Eclesiastés 4:9-10'],
  ['Él va contigo','Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo de ellos, que Jehová tu Dios es el que va contigo: no te dejará, ni te desamparará.','Deuteronomio 31:6'],
@@ -1634,7 +1639,7 @@ const VERSICULOS=[
  ['Bajo su cuidado','El que habita al abrigo del Altísimo, morará bajo la sombra del Omnipotente. Diré yo a Jehová: Esperanza mía, y castillo mío; mi Dios, en quien confiaré.','Salmo 91:1-2'],
  ['Todo tiene un propósito','Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, es a saber, a los que conforme al propósito son llamados.','Romanos 8:28'],
  ['Amanece la alegría','Porque un momento hay en su ira; mas en su voluntad está la vida: por la tarde durará el lloro, y a la mañana vendrá la alegría.','Salmo 30:5'],
- ['Confiá en el Señor','Fíate de Jehová de todo tu corazón, y no estribes en tu prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas.','Proverbios 3:5-6'],
+ ['Confía en el Señor','Fíate de Jehová de todo tu corazón, y no estribes en tu prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas.','Proverbios 3:5-6'],
  ['Alegría en su presencia','Me mostrarás la senda de la vida; hartura de alegrías hay con tu rostro; deleites a tu diestra para siempre.','Salmo 16:11'],
  ['Poder, amor y dominio propio','Porque no nos ha dado Dios espíritu de cobardía, sino de poder, y de amor, y de templanza.','2 Timoteo 1:7'],
  ['Poco a poco, con trabajo','Las riquezas de vanidad disminuirán; mas el que recoge con mano laboriosa las aumenta.','Proverbios 13:11'],
@@ -1735,7 +1740,7 @@ function renderCal(focusInput){
   const p=el('section','card'); p.style.marginTop='16px';
   const ph=el('header'); const pt=el('h2'); pt.textContent=tit; ph.append(pt); p.append(ph);
   const dl=byDay[calSel]||[];
-  if(!dl.length){ const e=el('p','small'); e.style.padding='4px'; e.textContent='No hay notas para este día. Escribí una abajo.'; p.append(e); }
+  if(!dl.length){ const e=el('p','small'); e.style.padding='4px'; e.textContent='No hay notas para este día. Escribe una abajo.'; p.append(e); }
   dl.forEach(n=>{
     const r=el('div','notaRow'+(n.hecho?' hecha':''));
     const cb=el('input'); cb.type='checkbox'; cb.checked=n.hecho; cb.setAttribute('aria-label','Marcar como hecha'); cb.addEventListener('change',()=>toggleNota(n));
@@ -1753,7 +1758,7 @@ function renderCal(focusInput){
   const prox=notas.filter(n=>!n.hecho&&n.fecha>=hoyS).sort((a,b)=>a.fecha<b.fecha?-1:a.fecha>b.fecha?1:a.creado-b.creado).slice(0,8);
   const q=el('section','card'); q.style.marginTop='16px';
   const qh=el('header'); const qt=el('h2'); qt.textContent='Próximas notas'; qh.append(qt); q.append(qh);
-  if(!prox.length){ const e=el('p','small'); e.style.padding='4px'; e.textContent='No tenés notas pendientes desde hoy en adelante.'; q.append(e); }
+  if(!prox.length){ const e=el('p','small'); e.style.padding='4px'; e.textContent='No tienes notas pendientes desde hoy en adelante.'; q.append(e); }
   prox.forEach(n=>{
     const pp=n.fecha.split('-').map(Number);
     const r=el('button','notaProx'); r.type='button';
@@ -1800,7 +1805,7 @@ function renderAnio(){
   kp.append(kpi('Ingresos del año',cf.format(T.ingresos)),kpi('Egresos del año',cf.format(T.egresos)),kpi('Balance del año',cf.format(T.balance),'soft'),
     kpi('Promedio de balance mensual',used.length?cf.format(T.balance/used.length):cf.format(0)));
   head.append(kp);
-  const note=el('p','hint'); note.textContent='Suma de '+used.length+(used.length===1?' mes cargado':' meses cargados')+'. Tocá un mes para abrirlo.'; head.append(note);
+  const note=el('p','hint'); note.textContent='Suma de '+used.length+(used.length===1?' mes cargado':' meses cargados')+'. Toca un mes para abrirlo.'; head.append(note);
   v.append(head);
   // tabla
   const tc=el('section','card'); tc.style.marginTop='16px';
@@ -1842,7 +1847,7 @@ function renderAnio(){
 }
 function buildEmpty(){
   const e=el('div','empty');
-  e.innerHTML='<h2>Todavía no hay datos</h2><p class="small">Podés importar el respaldo de tu libro anterior o empezar con un mes en blanco.</p><div class="tools"></div>';
+  e.innerHTML='<h2>Todavía no hay datos</h2><p class="small">Puedes importar el respaldo de tu libro anterior o empezar con un mes en blanco.</p><div class="tools"></div>';
   const t=$('.tools',e);
   const a=el('button','btn primary'); a.type='button'; a.textContent='Importar respaldo (.json)'; a.addEventListener('click',()=>$('#fileImp').click());
   const b=el('button','btn'); b.type='button'; b.textContent='Empezar en blanco'; b.addEventListener('click',()=>createMonth(currentMonthId(),null));
@@ -1910,7 +1915,7 @@ function updateRespaldoAviso(root){
   w.replaceChildren();
   if(t && dias<RESP_DIAS){ w.hidden=true; return; }
   w.hidden=false;
-  w.append(t?('Hace '+dias+' días que no bajás un respaldo. '):'Todavía no bajaste ningún respaldo. ');
+  w.append(t?('Hace '+dias+' días que no bajas un respaldo. '):'Todavía no bajaste ningún respaldo. ');
   const b=el('button','btn'); b.type='button'; b.textContent='Descargar ahora'; b.style.marginLeft='6px';
   b.addEventListener('click',exportBackup); w.append(b);
 }
@@ -1935,7 +1940,7 @@ function fillAhorro(root){
   const c=$('#ahorroCard',root); if(!c) return;
   c.replaceChildren();
   const h=el('header'); const h2=el('h2'); h2.textContent='Ahorro en dólares'; h.append(h2); c.append(h);
-  const hint=el('p','hint'); hint.textContent='Es un acumulado del hogar (no depende del mes). Cargá lo que ya ahorraste en dólares, la cotización a tu moneda y tu meta.'; c.append(hint);
+  const hint=el('p','hint'); hint.textContent='Es un acumulado del hogar (no depende del mes). Carga lo que ya ahorraste en dólares, la cotización a tu moneda y tu meta.'; c.append(hint);
   const grid=el('div','kpis'); grid.style.marginTop='4px';
   const box=(label,inp)=>{ const d=el('div','kpi'); const s=el('span'); s.textContent=label; d.append(s,inp); return d; };
   const stl=i=>{ i.style.cssText='width:100%; font-size:18px; font-weight:700; padding:0; border:0; background:transparent'; return i; };
@@ -1950,7 +1955,7 @@ function fillAhorro(root){
   const db1=el('button','btn'); db1.type='button'; db1.textContent='Sumar al ahorro';
   db1.addEventListener('click',()=>{
     const v=parseMoney(di.value);
-    if(Number.isNaN(v)||v===0){ toast('Escribí un monto válido'); return; }
+    if(Number.isNaN(v)||v===0){ toast('Escribe un monto válido'); return; }
     ahorro.ahorrado=num(ahorro.ahorrado)+v; saveAhorro(); fillAhorro(root); toast('Sumados '+usd(v));
   });
   dep.append(di,db1); c.append(dep);
@@ -1962,7 +1967,7 @@ function calcAhorro(c){
   const A=num(ahorro.ahorrado), C=moneda.c==='USD'?0:num(ahorro.cotizacion), M=num(ahorro.meta);
   const line=t=>{ const p=el('p','small'); p.style.margin='6px 4px'; p.textContent=t; out.append(p); };
   if(C>0) line('Equivale a '+cf.format(A*C)+' a la cotización cargada.');
-  if(M<=0){ line('Cargá una meta para ver tu progreso.'); return; }
+  if(M<=0){ line('Carga una meta para ver tu progreso.'); return; }
   const pct=Math.min(100,A/M*100);
   const bar=el('div','bar'); bar.style.cssText='grid-template-columns:1fr 64px; margin:10px 4px 4px';
   const tk=el('div','track'); const f=el('div','fill i'); f.style.width=pct+'%'; tk.append(f);
@@ -2022,7 +2027,7 @@ async function restoreMonth(it){
     papelera=papelera.filter(p=>p.id!==it.id); cur=it.id; tab='resumen'; render(); toast('Restaurado '+monthLabel(it.id));
   };
   if(!months[it.id]){ doIt(); return; }
-  const p=el('p'); p.textContent=monthLabel(it.id)+' ya existe. Si restaurás, se reemplaza por la versión de la papelera.';
+  const p=el('p'); p.textContent=monthLabel(it.id)+' ya existe. Si restauras, se reemplaza por la versión de la papelera.';
   modal('¿Reemplazar mes?',p,[{label:'Cancelar'},{label:'Reemplazar',cls:'primary',onClick:()=>{doIt();}}]);
 }
 function purgeMonth(it){
@@ -2033,7 +2038,7 @@ function purgeMonth(it){
   }}]);
 }
 function exportExcel(){
-  if(typeof XLSX==='undefined'){ toast('No se pudo cargar la herramienta de Excel. Revisá tu conexión a internet.'); return; }
+  if(typeof XLSX==='undefined'){ toast('No se pudo cargar la herramienta de Excel. Revisa tu conexión a internet.'); return; }
   const ids=Object.keys(months).sort();
   const resumen=[['Mes','Ingresos','Egresos fijos','Egresos variables','Egresos totales','Fondo de emergencia','Balance','% gastado','Tarjeta (informativo)']];
   const detalle=[['Mes','Período','Sección','Descripción','Categoría','Monto','Pagado']];
@@ -2079,7 +2084,7 @@ function downloadBlob(blob,filename){
 }
 async function captureAndDeliver(innerHTML,width,filenameBase,format){
   if(typeof html2canvas==='undefined' || (format==='pdf' && !(window.jspdf&&window.jspdf.jsPDF))){
-    toast('No se pudo cargar la herramienta de exportación. Revisá tu conexión a internet.'); return;
+    toast('No se pudo cargar la herramienta de exportación. Revisa tu conexión a internet.'); return;
   }
   toast('Generando…');
   const wrap=document.createElement('div');
@@ -2103,7 +2108,7 @@ async function captureAndDeliver(innerHTML,width,filenameBase,format){
 }
 async function exportFullPDF(){
   if(typeof html2canvas==='undefined' || !(window.jspdf&&window.jspdf.jsPDF)){
-    toast('No se pudo cargar la herramienta de exportación. Revisá tu conexión a internet.'); return;
+    toast('No se pudo cargar la herramienta de exportación. Revisa tu conexión a internet.'); return;
   }
   const main=$('#main'); if(!main) return;
   toast('Generando PDF…');
@@ -2197,7 +2202,7 @@ function newMonthDialog(){
   const l1=el('label'); l1.append('Mes: ');
   const inp=el('input'); inp.type='month'; inp.value=nextMonthId(); inp.className='txt'; inp.setAttribute('aria-label','Mes nuevo'); l1.append(inp);
   const l2=el('label'); const c1=el('input'); c1.type='checkbox'; c1.checked=true; l2.append(c1,'Copiar plataformas y reparto');
-  const l3=el('label'); const c2=el('input'); c2.type='checkbox'; c2.checked=true; l3.append(c2,'Copiar ingresos (después cambiás los montos)');
+  const l3=el('label'); const c2=el('input'); c2.type='checkbox'; c2.checked=true; l3.append(c2,'Copiar ingresos (después cambias los montos)');
   const l4=el('label'); const c4=el('input'); c4.type='checkbox'; c4.checked=true; l4.append(c4,'Copiar egresos fijos (sin marcar como pagados)');
   const note=el('p','small');
   note.textContent = cur
@@ -2210,7 +2215,7 @@ function newMonthDialog(){
     {label:'Cancelar'},
     {label:'Crear mes',cls:'primary',onClick:()=>{
       const id=inp.value.trim();
-      if(!MES_RE.test(id)){ toast('Escribí el mes como AAAA-MM'); return false; }
+      if(!MES_RE.test(id)){ toast('Escribe el mes como AAAA-MM'); return false; }
       createMonth(id,{plat:c1.checked,ing:c2.checked,egr:c4.checked});
     }}
   ]);
@@ -2218,7 +2223,7 @@ function newMonthDialog(){
 function askDeleteMonth(){
   if(Object.keys(months).length<2){ toast('No se puede eliminar el único mes'); return; }
   const id=cur;
-  const p=el('p'); p.textContent='Se mueve '+monthLabel(id)+' (con todo lo que cargaste) a la Papelera. Podés restaurarlo durante '+PAPELERA_DIAS+' días.';
+  const p=el('p'); p.textContent='Se mueve '+monthLabel(id)+' (con todo lo que cargaste) a la Papelera. Puedes restaurarlo durante '+PAPELERA_DIAS+' días.';
   modal('¿Eliminar '+monthLabel(id)+'?',p,[
     {label:'Cancelar'},
     {label:'Eliminar',cls:'danger solid',onClick:async()=>{
@@ -2253,7 +2258,7 @@ $('#installBtn').addEventListener('click',async()=>{
   try{ await deferredInstall.userChoice; }catch(e){}
   deferredInstall=null;
 });
-window.addEventListener('appinstalled',()=>{ $('#installBtn').hidden=true; deferredInstall=null; toast('Instalada. Ya la tenés en tu equipo.'); });
+window.addEventListener('appinstalled',()=>{ $('#installBtn').hidden=true; deferredInstall=null; toast('Instalada. Ya la tienes en tu equipo.'); });
 if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){ $('#installBtn').hidden=true; }
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('service-worker.js').catch(()=>{}); });
@@ -2262,16 +2267,16 @@ if('serviceWorker' in navigator){
 function loginError(e){
   const c=(e&&e.code)||'';
   if(/invalid-credential|wrong-password|user-not-found|invalid-email|missing-password/.test(c)) return 'Correo o clave incorrectos.';
-  if(c==='auth/email-already-in-use') return 'Ya existe una cuenta con ese correo. Probá "Ingresar".';
+  if(c==='auth/email-already-in-use') return 'Ya existe una cuenta con ese correo. Prueba "Ingresar".';
   if(c==='auth/weak-password') return 'La clave tiene que tener al menos 6 caracteres.';
-  if(c==='auth/too-many-requests') return 'Demasiados intentos. Esperá unos minutos y probá de nuevo.';
+  if(c==='auth/too-many-requests') return 'Demasiados intentos. Espera unos minutos y prueba de nuevo.';
   if(c==='auth/network-request-failed') return 'Sin conexión a internet.';
   if(c==='auth/unauthorized-domain') return 'Este dominio no está autorizado en Firebase (ver LEEME).';
   return 'No se pudo ingresar ('+(c||'error')+').';
 }
 async function joinHogarByCode(rawCode){
   const code=String(rawCode||'').trim().toUpperCase();
-  if(!code) throw new Error('Escribí un código.');
+  if(!code) throw new Error('Escribe un código.');
   let chSnap;
   try{ chSnap=await FS.getDoc(FS.doc(db,'codigosHogar',code)); }catch(e){ chSnap=null; }
   if(!chSnap || !chSnap.exists()) throw new Error('Ese código no es válido.');
@@ -2297,7 +2302,7 @@ function setAuthMode(mode){
   $('#authTitle').textContent=signup?'Crear cuenta':'Ingresar';
   $('#lBtn').textContent=signup?'Crear cuenta':'Entrar';
   $('#lReset').hidden=signup;
-  $('#lToggle').textContent=signup?'¿Ya tenés cuenta? Ingresá':'¿No tenés cuenta? Creá una';
+  $('#lToggle').textContent=signup?'¿Ya tienes cuenta? Ingresa':'¿No tienes cuenta? Crea una';
   $('#lErr').textContent='';
 }
 $('#lToggle').addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
@@ -2319,7 +2324,7 @@ $('#loginForm').addEventListener('submit',async ev=>{
 });
 $('#lReset').addEventListener('click',async()=>{
   const email=$('#lEmail').value.trim();
-  if(!email){ $('#lErr').textContent='Escribí tu correo arriba y tocá de nuevo.'; return; }
+  if(!email){ $('#lErr').textContent='Escribe tu correo arriba y toca de nuevo.'; return; }
   try{ await AU.sendPasswordResetEmail(auth,email); $('#lErr').textContent=''; toast('Si el correo existe, te llegó un mensaje para cambiar la clave'); }
   catch(e){ $('#lErr').textContent=loginError(e); }
 });
@@ -2348,13 +2353,13 @@ $('#vOk').addEventListener('click',async()=>{
   $('#vErr').textContent='';
   try{
     await me.reload(); await me.getIdToken(true);
-    if(me.emailVerified) resolveHogar(); else $('#vErr').textContent='Todavía no figura verificado. Abrí el enlace del correo y probá de nuevo.';
+    if(me.emailVerified) resolveHogar(); else $('#vErr').textContent='Todavía no figura verificado. Abre el enlace del correo y prueba de nuevo.';
   }catch(e){ $('#vErr').textContent='No se pudo comprobar ('+((e&&e.code)||'error')+').'; }
 });
 $('#vResend').addEventListener('click',async()=>{
   $('#vErr').textContent='';
   try{ await AU.sendEmailVerification(me); toast('Te lo reenviamos'); }
-  catch(e){ $('#vErr').textContent=(e&&e.code==='auth/too-many-requests')?'Esperá unos minutos antes de pedir otro.':'No se pudo reenviar.'; }
+  catch(e){ $('#vErr').textContent=(e&&e.code==='auth/too-many-requests')?'Espera unos minutos antes de pedir otro.':'No se pudo reenviar.'; }
 });
 $('#vSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
 
@@ -2366,8 +2371,8 @@ async function deleteAllInCol(colRef){
 function askDeleteAccount(){
   const body=el('div');
   const p=el('p','small');
-  p.textContent='Se borra tu cuenta para siempre. Si sos la única persona del hogar, también se borran todos sus datos (meses, papelera, ahorro y lista de compras). Si tu pareja sigue en el hogar, ella conserva los datos. No se puede deshacer.';
-  const l=el('label'); l.append('Escribí tu clave para confirmar: ');
+  p.textContent='Se borra tu cuenta para siempre. Si eres la única persona del hogar, también se borran todos sus datos (meses, papelera, ahorro y lista de compras). Si tu pareja sigue en el hogar, ella conserva los datos. No se puede deshacer.';
+  const l=el('label'); l.append('Escribe tu clave para confirmar: ');
   const inp=el('input'); inp.type='password'; inp.className='txt'; inp.autocomplete='current-password'; l.append(inp);
   const err=el('p','err'); err.setAttribute('role','alert');
   body.append(p,l,err);
@@ -2378,7 +2383,7 @@ function askDeleteAccount(){
 }
 async function doDeleteAccount(pass,errEl){
   errEl.textContent='';
-  if(!pass){ errEl.textContent='Escribí tu clave.'; return; }
+  if(!pass){ errEl.textContent='Escribe tu clave.'; return; }
   try{
     await AU.reauthenticateWithCredential(me,AU.EmailAuthProvider.credential(me.email,pass));
   }catch(e){ errEl.textContent='La clave no es correcta.'; return; }
@@ -2399,7 +2404,7 @@ async function doDeleteAccount(pass,errEl){
     }
     await AU.deleteUser(me);
     closeModal(); toast('Tu cuenta fue eliminada');
-  }catch(e){ errEl.textContent='No se pudo eliminar ('+((e&&e.code)||'error')+'). Probá de nuevo.'; }
+  }catch(e){ errEl.textContent='No se pudo eliminar ('+((e&&e.code)||'error')+'). Prueba de nuevo.'; }
 }
 function stopListening(){ if(unsub){ try{unsub();}catch(e){} unsub=null; } clearTimeout(saveTimer); clearTimeout(retryTimer); dirty.clear(); }
 
@@ -2414,7 +2419,7 @@ async function boot(){
     AU=AUm; FS=FSm;
     fbApp=A.initializeApp(cfg); auth=AU.getAuth(fbApp); db=FS.getFirestore(fbApp);
   }catch(e){
-    $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisá tu conexión a internet y recargá.'; return;
+    $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisa tu conexión a internet y recarga.'; return;
   }
   AU.onAuthStateChanged(auth,user=>{
     if(user){ me=user; if(user.emailVerified) resolveHogar(); else showVerify(); }
