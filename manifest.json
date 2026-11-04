@@ -1,8 +1,8 @@
 {
   "id": ".",
-  "name": "Libro Finanzas Hogar",
-  "short_name": "Finanzas Hogar",
-  "description": "Ingresos y egresos de tu hogar, por quincena, para una o dos personas.",
+  "name": "Libro de Finanzas",
+  "short_name": "Libro Finanzas",
+  "description": "Un hogar organizado con propósito: ingresos y egresos de tu casa, por mes, quincena o semana.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
