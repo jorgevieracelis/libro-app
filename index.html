@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com; frame-src https://*.firebaseapp.com https://*.web.app; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.google.com; style-src 'self' 'unsafe-inline' https://www.gstatic.com; img-src 'self' data: blob: https://www.gstatic.com https://www.google.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://www.google.com; frame-src https://*.firebaseapp.com https://*.web.app https://www.google.com https://recaptcha.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0f2a52">
@@ -2648,7 +2648,13 @@ async function boot(){
   try{
     const [A,AUm,FSm]=await Promise.all([import(FB+'firebase-app.js'),import(FB+'firebase-auth.js'),import(FB+'firebase-firestore.js')]);
     AU=AUm; FS=FSm;
-    fbApp=A.initializeApp(cfg); auth=AU.getAuth(fbApp); db=FS.getFirestore(fbApp);
+    fbApp=A.initializeApp(cfg);
+    /* App Check: demuestra a Firebase que las solicitudes vienen de esta app (reCAPTCHA / Fraud Defense). */
+    try{
+      const AC=await import(FB+'firebase-app-check.js');
+      AC.initializeAppCheck(fbApp,{provider:new AC.ReCaptchaEnterpriseProvider('6LfdSRMuAAAAANDcFLuzLPgIYcr7wO_UH88kFpZ0'),isTokenAutoRefreshEnabled:true});
+    }catch(e){ /* si falla, la app sigue; el cumplimiento se activa solo cuando está verificado */ }
+    auth=AU.getAuth(fbApp); db=FS.getFirestore(fbApp);
   }catch(e){
     $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisa tu conexión a internet y recarga.'; return;
   }
