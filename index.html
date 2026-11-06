@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com; frame-src https://*.firebaseapp.com https://*.web.app; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0f2a52">
 <title>Libro de Finanzas</title>
@@ -530,9 +532,9 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <div id="modal-root"></div>
 <input type="file" id="fileImp" accept=".json,application/json" hidden>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
 <script type="module">
 const FB='https://www.gstatic.com/firebasejs/10.14.1/';
 
@@ -560,6 +562,7 @@ const PIE_PAL=['#f28c28','#0f2a52','#111111','#2e7d32','#8e24aa','#c75c00','#008
 /* ---------- Utilidades ---------- */
 const uid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
 const $=(s,r)=>(r||document).querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el=(tag,cls)=>{const e=document.createElement(tag); if(cls) e.className=cls; return e;};
 const nf=new Intl.NumberFormat('es-AR',{maximumFractionDigits:2});
 const MONEDAS=[
@@ -734,7 +737,8 @@ let fbApp=null, auth=null, db=null, FS=null, AU=null, unsub=null, me=null, loadT
 let hogarId=null, hogarInfo=null, authMode='login';
 function genCode(len){
   const chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  let s=''; for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  let s=''; const lim=256-(256%chars.length);
+  while(s.length<len){ for(const b of crypto.getRandomValues(new Uint8Array(len*2))){ if(b<lim && s.length<len) s+=chars[b%chars.length]; } }
   return s;
 }
 const mesesCol=()=>FS.collection(db,'hogares',hogarId,'meses');
@@ -903,7 +907,7 @@ function renderPie(md){
   const {svg,legend,total}=buildPieSVG(totals);
   const rows=legend.map(e=>
     '<div class="pie-row"><span class="pie-dot" style="background:'+e.color+'"></span>'+
-    '<span class="pie-label">'+e.label+'</span>'+
+    '<span class="pie-label">'+esc(e.label)+'</span>'+
     '<span class="pie-amt">'+cf.format(e.amt)+'</span>'+
     '<span class="pie-pct">'+(Math.round(e.pct*1000)/10).toString().replace('.',',')+' %</span></div>'
   ).join('');
@@ -1211,7 +1215,7 @@ function renderSearchResults(term,host){
   if(!out.length){ host.innerHTML='<p class="small">Sin resultados.</p>'; return; }
   const rows=out.slice(0,60).map(r=>
     '<div class="searchRow"><span class="searchWhen">'+monthLabel(r.mId)+' · '+qname(r.q)+'</span>'+
-    '<span class="searchName">'+(r.n||'—')+'</span>'+
+    '<span class="searchName">'+(esc(r.n)||'—')+'</span>'+
     '<span class="tag">'+(secLabel[r.sec]||'Plataforma')+'</span>'+
     '<span class="searchAmt">'+cf.format(r.m)+'</span></div>'
   ).join('');
@@ -2406,7 +2410,7 @@ async function joinHogarByCode(rawCode){
 }
 async function createHogar(nombre){
   const hogarRef=FS.doc(FS.collection(db,'hogares'));
-  const codigoHogar=genCode(6);
+  const codigoHogar=genCode(8);
   const info={nombre:String(nombre||'').trim()||'Mi hogar', creadoPor:me.uid, miembros:[me.uid], codigoHogar};
   const batch=FS.writeBatch(db);
   batch.set(hogarRef,info);
