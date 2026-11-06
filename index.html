@@ -315,6 +315,16 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 .empty .tools{justify-content:center}
 
 .overlay{position:fixed; inset:0; background:rgba(10,15,30,.5); display:flex; align-items:center; justify-content:center; padding:16px; z-index:50}
+.lkBack{position:fixed; inset:0; z-index:900; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px}
+.lkBack[hidden]{display:none}
+.lkFull{z-index:1000; background:var(--bg,#fff)}
+.lkBox{width:min(360px,100%); display:grid; gap:12px; text-align:center; justify-items:center}
+.lkBox h2{color:var(--brand)}
+.lkBox form,.lkBox .btn{width:100%}
+.lkBox form{display:grid; gap:10px}
+.lkBox input.txt{text-align:center; font-size:22px; letter-spacing:.3em}
+.lkLogos{display:flex; gap:10px}
+.lkLogos img{width:52px; height:52px; border-radius:12px; object-fit:cover}
 .modal{background:var(--card); color:var(--ink); border-radius:16px; padding:20px; width:min(440px,100%); box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .modal h3{font-size:17px; margin-bottom:12px; color:var(--brand)}
 .modal label{display:flex; gap:8px; align-items:center; margin:10px 0}
@@ -393,6 +403,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
       <button class="btn" id="nuevoMes" type="button">＋ Nuevo mes</button>
       <button class="btn primary" id="installBtn" type="button" hidden>⬇ Instalar app</button>
       <span class="pill" id="status" role="status"></span>
+      <button class="btn" id="lockBtn" type="button" title="Seguridad: bloqueo de la app" aria-label="Seguridad">🔒</button>
       <button class="btn" id="salir" type="button">Salir</button>
     </div>
   </div>
@@ -483,6 +494,38 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <p class="vsCred">Texto bíblico: Traducción en lenguaje actual™ © Sociedades Bíblicas Unidas, 2002, 2004. Utilizado con permiso.</p>
   </div>
 </section>
+<div id="lockScreen" class="lkBack lkFull" hidden role="dialog" aria-modal="true" aria-label="App bloqueada">
+  <div class="lkBox">
+    <div class="lkLogos"><img src="icon-192.png" alt=""><img src="logo-biblia.jpg" alt=""><img src="logo-paloma.jpg" alt=""></div>
+    <h2>Libro de Finanzas</h2>
+    <p class="small">La app está bloqueada para proteger tus datos.</p>
+    <button class="btn primary" id="lkBioBtn" type="button" hidden>Desbloquear con huella o rostro</button>
+    <form id="lkPinForm" hidden>
+      <input type="password" class="txt" id="lkPinIn" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="Tu PIN" aria-label="PIN">
+      <button class="btn primary" type="submit">Desbloquear</button>
+    </form>
+    <p class="err" id="lkErr" role="alert"></p>
+    <button class="link" id="lkSalir" type="button">Olvidé mi PIN / Cerrar sesión</button>
+  </div>
+</div>
+
+<div id="lockCfg" class="lkBack" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Seguridad">
+    <h3>🔒 Seguridad</h3>
+    <p class="small">Protege la app en este teléfono. El bloqueo se aplica cuando sales de la app y vuelves.</p>
+    <label style="display:block"><input type="radio" name="lkMode" value="off"> Sin bloqueo</label>
+    <label style="display:block" id="lkBioOpt"><input type="radio" name="lkMode" value="bio"> Huella o rostro <span class="small" id="lkBioNote"></span></label>
+    <label style="display:block"><input type="radio" name="lkMode" value="pin"> PIN de 4 a 6 números</label>
+    <div id="lkPinBox" hidden>
+      <input type="password" class="txt" id="lkPin1" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="Nuevo PIN" aria-label="Nuevo PIN">
+      <input type="password" class="txt" id="lkPin2" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="Repite el PIN" aria-label="Repite el PIN" style="margin-top:8px">
+    </div>
+    <label id="lkTimeBox">Bloquear tras <select id="lkTime"><option value="0">salir de la app</option><option value="1">1 minuto</option><option value="5">5 minutos</option><option value="15">15 minutos</option></select></label>
+    <p class="err" id="lkCfgErr" role="alert"></p>
+    <div class="actions"><button class="btn" id="lkCancel" type="button">Cancelar</button><button class="btn primary" id="lkSave" type="button">Guardar</button></div>
+  </div>
+</div>
+
 <div id="toast" role="status"></div>
 <div id="modal-root"></div>
 <input type="file" id="fileImp" accept=".json,application/json" hidden>
@@ -2483,6 +2526,115 @@ async function doDeleteAccount(pass,errEl){
 }
 function stopListening(){ if(unsub){ try{unsub();}catch(e){} unsub=null; } clearTimeout(saveTimer); clearTimeout(retryTimer); dirty.clear(); }
 
+/* ---------- Bloqueo de la app (huella/rostro o PIN) ---------- */
+/* Es un bloqueo local de este teléfono: la sesión de Firebase sigue abierta, pero la pantalla
+   queda tapada hasta verificar. El método biométrico lo decide el teléfono (huella, rostro o bloqueo de pantalla). */
+const LK='lfh.lock';
+let lockCfg=null, lockBusy=false, lockHiddenAt=0, lockFails=0;
+const lkEnc=new TextEncoder();
+const lkB64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
+const lkUn64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const lkRand=n=>crypto.getRandomValues(new Uint8Array(n));
+function lkLoad(){ try{ const c=JSON.parse(localStorage.getItem(LK)||'null'); if(c&&(c.mode==='bio'&&c.cred||c.mode==='pin'&&c.hash&&c.salt)) return c; }catch(e){} return null; }
+function lkStore(c){ lockCfg=c; try{ if(c) localStorage.setItem(LK,JSON.stringify(c)); else localStorage.removeItem(LK); }catch(e){} }
+async function lkHash(pin,salt){
+  const k=await crypto.subtle.importKey('raw',lkEnc.encode(pin),'PBKDF2',false,['deriveBits']);
+  return lkB64(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:150000},k,256));
+}
+async function lkBioOk(){
+  try{ return !!(window.PublicKeyCredential && navigator.credentials && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }catch(e){ return false; }
+}
+async function lkBioRegistrar(){
+  const c=await navigator.credentials.create({publicKey:{
+    challenge:lkRand(32), rp:{name:'Libro de Finanzas'},
+    user:{id:lkRand(16),name:'hogar',displayName:'Libro de Finanzas'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+    authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},
+    timeout:60000}});
+  return lkB64(c.rawId);
+}
+async function lkBioVerificar(){
+  await navigator.credentials.get({publicKey:{
+    challenge:lkRand(32), userVerification:'required', timeout:60000,
+    allowCredentials:[{type:'public-key',id:lkUn64(lockCfg.cred),transports:['internal']}]}});
+}
+function lkMostrar(){
+  if(!lockCfg) return;
+  $('#lockScreen').hidden=false; document.body.style.overflow='hidden';
+  $('#lkErr').textContent=''; $('#lkPinIn').value='';
+  const bio=lockCfg.mode==='bio';
+  $('#lkBioBtn').hidden=!bio; $('#lkPinForm').hidden=bio;
+  $('#lkSalir').textContent=bio?'Cerrar sesión':'Olvidé mi PIN / Cerrar sesión';
+  if(bio) lkDesbloquearBio(); else setTimeout(()=>{ try{$('#lkPinIn').focus();}catch(e){} },50);
+}
+function lkOcultar(){ $('#lockScreen').hidden=true; document.body.style.overflow=''; lockFails=0; }
+async function lkDesbloquearBio(){
+  if(lockBusy) return; lockBusy=true; $('#lkErr').textContent='';
+  try{ await lkBioVerificar(); lkOcultar(); }
+  catch(e){ $('#lkErr').textContent='No se pudo verificar. Toca el botón para intentar de nuevo.'; }
+  finally{ lockBusy=false; }
+}
+function lkFalla(){
+  lockFails++;
+  if(lockFails>=5){ lkStore(null); lkOcultar(); toast('Demasiados intentos. Inicia sesión de nuevo.'); if(auth) AU.signOut(auth); return; }
+  $('#lkErr').textContent='PIN incorrecto. Intentos restantes: '+(5-lockFails);
+}
+$('#lkBioBtn').addEventListener('click',lkDesbloquearBio);
+$('#lkPinForm').addEventListener('submit',async ev=>{
+  ev.preventDefault(); const pin=$('#lkPinIn').value; $('#lkPinIn').value='';
+  if(!lockCfg||!/^\d{4,6}$/.test(pin)){ lkFalla(); return; }
+  try{ if(await lkHash(pin,lkUn64(lockCfg.salt))===lockCfg.hash) lkOcultar(); else lkFalla(); }catch(e){ lkFalla(); }
+});
+$('#lkSalir').addEventListener('click',()=>{ lkStore(null); lkOcultar(); if(auth) AU.signOut(auth); });
+document.addEventListener('visibilitychange',()=>{
+  if(!lockCfg) return;
+  if(document.hidden){ if(!lockBusy) lockHiddenAt=Date.now(); return; }
+  if(lockBusy||!lockHiddenAt||!me) return;
+  const lejos=(Date.now()-lockHiddenAt)/60000; lockHiddenAt=0;
+  if(lejos>=(lockCfg.min||0) && $('#lockScreen').hidden) lkMostrar();
+});
+/* Pantalla de configuración */
+async function lkAbrirCfg(){
+  const bioOk=await lkBioOk();
+  $('#lkBioOpt').hidden=!bioOk;
+  $('#lkBioNote').textContent=bioOk?'(según lo que tenga tu teléfono)':'';
+  const modo=lockCfg?lockCfg.mode:'off';
+  document.querySelectorAll('input[name=lkMode]').forEach(r=>{ r.checked=r.value===modo; });
+  $('#lkTime').value=String(lockCfg?lockCfg.min:1);
+  $('#lkPin1').value=''; $('#lkPin2').value=''; $('#lkCfgErr').textContent='';
+  lkVistaCfg(); $('#lockCfg').hidden=false;
+}
+function lkModoSel(){ const r=document.querySelector('input[name=lkMode]:checked'); return r?r.value:'off'; }
+function lkVistaCfg(){
+  const m=lkModoSel();
+  $('#lkPinBox').hidden=m!=='pin'; $('#lkTimeBox').hidden=m==='off';
+}
+document.querySelectorAll('input[name=lkMode]').forEach(r=>r.addEventListener('change',lkVistaCfg));
+$('#lockBtn').addEventListener('click',lkAbrirCfg);
+$('#lkCancel').addEventListener('click',()=>{ $('#lockCfg').hidden=true; });
+$('#lkSave').addEventListener('click',async ()=>{
+  const m=lkModoSel(), min=parseInt($('#lkTime').value,10)||0, err=$('#lkCfgErr'); err.textContent='';
+  try{
+    if(m==='off'){ lkStore(null); toast('Bloqueo desactivado'); }
+    else if(m==='bio'){
+      if(lockCfg&&lockCfg.mode==='bio') lkStore({...lockCfg,min});
+      else lkStore({mode:'bio',cred:await lkBioRegistrar(),min});
+      toast('Bloqueo con huella o rostro activado');
+    } else {
+      const p1=$('#lkPin1').value, p2=$('#lkPin2').value;
+      if(!(lockCfg&&lockCfg.mode==='pin'&&!p1&&!p2)){
+        if(!/^\d{4,6}$/.test(p1)){ err.textContent='El PIN debe tener de 4 a 6 números.'; return; }
+        if(p1!==p2){ err.textContent='Los PIN no coinciden.'; return; }
+        const salt=lkRand(16); lkStore({mode:'pin',salt:lkB64(salt),hash:await lkHash(p1,salt),min});
+      } else lkStore({...lockCfg,min});
+      toast('Bloqueo con PIN activado');
+    }
+    $('#lockCfg').hidden=true;
+  }catch(e){ err.textContent='No se pudo activar. Si cancelaste la verificación del teléfono, inténtalo de nuevo.'; }
+});
+lockCfg=lkLoad();
+if(lockCfg) lkMostrar();
+
 /* ---------- Arranque ---------- */
 async function boot(){
   setView('loading'); $('#loadingMsg').textContent='Cargando…';
@@ -2498,7 +2650,7 @@ async function boot(){
   }
   AU.onAuthStateChanged(auth,user=>{
     if(user){ me=user; if(user.emailVerified) resolveHogar(); else showVerify(); }
-    else { me=null; stopData(); setView('login'); }
+    else { me=null; stopData(); if(lockCfg){ lkStore(null); } lkOcultar(); $('#lockCfg').hidden=true; setView('login'); }
   });
 }
 async function resolveHogar(){
