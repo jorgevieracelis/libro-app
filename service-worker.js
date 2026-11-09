@@ -5,8 +5,8 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v18';
-const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './icon-192.png', './icon-512.png', './icon-maskable.png', './logo-biblia.jpg', './logo-paloma.jpg'];
+const CACHE_NAME = 'lfh-shell-v19';
+const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
