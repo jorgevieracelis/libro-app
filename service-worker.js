@@ -1,12 +1,13 @@
 // Service worker de "Libro Finanzas Hogar".
 // Guarda una copia de la cáscara de la app (HTML, manifest, íconos) para que abra
-// rápido e instale como app. Firebase, Google Fonts y las librerías externas
-// (html2canvas, jsPDF) NUNCA pasan por acá: siempre van directo a internet.
+// rápido e instale como app. Las librerías (Firebase, html2canvas, jsPDF, xlsx) viven dentro de la app
+// (carpeta vendor/) y se guardan acá para que todo abra aunque no haya internet.
+// Los datos de los usuarios NO pasan por acá: van directo a Firebase.
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v20';
-const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+const CACHE_NAME = 'lfh-shell-v21';
+const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -30,13 +31,22 @@ self.addEventListener('fetch', event => {
 
   const isPage = req.mode === 'navigate' || url.pathname.endsWith('/index.html');
   if (isPage) {
-    // Página principal: primero internet (para traer siempre la versión más nueva),
-    // y si no hay conexión, se muestra la última copia guardada.
-    event.respondWith(
-      fetch(req)
-        .then(res => { caches.open(CACHE_NAME).then(c => c.put(req, res.clone())); return res; })
-        .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
-    );
+    // Página principal: primero internet (para traer siempre la versión más nueva).
+    // Si no hay conexión, o responde muy lento (4 s), se muestra la última copia guardada.
+    event.respondWith(new Promise(resolve => {
+      let done = false;
+      const finish = r => { if (!done && r) { done = true; resolve(r); } };
+      const t = setTimeout(() => { caches.match(req).then(finish); }, 4000);
+      fetch(req).then(res => {
+        clearTimeout(t);
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(req, copy));
+        finish(res);
+      }).catch(() => {
+        clearTimeout(t);
+        caches.match(req).then(r => r || caches.match('./index.html')).then(r => { if (!done) { done = true; resolve(r || Response.error()); } });
+      });
+    }));
     return;
   }
 

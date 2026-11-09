@@ -332,6 +332,8 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 .modal label{display:flex; gap:8px; align-items:center; margin:10px 0}
 .modal .actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px}
 .modal ul{margin:8px 0 0; padding-left:18px}
+#netBar{position:fixed; left:0; right:0; bottom:0; z-index:60; background:#8a4208; color:#fff; font-size:12.5px; line-height:1.35; text-align:center; padding:8px 14px; box-shadow:0 -2px 10px rgba(0,0,0,.35)}
+#netBar[hidden]{display:none}
 #toast{
   position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px));
   background:#1b2333; color:#fff; padding:10px 16px; border-radius:10px; font-size:13px; z-index:60;
@@ -529,6 +531,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
   </div>
 </div>
 
+<div id="netBar" role="status" hidden></div>
 <div id="toast" role="status"></div>
 <div id="modal-root"></div>
 <input type="file" id="fileImp" accept=".json,application/json" hidden>
@@ -537,7 +540,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="vendor/xlsx.full.min.js"></script>
 <script type="module">
-const FB='https://www.gstatic.com/firebasejs/10.14.1/';
+const FB='./vendor/firebase/'; /* Firebase 10.14.1 guardado dentro de la app: así abre aunque no haya internet */
 
 /* ---------- Constantes ---------- */
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -576,7 +579,9 @@ const MONEDAS=[
   {c:'CLP',n:'Peso chileno',s:'CLP$',d:0},
   {c:'PYG',n:'Guaraní paraguayo',s:'₲',d:0},
   {c:'MXN',n:'Peso mexicano',s:'MX$',d:2},
-  {c:'UYU',n:'Peso uruguayo',s:'$U',d:2}
+  {c:'UYU',n:'Peso uruguayo',s:'$U',d:2},
+  {c:'EUR',n:'Euro',s:'€',d:2},
+  {c:'CAD',n:'Dólar canadiense',s:'CA$',d:2}
 ];
 let moneda=MONEDAS[0], monedaNF=null;
 function setMoneda(code){
@@ -734,7 +739,31 @@ function calc(qd,md){
 let months={}, cur=null, tab='resumen';
 let ready=false, inflight=null, saving=false, saveTimer=null, retryTimer=null, pendingRender=false;
 const dirty=new Set();
-let fbApp=null, auth=null, db=null, FS=null, AU=null, unsub=null, me=null, loadTimer=null;
+let fbApp=null, auth=null, db=null, FS=null, AU=null, unsub=null, me=null, loadTimer=null, cacheTimer=null;
+/* ---------- Sin conexión ---------- */
+let netPend=false;
+function netUI(){
+  const b=document.getElementById('netBar'); if(!b) return;
+  const off=!navigator.onLine;
+  b.hidden=!(off||netPend);
+  b.textContent=off
+    ? 'Sin conexión. Sigue usando la app: tus cambios se guardan en el teléfono y se envían al volver internet.'
+    : 'Enviando los cambios guardados en este teléfono…';
+}
+/* Si el navegador avisa que no hay red, Firestore trabaja de inmediato con la copia del teléfono (sin esperar 10 s). */
+function netSync(){
+  try{ if(db&&FS){ (navigator.onLine?FS.enableNetwork(db):FS.disableNetwork(db)).catch(()=>{}); } }catch(e){}
+}
+window.addEventListener('online',()=>{ netSync(); netUI(); }); window.addEventListener('offline',()=>{ netSync(); netUI(); });
+/* Las escrituras no esperan la confirmación del servidor más de 4 s: sin internet quedan guardadas en el teléfono y se envían al volver. */
+function wrapFS(m){
+  const slow=p=>Promise.race([p,new Promise(r=>setTimeout(()=>{
+    if(!netPend){ netPend=true; netUI(); try{ m.waitForPendingWrites(db).then(()=>{ netPend=false; netUI(); setStatus('saved'); }).catch(()=>{}); }catch(e){} }
+    r();
+  },4000))]);
+  return {...m, setDoc:(...a)=>slow(m.setDoc(...a)), updateDoc:(...a)=>slow(m.updateDoc(...a)), deleteDoc:(...a)=>slow(m.deleteDoc(...a))};
+}
+const hogarCacheKey=()=>'lfh.hogar.'+(me&&me.uid);
 let hogarId=null, hogarInfo=null, authMode='login';
 function genCode(len){
   const chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -748,7 +777,7 @@ const mesDocRef=id=>FS.doc(db,'hogares',hogarId,'meses',id);
 /* ---------- Guardado ---------- */
 function setStatus(kind,err){
   const s=$('#status'); s.classList.remove('err');
-  const map={saved:'✓ Guardado',saving:'Guardando…',editing:'Editando…',ready:'Listo'};
+  const map={saved:netPend?'✓ Guardado en el teléfono':'✓ Guardado',saving:'Guardando…',editing:'Editando…',ready:'Listo'};
   if(kind==='error'){
     s.classList.add('err');
     s.textContent=(err&&err.code==='permission-denied')?'⚠ Sin permiso para guardar':'⚠ No se pudo guardar';
@@ -819,7 +848,14 @@ document.addEventListener('focusout',()=>{
 const monedaRef=()=>FS.doc(db,'hogares',hogarId,'ahorro','config');
 async function loadMoneda(){
   setMoneda('ARS'); setPeriodo('quincenal');
-  try{ const s=await FS.getDoc(monedaRef()); if(s.exists()){ const d=s.data(); if(d.moneda) setMoneda(d.moneda); if(d.periodo) setPeriodo(d.periodo); } }catch(e){}
+  const ck='lfh.cfg.'+hogarId; let d=null;
+  try{
+    const s=await Promise.race([FS.getDoc(monedaRef()), new Promise((_,rj)=>setTimeout(()=>rj(new Error('tiempo')),5000))]);
+    if(s.exists()){ d=s.data(); try{ localStorage.setItem(ck,JSON.stringify({moneda:d.moneda,periodo:d.periodo})); }catch(e){} }
+  }catch(e){
+    try{ d=JSON.parse(localStorage.getItem(ck)||'null'); }catch(e2){}
+  }
+  if(d){ if(d.moneda) setMoneda(d.moneda); if(d.periodo) setPeriodo(d.periodo); }
 }
 async function saveMoneda(code){
   try{ await FS.setDoc(monedaRef(),{moneda:code,periodo:periodo,actualizado:Date.now()}); return true; }
@@ -834,6 +870,12 @@ function startData0(){
   unsub=FS.onSnapshot(mesesCol(),snap=>{
     const map={};
     snap.docs.forEach(d=>{ map[d.id]=JSON.parse(JSON.stringify(d.data())); });
+    clearTimeout(cacheTimer);
+    if(snap.metadata.fromCache && !ready){
+      /* Datos guardados en el teléfono: si el servidor no responde (sin internet o señal mala) se usan igual. */
+      if(!navigator.onLine){ onRemote(map,true); return; }
+      if(snap.docs.length) cacheTimer=setTimeout(()=>{ if(!ready) onRemote(map,true); },3500);
+    }
     onRemote(map,!snap.metadata.fromCache);
   },err=>{
     if(!ready){
@@ -2399,7 +2441,7 @@ function loginError(e){
   if(c==='auth/email-already-in-use') return 'Ya existe una cuenta con ese correo. Prueba "Ingresar".';
   if(c==='auth/weak-password') return 'La clave tiene que tener al menos 6 caracteres.';
   if(c==='auth/too-many-requests') return 'Demasiados intentos. Espera unos minutos y prueba de nuevo.';
-  if(c==='auth/network-request-failed') return 'Sin conexión a internet.';
+  if(c==='auth/network-request-failed') return 'Sin conexión a internet. Para ingresar la primera vez en este teléfono necesitas conexión; después podrás usar la app sin internet.';
   if(c==='auth/unauthorized-domain') return 'Este dominio no está autorizado en Firebase (ver LEEME).';
   return 'No se pudo ingresar ('+(c||'error')+').';
 }
@@ -2654,14 +2696,18 @@ async function boot(){
   if(!cfg || !cfg.apiKey || /PEGAR/.test(cfg.apiKey+cfg.projectId)){ setView('setup'); return; }
   try{
     const [A,AUm,FSm]=await Promise.all([import(FB+'firebase-app.js'),import(FB+'firebase-auth.js'),import(FB+'firebase-firestore.js')]);
-    AU=AUm; FS=FSm;
+    AU=AUm; FS=wrapFS(FSm);
     fbApp=A.initializeApp(cfg);
     /* App Check: demuestra a Firebase que las solicitudes vienen de esta app (reCAPTCHA / Fraud Defense). */
     try{
       const AC=await import(FB+'firebase-app-check.js');
       AC.initializeAppCheck(fbApp,{provider:new AC.ReCaptchaEnterpriseProvider('6LfdSRMuAAAAANDcFLuzLPgIYcr7wO_UH88kFpZ0'),isTokenAutoRefreshEnabled:true});
     }catch(e){ /* si falla, la app sigue; el cumplimiento se activa solo cuando está verificado */ }
-    auth=AU.getAuth(fbApp); db=FS.getFirestore(fbApp);
+    auth=AU.getAuth(fbApp);
+    /* Copia local de los datos en el teléfono (funciona sin internet y se sincroniza al volver). */
+    try{ db=FS.initializeFirestore(fbApp,{localCache:FS.persistentLocalCache({tabManager:FS.persistentMultipleTabManager()})}); }
+    catch(e){ db=FS.getFirestore(fbApp); }
+    netSync(); netUI();
   }catch(e){
     $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisa tu conexión a internet y recarga.'; return;
   }
@@ -2672,16 +2718,27 @@ async function boot(){
 }
 async function resolveHogar(){
   setView('loading'); $('#loadingMsg').textContent='Buscando tu hogar…'; $('#loadingErr').textContent='';
-  try{
-    const q=FS.query(FS.collection(db,'hogares'), FS.where('miembros','array-contains',me.uid));
-    const snap=await FS.getDocs(q);
-    if(!snap.empty){
-      const d=snap.docs[0];
-      hogarId=d.id; hogarInfo=d.data();
-      startData();
-      return;
-    }
-  }catch(e){ /* sigue abajo */ }
+  let snap=null;
+  if(navigator.onLine){
+    try{
+      const q=FS.query(FS.collection(db,'hogares'), FS.where('miembros','array-contains',me.uid));
+      snap=await Promise.race([FS.getDocs(q), new Promise((_,rj)=>setTimeout(()=>rj(new Error('tiempo')),8000))]);
+    }catch(e){ snap=null; }
+  }
+  if(snap && !snap.empty){
+    const d=snap.docs[0];
+    hogarId=d.id; hogarInfo=d.data();
+    try{ localStorage.setItem(hogarCacheKey(),JSON.stringify({id:hogarId,info:hogarInfo})); }catch(e){}
+    startData();
+    return;
+  }
+  if(!snap || snap.empty && snap.metadata && snap.metadata.fromCache){
+    /* Sin internet o sin respuesta: usa el hogar recordado en este teléfono. */
+    try{
+      const c=JSON.parse(localStorage.getItem(hogarCacheKey())||'null');
+      if(c && c.id){ hogarId=c.id; hogarInfo=c.info||{}; startData(); return; }
+    }catch(e){}
+  }
   showNoHogar();
 }
 function showNoHogar(){
