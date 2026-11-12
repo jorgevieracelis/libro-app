@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Solo cuentas con el correo verificado.
+    function verificado() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function esMiembro(hogarId) {
+      return verificado()
+        && request.auth.uid in get(/databases/$(database)/documents/hogares/$(hogarId)).data.miembros;
+    }
+
+    // ---------- Hogares ----------
+    // Cada hogar tiene hasta 2 personas (miembros). Solo ellas pueden leer
+    // o escribir sus datos.
+    match /hogares/{hogarId} {
+      allow read: if verificado() && request.auth.uid in resource.data.miembros;
+
+      // Crear un hogar nuevo: solo con uno mismo como único miembro.
+      allow create: if verificado()
+        && request.resource.data.miembros == [request.auth.uid]
+        && request.resource.data.creadoPor == request.auth.uid
+        && request.resource.data.codigoHogar is string;
+
+      // Sumarse (agregar el propio UID, máx. 2 personas) o salirse
+      // (quitar el propio UID). Nada más se puede tocar.
+      allow update: if verificado()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['miembros'])
+        && (
+          (request.resource.data.miembros == resource.data.miembros.concat([request.auth.uid])
+            && resource.data.miembros.size() < 2)
+          ||
+          (request.auth.uid in resource.data.miembros
+            && request.resource.data.miembros == resource.data.miembros.removeAll([request.auth.uid]))
+        );
+
+      // Borrar el hogar: solo si queda una única persona y es quien lo borra.
+      allow delete: if verificado() && resource.data.miembros == [request.auth.uid];
+
+      match /meses/{mesId} {
+        allow read, write: if esMiembro(hogarId);
+      }
+
+      // Ahorro en dólares del hogar (un solo documento: ahorro/usd).
+      match /ahorro/{docId} {
+        allow read, write: if esMiembro(hogarId);
+      }
+
+      // Lista de artículos del súper (un documento por producto y cadena).
+      match /catalogo/{itemId} {
+        allow read, write: if esMiembro(hogarId);
+      }
+
+      // Notas del calendario (un documento por nota).
+      match /notas/{notaId} {
+        allow read, delete: if esMiembro(hogarId);
+        allow create, update: if esMiembro(hogarId)
+          && request.resource.data.keys().hasOnly(['fecha','texto','hecho','creado','tipo','monto','exportada'])
+          && (!('tipo' in request.resource.data) || (request.resource.data.tipo is string && request.resource.data.tipo.size() <= 40))
+          && (!('monto' in request.resource.data) || (request.resource.data.monto is number && request.resource.data.monto >= 0))
+          && (!('exportada' in request.resource.data) || request.resource.data.exportada is bool)
+          && request.resource.data.fecha is string && request.resource.data.fecha.size() == 10
+          && request.resource.data.texto is string
+          && request.resource.data.texto.size() > 0 && request.resource.data.texto.size() <= 500
+          && request.resource.data.hecho is bool
+          && request.resource.data.creado is number;
+      }
+
+      // Papelera: copia de los meses eliminados.
+      match /papelera/{mesId} {
+        allow read, write: if esMiembro(hogarId);
+      }
+    }
+
+    // ---------- Códigos de hogar ----------
+    // "código -> ID de hogar", para que la pareja se sume. Solo se puede
+    // consultar un código puntual (no listar todos) y con sesión verificada.
+    match /codigosHogar/{codigo} {
+      allow get: if verificado();
+      allow create: if verificado()
+        && request.resource.data.keys().hasOnly(['hogarId'])
+        && request.resource.data.hogarId is string;
+      allow delete: if verificado()
+        && request.auth.uid in get(/databases/$(database)/documents/hogares/$(resource.data.hogarId)).data.miembros;
+    }
+
+    // Todo lo demás, cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
