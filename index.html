@@ -139,6 +139,14 @@ body.auth .loginbox .err{text-align:center}
   body.auth .center.auth .loginbox{padding:28px 22px}
 }
 .setup{background:var(--card); border-radius:16px; padding:24px; box-shadow:var(--shadow)}
+#verFooter{max-width:1240px; margin:0 auto; padding:0 16px 40px; text-align:center}
+#verBtn{background:none; border:0; color:var(--muted); font-size:12px; padding:8px 12px; border-radius:99px; display:inline-flex; align-items:center; gap:7px; opacity:.85}
+#verBtn:hover,#verBtn:focus-visible{opacity:1; background:var(--chip)}
+.verDot{width:8px; height:8px; border-radius:50%; background:#f28c28; box-shadow:0 0 0 3px rgba(242,140,40,.25)}
+.verList{margin:0 0 4px; padding-left:20px; font-size:14px; line-height:1.45}
+.verList li{margin-bottom:5px}
+.verHead{display:flex; justify-content:space-between; align-items:baseline; margin:12px 0 6px; font-weight:700}
+.verHead span{font-weight:400; font-size:12px; color:var(--muted)}
 #versiculo{max-width:1240px; margin:0 auto; padding:0 16px 56px}
 .vsBox{background:linear-gradient(160deg,#16396f 0%,#0f2a52 60%,#091c3a 100%); color:#fff; border-radius:18px; padding:26px 28px; box-shadow:var(--shadow); border-top:4px solid #f28c28}
 .vsTop{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px}
@@ -517,6 +525,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <p class="vsCred">Texto bíblico: Traducción en lenguaje actual™ © Sociedades Bíblicas Unidas, 2002, 2004. Utilizado con permiso.</p>
   </div>
 </section>
+<div id="verFooter" hidden><button type="button" id="verBtn" aria-label="Ver las novedades de esta versión"><span id="verTxt"></span><span id="verDot" class="verDot" hidden></span></button></div>
 <div id="lockScreen" class="lkBack lkFull" hidden role="dialog" aria-modal="true" aria-label="App bloqueada">
   <div class="lkBox">
     <div class="lkLogos"><img src="icon-192.png" alt="" style="width:96px;height:96px;border-radius:22px"></div>
@@ -634,7 +643,7 @@ function setView(v){
   $('#loading').hidden=v!=='loading'; $('#login').hidden=v!=='login'; $('#setup').hidden=v!=='setup';
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
   document.body.classList.toggle('auth',v==='login'||v==='verify'||v==='nohogar');
-  const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app; $('#versiculo').hidden=!app;
+  const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app; $('#versiculo').hidden=!app; $('#verFooter').hidden=!app;
   $('#tabs').hidden=!(app&&cur);
 }
 
@@ -2812,6 +2821,46 @@ $('#fileImp').addEventListener('change',e=>{
   const f=e.target.files&&e.target.files[0]; e.target.value='';
   if(f&&ready) importFile(f);
 });
+
+
+/* ---------- Versión y novedades ---------- */
+/* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
+const APP_VERSION='1.1';
+const NOVEDADES=[
+ {v:'1.1', fecha:'12 nov 2026', items:[
+  'Pagos fijos en el calendario (alquiler, luz, internet, seguros…) y opción de repetirlos cada mes',
+  'Aviso de pagos próximos y vencidos en Resumen',
+  'Consejos del mes calculados en tu teléfono',
+  'Presupuesto por categoría con barras de avance',
+  'Metas de ahorro y calculadora de deudas (pestaña Metas y deudas)',
+  'Gráfico de evolución del año y reporte anual en PDF',
+  'Respaldo con botón Compartir / guardar en Drive y recordatorio semanal, quincenal o mensual',
+  'Esta lista de novedades']},
+ {v:'1.0', fecha:'9 nov 2026', items:[
+  'Modo sin internet',
+  '12 monedas (se sumaron euro y dólar canadiense)',
+  'Bloqueo con huella, rostro o PIN',
+  'Guía de uso en PDF']}
+];
+const VER_KEY='lfh.verVista';
+function verVista(){ try{ return localStorage.getItem(VER_KEY); }catch(e){ return null; } }
+function verPintar(){
+  const t=$('#verTxt'), d=$('#verDot'); if(!t||!d) return;
+  t.textContent='Versión '+APP_VERSION+' · Novedades';
+  d.hidden=verVista()===APP_VERSION;
+}
+function verAbrir(){
+  const body=el('div');
+  NOVEDADES.forEach((n,i)=>{
+    const h=el('div','verHead'); const a=el('b'); a.textContent='Versión '+n.v+(i===0?' (la tuya)':''); const f=el('span'); f.textContent=n.fecha; h.append(a,f); body.append(h);
+    const ul=el('ul','verList'); n.items.forEach(x=>{ const li=el('li'); li.textContent=x; ul.append(li); }); body.append(ul);
+  });
+  modal('Novedades',body,[{label:'Cerrar',cls:'primary'}]);
+  try{ localStorage.setItem(VER_KEY,APP_VERSION); }catch(e){}
+  verPintar();
+}
+document.getElementById('verBtn').addEventListener('click',verAbrir);
+verPintar();
 
 /* ---------- Ventanas ---------- */
 function closeModal(){ $('#modal-root').replaceChildren(); document.removeEventListener('keydown',escClose); }
