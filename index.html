@@ -181,6 +181,8 @@ body.auth .loginbox .err{text-align:center}
 .planGrid input,.planGrid select{width:100%; padding:10px; font-size:15px}
 .consejo{display:flex; gap:10px; align-items:flex-start; padding:9px 4px; border-bottom:1px solid var(--line); font-size:15px; line-height:1.4}
 .consejo .cIcon{flex:none}
+.pagoFijo input[type=checkbox]{flex:none; width:20px; height:20px; padding:0; accent-color:var(--accent)}
+.pagoFijo input[type=text]{border:1px solid var(--line); background:var(--field); color:var(--ink); border-radius:8px}
 .notaAdd select{flex:1 1 160px; width:auto; padding:11px 12px; font-size:15px}
 .notaRow{flex-wrap:wrap}
 .notaProx{display:flex; gap:12px; align-items:baseline; width:100%; text-align:left; background:none; border:0; border-bottom:1px solid var(--line); padding:9px 4px}
@@ -2324,7 +2326,7 @@ function renderPlan(){
   mc.append(nb); v.append(mc);
   // deudas
   const dc=el('section','card'); dc.style.marginTop='16px'; const dh=el('header'); const dt=el('h2'); dt.textContent='Deudas'; dh.append(dt); dc.append(dh);
-  const dp=el('p','hint'); dp.textContent='Anota lo que debes y la app calcula cuándo terminas y cuánto ahorras si pagas un extra. Es solo una guía: usa los datos de tu banco para el número exacto.'; dc.append(dp);
+  const dp=el('p','hint'); dp.textContent='Anota lo que debes y la app calcula cuándo terminas y cuánto ahorras si pagas un extra. Es solo una guía: usa los datos de tu banco para el número exacto. Bola de nieve: pagas primero la deuda más chica. Avalancha: pagas primero la de mayor interés.'; dc.append(dp);
   extras.deudas.forEach(d=>dc.append(deudaItem(d)));
   const nd=el('button','btn primary'); nd.type='button'; nd.textContent='＋ Nueva deuda'; nd.style.marginTop='10px';
   nd.addEventListener('click',()=>{ if(extras.deudas.length>=40){ toast('Llegaste al máximo de deudas'); return; } extras.deudas.push({id:uid(),n:'',saldo:null,cuota:null,tasa:null}); saveExtras(); renderPlan(); });
@@ -2332,7 +2334,7 @@ function renderPlan(){
   const og=el('div','planGrid'); og.style.marginTop='12px';
   og.append(lbl('Pago extra por mes (opcional)',moneyInput(()=>extras.extraDeuda,x=>{ extras.extraDeuda=x; },()=>{},()=>{ saveExtras(); renderPlanResumenDeudas(); },'Extra')));
   const os=el('select','txt'); os.setAttribute('aria-label','Qué deuda pagar primero');
-  [['bola','Bola de nieve: primero la de menor saldo'],['avalancha','Avalancha: primero la de mayor interés']].forEach(([k,t])=>{ const o=el('option'); o.value=k; o.textContent=t; if(k===extras.orden) o.selected=true; os.append(o); });
+  [['bola','Bola de nieve'],['avalancha','Avalancha']].forEach(([k,t])=>{ const o=el('option'); o.value=k; o.textContent=t; if(k===extras.orden) o.selected=true; os.append(o); });
   os.addEventListener('change',()=>{ extras.orden=os.value==='avalancha'?'avalancha':'bola'; saveExtras(); renderPlanResumenDeudas(); });
   og.append(lbl('Qué pagar primero',os)); dc.append(og);
   const res=el('div'); res.id='deudaRes'; res.style.marginTop='10px'; dc.append(res);
