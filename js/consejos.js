@@ -1,6 +1,13 @@
 'use strict';
 /* Cálculos en pantalla y consejos del mes */
 /* ---------- Cálculos en pantalla ---------- */
+/* Anillo del Resumen: se llena según el % del ingreso que ya se gastó (naranja; ámbar desde 80 %; rojo desde 100 %) */
+function actualizarAnillo(pct){
+  const fg=document.getElementById('ringFg'), box=document.getElementById('ringBox'); if(!fg||!box) return;
+  const C=2*Math.PI*52, p=Math.max(0,Math.min(1,pct||0));
+  fg.style.strokeDasharray=(C*p).toFixed(1)+' '+C.toFixed(1);
+  box.classList.toggle('warn',pct>=0.8&&pct<1); box.classList.toggle('bad',pct>=1);
+}
 function refreshComputed(){
   const md=months[cur]; if(!md) return;
   const C={}; QS.forEach(q=>{ C[q]=calc(md[q],md); C[q].tarjeta=monthTarjetaTotal(cur,q); });
@@ -22,6 +29,7 @@ function refreshComputed(){
     if(p[1]==='balance'){ e.classList.toggle('neg',v<0); e.classList.toggle('pos',v>=0); }
     if(p[1]==='disponibleTarjeta'){ e.classList.toggle('neg',v<0); e.classList.toggle('pos',v>=0); }
   });
+  actualizarAnillo(mes.pct);
   const tcWarn=document.getElementById('tcWarn');
   if(tcWarn){
     const lim=months[cur].limiteTarjeta;

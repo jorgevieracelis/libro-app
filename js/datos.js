@@ -69,13 +69,14 @@ function toast(msg){
 }
 let vistaActual=null;
 function setView(v){
+  if(v!=='loading') ocultarSplash();
   if(v==='app' && vistaActual!=='app') setTimeout(()=>nuevoVersiculo(),0);
   vistaActual=v;
   $('#loading').hidden=v!=='loading'; $('#login').hidden=v!=='login'; $('#setup').hidden=v!=='setup';
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
   document.body.classList.toggle('auth',v==='login'||v==='verify'||v==='nohogar');
   const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app; $('#versiculo').hidden=!app; $('#verFooter').hidden=!app;
-  $('#tabs').hidden=!(app&&cur);
+  $('#tabs').hidden=!(app&&cur); $('#bottomNav').hidden=!(app&&cur);
 }
 
 /* ---------- Modelo de datos ---------- */

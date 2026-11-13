@@ -379,13 +379,13 @@ function cambiarPeriodo(nuevo,selEl){
 function buildResumen(){
   const v=el('div'); v.id='view-resumen'; v.hidden=true;
   v.innerHTML=
-   '<div class="kpis">'+
-   '<div class="kpi"><span>Ingresos del mes</span><b data-k="mes.ingresos"></b></div>'+
-   '<div class="kpi"><span>Egresos del mes</span><b data-k="mes.egresos"></b></div>'+
-   '<div class="kpi soft"><span>Balance del mes</span><b data-k="mes.balance"></b></div>'+
-   '<div class="kpi"><span>Gastado del ingreso</span><b data-k="mes.pct"></b></div></div>'+
-   '<p style="margin:12px 0 16px; display:flex; gap:8px; flex-wrap:wrap"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">📘 Guía de uso (PDF)</a>'+
-   '<button type="button" class="btn" id="consejosBtn" aria-expanded="false" aria-controls="consejosCard">💡 Consejos del mes</button></p>'+
+   '<section class="hero" aria-label="Resumen del mes">'+
+   '<div class="ringBox" id="ringBox" role="img" aria-label="Porcentaje del ingreso gastado"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="rBg" cx="60" cy="60" r="52"></circle><circle class="rFg" id="ringFg" cx="60" cy="60" r="52"></circle></svg>'+
+   '<div class="ringTxt"><b data-k="mes.pct"></b><span>gastado</span></div></div>'+
+   '<div class="heroMain"><span class="lab">Balance del mes</span><b class="big" data-k="mes.balance"></b>'+
+   '<div class="heroChips"><span class="hchip"><i></i>Ingresos <b data-k="mes.ingresos"></b></span><span class="hchip out"><i></i>Egresos <b data-k="mes.egresos"></b></span></div></div></section>'+
+   '<div class="quick"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener">'+icono('guia')+'Guía de uso (PDF)</a>'+
+   '<button type="button" class="btn" id="consejosBtn" aria-expanded="false" aria-controls="consejosCard">'+icono('idea')+'Consejos del mes</button></div>'+
    '<p class="warnBox" id="respWarn" hidden></p>'+
    '<section class="card" id="vencCard" style="margin:0 0 16px" hidden></section>'+
    '<section class="card" id="consejosCard" style="margin:0 0 16px" hidden></section>'+

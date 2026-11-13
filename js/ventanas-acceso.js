@@ -2,8 +2,16 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.4';
+const APP_VERSION='1.6';
 const NOVEDADES=[
+ {v:'1.6', fecha:'13 nov 2026', items:[
+  'Pantalla de inicio animada con el logo mientras abre la app',
+  'Nueva tipografía Plus Jakarta Sans, guardada dentro de la app (se ve igual en todos los teléfonos y funciona sin internet)']},
+ {v:'1.5', fecha:'13 nov 2026', items:[
+  'Diseño renovado: Resumen con anillo de gasto y balance destacado, tarjetas y tipografía más modernas',
+  'Barra de navegación abajo en el teléfono (Resumen, Libro, Compras, Calendario y Más)',
+  'Encabezado más compacto y íconos de línea en lugar de emojis',
+  'Animaciones suaves al cambiar de pantalla']},
  {v:'1.4', fecha:'13 nov 2026', items:[
   'Presupuesto, metas, deudas, pagos repetidos y ahorro en dólares se actualizan solos cuando tu pareja los cambia',
   'Mejoras internas para que la app sea más estable y fácil de mantener']},

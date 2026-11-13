@@ -435,23 +435,25 @@ function renderHeader(){
   Object.keys(months).sort().reverse().forEach(id=>{
     const o=el('option'); o.value=id; o.textContent=monthLabel(id); if(id===cur) o.selected=true; sel.append(o);
   });
-  $('#tabs').hidden=!cur; sel.hidden=!cur;
+  $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
 function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan']; }
 function renderTabs(){
   const nav=$('#tabs'); nav.replaceChildren();
-  const add=(k,label,title)=>{
-    const b=el('button','tab'); b.type='button'; b.setAttribute('role','tab'); b.dataset.tab=k; b.textContent=label; if(title) b.title=title;
+  const add=(k,label,title,short)=>{
+    const b=el('button','tab'); b.type='button'; b.setAttribute('role','tab'); b.dataset.tab=k; b.dataset.grupo=grupoDe(k); if(title) b.title=title;
+    const f=el('span','full'); f.textContent=label; const s=el('span','short'); s.textContent=short||label; b.append(f,s);
     b.addEventListener('click',()=>{ tab=k; showTab(); window.scrollTo(0,0); }); nav.append(b);
   };
   add('resumen','Resumen');
   QS.forEach(q=>{
     const i=q.slice(1);
-    add(q,periodo==='mensual'?'Ingresos y egresos':qname(q),qrange(q));
-    add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q));
+    add(q,periodo==='mensual'?'Ingresos y egresos':qname(q),qrange(q),qname(q));
+    add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q),qname(q));
   });
   add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas');
+  renderBottomNav();
 }
 function showTab(){
   if(!tabsValidas().includes(tab)) tab='resumen';
@@ -461,6 +463,7 @@ function showTab(){
   if(tab==='plan') renderPlan();
   tabsValidas().forEach(t=>{const v=document.getElementById('view-'+t); if(v) v.hidden=(t!==tab);});
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
+  marcarNav();
 }
 function render(){
   renderTabs(); renderHeader();
