@@ -2,8 +2,14 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.6.3';
+const APP_VERSION='1.7.0';
 const NOVEDADES=[
+ {v:'1.7.0', fecha:'13 nov 2026', items:[
+  'Ahora hay Ingresos fijos e Ingresos variables (para changas y entradas extra), cada uno con 10 líneas y botón para agregar más',
+  'Balance del mes muestra Ingresos totales y Egresos totales (antes los egresos solo contaban los fijos)',
+  'Todos los bloques de ingresos y egresos arrancan con 10 líneas en blanco',
+  'Al crear un mes nuevo eliges con casillas qué llevar: ingresos fijos y variables, egresos fijos y variables',
+  'Arreglo: ya no se pierde lo que escribes en una línea mientras la app se sincroniza']},
  {v:'1.6.3', fecha:'13 nov 2026', items:[
   'Política de privacidad más clara sobre dónde se guardan tus datos y quién puede acceder a ellos']},
  {v:'1.6.2', fecha:'13 nov 2026', items:[
