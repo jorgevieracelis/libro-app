@@ -6,8 +6,8 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v30';
-const SHELL = ['./', './index.html', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+const CACHE_NAME = 'lfh-shell-v33';
+const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/respaldo.js', './js/ventanas-acceso.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './manifest.json', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -29,9 +29,9 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // Firebase/CDN: sin intervenir
 
-  const isPage = req.mode === 'navigate' || url.pathname.endsWith('/index.html');
+  const isPage = req.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.includes('/js/');
   if (isPage) {
-    // Página principal: primero internet (para traer siempre la versión más nueva).
+    // Página principal y código de la app (carpeta js/): primero internet, para que index.html y js/ sean siempre de la misma versión.
     // Si no hay conexión, o responde muy lento (4 s), se muestra la última copia guardada.
     event.respondWith(new Promise(resolve => {
       let done = false;
