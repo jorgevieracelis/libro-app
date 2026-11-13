@@ -67,7 +67,18 @@ h1,h2,h3,p{margin:0}
 select,.btn{border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:10px; padding:8px 12px; font:inherit}
 select{font-weight:600; max-width:190px}
 .btn:hover{border-color:var(--accent)}
-.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+/* Botones azul cromado (en modo oscuro, naranja metalizado) y luz naranja al pulsar/enfocar */
+:root{--chrome:linear-gradient(180deg,#7f9fcf 0%,#3f6aa8 22%,#1b3f7a 50%,#10305f 52%,#2a5799 100%); --chromeBd:#0c244a; --chromeHi:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.25),0 2px 5px rgba(15,42,82,.35); --glow:rgba(242,140,40,.45)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%); --chromeBd:#b8620f; --chromeHi:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.25),0 2px 5px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%); --chromeBd:#b8620f; --chromeHi:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.25),0 2px 5px rgba(0,0,0,.4)}
+button,a,select,input,label,summary{-webkit-tap-highlight-color:rgba(242,140,40,.35)}
+button:focus-visible,a:focus-visible,select:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid #f28c28; outline-offset:2px; box-shadow:0 0 0 4px var(--glow)}
+.btn:active{box-shadow:0 0 0 4px var(--glow); border-color:#f28c28}
+.btn.primary{background:var(--chrome); border-color:var(--chromeBd); color:#fff; font-weight:600; text-shadow:0 -1px 0 rgba(0,0,0,.35); box-shadow:var(--chromeHi)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.primary:active{filter:brightness(.95); box-shadow:var(--chromeHi),0 0 0 4px var(--glow)}
+:root[data-theme="dark"] .btn.primary,:root[data-theme="dark"] .btn.primary:active{text-shadow:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{text-shadow:none}}
 :root[data-theme="dark"] .btn.primary{color:#1a0d00}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#1a0d00}}
 .btn.danger{color:var(--danger); border-color:var(--danger); background:transparent}
@@ -90,7 +101,11 @@ main{max-width:1240px; margin:0 auto; padding:16px 16px 48px}
 .loginbox input,.loginbox input.txt,.modal input.txt,.modal input[type="month"],input.txt{
   border:1px solid var(--line); background:var(--field); color:var(--ink); border-radius:8px; padding:10px; font:inherit; width:100%;
 }
-.loginbox input:focus{outline:2px solid var(--accent); outline-offset:-1px}
+.loginbox input:focus{outline:2px solid #f28c28; outline-offset:-1px; box-shadow:0 0 0 3px var(--glow)}
+.btn.attn{animation:attn 1.2s ease-in-out 3; border-color:#f28c28}
+@keyframes attn{50%{box-shadow:0 0 0 6px var(--glow)}}
+.cTog{display:inline-block; margin-left:8px}
+#consejosCard[hidden]{display:none}
 .err{color:var(--neg); font-size:13px; min-height:1.2em}
 .link{background:none; border:0; color:var(--accent); padding:0; text-align:left; font-size:13px}
 /* ---------- Pantallas de acceso (login / verificar / hogar) ---------- */
@@ -480,6 +495,7 @@ table.tbl{width:100%; border-collapse:collapse; margin-top:8px}
     <button class="btn primary" id="lBtn" type="submit">Entrar</button>
     <p class="err" id="lErr" role="alert"></p>
     <button class="link" id="lReset" type="button">Olvidé mi clave</button>
+    <button class="link" id="lRecover" type="button">Recuperar mis datos con mi respaldo (.json)</button>
     <button class="link" id="lToggle" type="button">¿No tienes cuenta? Crea una</button>
     <a class="link" href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
     <p class="small" style="font-size:11px; line-height:1.4; color:var(--muted); text-align:center">Este sitio está protegido por reCAPTCHA y se aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de privacidad</a> y las <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Condiciones del servicio</a> de Google.</p>
@@ -1026,13 +1042,33 @@ function consejosMes(md,mes){
   }
   return out;
 }
+let consejosAbiertos=false, consejosPag=0, consejosCtx=null;
+const CONSEJOS_POR_PAG=3;
+function consejosCerrar(){
+  consejosAbiertos=false; consejosPag=0;
+  const host=document.getElementById('consejosCard'); if(host) host.hidden=true;
+  const b=document.getElementById('consejosBtn'); if(b) b.setAttribute('aria-expanded','false');
+}
 function renderConsejos(md,mes){
+  consejosCtx={md,mes};
   const host=document.getElementById('consejosCard'); if(!host) return;
+  const btn=document.getElementById('consejosBtn');
+  if(btn && !btn.dataset.ok){ btn.dataset.ok='1'; btn.addEventListener('click',()=>{ if(consejosAbiertos){ consejosCerrar(); } else { consejosAbiertos=true; consejosPag=0; if(consejosCtx) renderConsejos(consejosCtx.md,consejosCtx.mes); } }); }
+  host.hidden=!consejosAbiertos;
+  if(btn) btn.setAttribute('aria-expanded',String(consejosAbiertos));
   host.replaceChildren();
+  if(!consejosAbiertos) return;
   const h=el('header'); const t=el('h2'); t.textContent='Consejos del mes'; h.append(t); host.append(h);
-  const list=consejosMes(md,mes).sort((a,b)=>a.p-b.p).slice(0,6);
+  const all=consejosMes(md,mes).sort((a,b)=>a.p-b.p);
+  const pags=Math.max(1,Math.ceil(all.length/CONSEJOS_POR_PAG));
+  if(consejosPag>=pags) consejosPag=0;
+  const list=all.slice(consejosPag*CONSEJOS_POR_PAG,(consejosPag+1)*CONSEJOS_POR_PAG);
   const ICON={warn:'⚠️',ok:'✅',info:'💡'};
   list.forEach(c=>{ const d=el('div','consejo '+c.t); const i=el('span','cIcon'); i.textContent=ICON[c.t]; const x=el('span'); x.textContent=c.x; d.append(i,x); host.append(d); });
+  const row=el('p','hint'); row.style.cssText='display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px';
+  if(pags>1){ const o=el('button','btn'); o.type='button'; o.textContent='Ver otros consejos ('+(consejosPag+1)+' de '+pags+')'; o.addEventListener('click',()=>{ consejosPag=(consejosPag+1)%pags; renderConsejos(md,mes); }); row.append(o); }
+  const c2=el('button','btn'); c2.type='button'; c2.textContent='Cerrar'; c2.addEventListener('click',consejosCerrar); row.append(c2);
+  host.append(row);
   const f=el('p','hint'); f.textContent='Son consejos orientativos, calculados en tu teléfono con los datos que cargaste. No son asesoría financiera.'; host.append(f);
 }
 function renderPie(md){
@@ -1438,10 +1474,11 @@ function buildResumen(){
    '<div class="kpi"><span>Egresos del mes</span><b data-k="mes.egresos"></b></div>'+
    '<div class="kpi soft"><span>Balance del mes</span><b data-k="mes.balance"></b></div>'+
    '<div class="kpi"><span>Gastado del ingreso</span><b data-k="mes.pct"></b></div></div>'+
-   '<p style="margin:12px 0 16px"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">📘 Guía de uso (PDF)</a></p>'+
+   '<p style="margin:12px 0 16px; display:flex; gap:8px; flex-wrap:wrap"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">📘 Guía de uso (PDF)</a>'+
+   '<button type="button" class="btn" id="consejosBtn" aria-expanded="false" aria-controls="consejosCard">💡 Consejos del mes</button></p>'+
    '<p class="warnBox" id="respWarn" hidden></p>'+
    '<section class="card" id="vencCard" style="margin:0 0 16px" hidden></section>'+
-   '<section class="card" id="consejosCard" style="margin:0 0 16px"></section>'+
+   '<section class="card" id="consejosCard" style="margin:0 0 16px" hidden></section>'+
    '<div class="two">'+
    tablaPeriodos()+
    '<section class="card"><header><h2>Ingresos vs. egresos</h2></header><div class="bars">'+
@@ -1495,7 +1532,9 @@ function buildResumen(){
   const del=el('button','btn danger'); del.type='button'; del.textContent='Eliminar este mes'; del.addEventListener('click',askDeleteMonth);
   const bp=el('button','btn'); bp.type='button'; bp.id='btnPapelera'; bp.addEventListener('click',openPapelera);
   const bAcc=el('button','btn danger'); bAcc.type='button'; bAcc.textContent='Eliminar mi cuenta y mis datos'; bAcc.addEventListener('click',askDeleteAccount);
-  tools.append(bS,b1,b2,del,bp);
+  const bW=el('button','btn primary'); bW.type='button'; bW.textContent='Enviar por WhatsApp'; bW.addEventListener('click',()=>sendBackupVia('wa'));
+  const bM=el('button','btn primary'); bM.type='button'; bM.textContent='Enviar por correo'; bM.addEventListener('click',()=>sendBackupVia('mail'));
+  tools.append(bS,bW,bM,b1,b2,del,bp);
   const rf=respFreqSelect('',respFreq()[0]); rf.addEventListener('change',()=>{ setRespFreq(rf.value); updateRespaldoAviso(document); toast('Recordatorio: '+respFreq()[1].toLowerCase()); }); $('#respFreqTools',v).append(rf);
   const priv=el('a','link'); priv.href='privacidad.html'; priv.target='_blank'; priv.rel='noopener'; priv.textContent='Política de privacidad';
   $('#sesion',v).after(el('div','tools')); const t3=$('#sesion',v).nextSibling; t3.append(bAcc); t3.after(priv);
@@ -2510,6 +2549,7 @@ function renderTabs(){
 }
 function showTab(){
   if(!tabsValidas().includes(tab)) tab='resumen';
+  if(tab!=='resumen') consejosCerrar();
   if(tab==='anio') renderAnio();
   if(tab==='cal') renderCal();
   if(tab==='plan') renderPlan();
@@ -2547,20 +2587,44 @@ function exportBackup(){
   marcarRespaldo();
   toast('Respaldo descargado');
 }
+/* WhatsApp / correo directos: si el teléfono permite compartir archivos, se usa ese menú; si no, se descarga el archivo y se abre la app elegida para que lo adjuntes. */
+async function sendBackupVia(kind){
+  const f=backupFile();
+  let file=null; try{ file=new File([f.text],f.name,{type:'text/plain'}); }catch(e){}
+  try{
+    if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Respaldo Libro de Finanzas'}); marcarRespaldo(); toast('Respaldo enviado'); return; }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  exportBackup();
+  const msg='Adjunto mi respaldo de Libro de Finanzas ('+f.name+').';
+  setTimeout(()=>{ window.open(kind==='mail'?'mailto:?subject='+encodeURIComponent('Respaldo Libro de Finanzas')+'&body='+encodeURIComponent(msg+' (adjunta el archivo descargado)'):'https://wa.me/?text='+encodeURIComponent(msg+' (adjunta el archivo descargado)'),'_blank'); },900);
+  toast('Se descargó el archivo. Adjúntalo en el mensaje que se abre.');
+}
 /* Compartir el respaldo (Drive, WhatsApp, correo, etc.) con el menú de compartir del teléfono; si no existe, se descarga. */
 async function shareBackup(){
   const f=backupFile();
-  let file=null;
-  try{ file=new File([f.text],f.name,{type:'application/json'}); }catch(e){}
-  if(file && navigator.canShare && navigator.share && navigator.canShare({files:[file]})){
+  if(!navigator.share){ exportBackup(); return; }
+  /* Android/Chrome suele rechazar application/json en el menú de compartir: se prueba también como text/plain con nombre .json. */
+  const intentos=[];
+  ['application/json','text/plain'].forEach(tp=>{ try{ intentos.push(new File([f.text],f.name,{type:tp})); }catch(e){} });
+  for(const file of intentos){
+    let ok=false;
+    try{ ok=!navigator.canShare || navigator.canShare({files:[file]}); }catch(e){ ok=false; }
+    if(!ok) continue;
     try{
-      await navigator.share({files:[file],title:'Respaldo Libro de Finanzas'});
+      await navigator.share({files:[file],title:'Respaldo Libro de Finanzas',text:'Respaldo de Libro de Finanzas'});
       marcarRespaldo(); toast('Respaldo enviado. Revisa que quedó guardado donde lo elegiste.');
+      return;
     }catch(e){
       if(e&&e.name==='AbortError') return;
-      exportBackup();
     }
-    return;
+  }
+  /* Último recurso: compartir el contenido como texto (WhatsApp, correo, notas) */
+  if(f.text.length<400000){
+    try{
+      await navigator.share({title:'Respaldo Libro de Finanzas '+f.name,text:f.text});
+      marcarRespaldo(); toast('Respaldo enviado como texto. Guárdalo con extensión .json si lo vas a importar.');
+      return;
+    }catch(e){ if(e&&e.name==='AbortError') return; }
   }
   exportBackup();
 }
@@ -2825,8 +2889,14 @@ $('#fileImp').addEventListener('change',e=>{
 
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.1';
+const APP_VERSION='1.2';
 const NOVEDADES=[
+ {v:'1.2', fecha:'13 nov 2026', items:[
+  'Más seguridad: tras 3 claves erróneas el ingreso se bloquea 10 minutos; si vuelve a fallar 3 veces, hay que cambiar la clave por correo',
+  'Recuperar mis datos con tu respaldo (.json) desde la pantalla de ingreso',
+  'Compartir el respaldo ahora ofrece el menú de tu teléfono, y hay botones para WhatsApp y correo',
+  'Botones con acabado azul cromado y luz naranja al pulsarlos',
+  'Consejos del mes ahora se abren desde un botón junto a la Guía de uso, con la opción de ver otros']},
  {v:'1.1', fecha:'12 nov 2026', items:[
   'Pagos fijos en el calendario (alquiler, luz, internet, seguros…) y opción de repetirlos cada mes',
   'Aviso de pagos próximos y vencidos en Resumen',
@@ -3009,10 +3079,12 @@ function setAuthMode(mode){
   $('#lReset').hidden=signup;
   $('#lToggle').textContent=signup?'¿Ya tienes cuenta? Ingresa':'¿No tienes cuenta? Crea una';
   $('#lErr').textContent='';
+  lockPintar();
 }
 $('#lToggle').addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
 $('#loginForm').addEventListener('submit',async ev=>{
   ev.preventDefault();
+  if(authMode==='login' && lockActivo()){ lockPintar(); return; }
   const btn=$('#lBtn'); $('#lErr').textContent=''; btn.disabled=true;
   const email=$('#lEmail').value.trim(), pass=$('#lPass').value;
   try{
@@ -3021,18 +3093,68 @@ $('#loginForm').addEventListener('submit',async ev=>{
       try{ await AU.sendEmailVerification(cred.user); }catch(e){}
     } else {
       await AU.signInWithEmailAndPassword(auth,email,pass);
+      lockLimpiar();
     }
     $('#lPass').value='';
   }
-  catch(e){ $('#lErr').textContent=loginError(e); }
-  finally{ btn.disabled=false; }
+  catch(e){
+    if(authMode==='login' && /invalid-credential|wrong-password/.test((e&&e.code)||'')){ lockFallo(); $('#lPass').value=''; }
+    else $('#lErr').textContent=loginError(e);
+  }
+  finally{ btn.disabled=false; lockPintar(); }
 });
 $('#lReset').addEventListener('click',async()=>{
   const email=$('#lEmail').value.trim();
   if(!email){ $('#lErr').textContent='Escribe tu correo arriba y toca de nuevo.'; return; }
-  try{ await AU.sendPasswordResetEmail(auth,email); $('#lErr').textContent=''; toast('Si el correo existe, te llegó un mensaje para cambiar la clave'); }
+  try{ await AU.sendPasswordResetEmail(auth,email); $('#lErr').textContent=''; lockLimpiar(); lockPintar(); toast('Si el correo existe, te llegó un mensaje para cambiar la clave'); }
   catch(e){ $('#lErr').textContent=loginError(e); }
 });
+$('#lRecover').addEventListener('click',()=>{
+  const body=el('div');
+  const p=el('p'); p.textContent='Si perdiste el acceso a tu cuenta pero guardaste un respaldo (.json), tus datos se pueden recuperar así:'; body.append(p);
+  const ol=el('ol');
+  ['Si olvidaste la clave: toca "Olvidé mi clave" y cámbiala desde el correo que te llega. Entra con la clave nueva.',
+   'Si ya no puedes usar ese correo: crea una cuenta nueva ("¿No tienes cuenta? Crea una") y crea tu hogar.',
+   'Dentro de la app ve a Herramientas, toca "Importar respaldo (.json)" y elige tu archivo. Vuelven todos tus meses, presupuesto, metas y deudas.'].forEach(t=>{ const li=el('li'); li.textContent=t; ol.append(li); });
+  body.append(ol);
+  const n=el('p','small'); n.textContent='Por seguridad, el archivo de respaldo no sirve para entrar ni para cambiar la clave: solo para recuperar los datos una vez que tengas una cuenta.'; body.append(n);
+  modal('Recuperar mis datos',body,[{label:'Crear cuenta nueva',onClick:()=>{ setAuthMode('signup'); }},{label:'Entendido',cls:'primary'}]);
+});
+
+/* ---------- Bloqueo por claves erróneas (en este teléfono) ---------- */
+/* 3 fallos → 10 min de espera. Otros 3 fallos tras la espera → hay que restablecer la clave por correo. */
+const LOCK_KEY='lfh.loginLock', LOCK_MAX=3, LOCK_MIN=10;
+function lockLeer(){ try{ return JSON.parse(localStorage.getItem(LOCK_KEY)||'null')||{n:0,until:0,fase:0,reset:false}; }catch(e){ return {n:0,until:0,fase:0,reset:false}; } }
+function lockGuardar(s){ try{ localStorage.setItem(LOCK_KEY,JSON.stringify(s)); }catch(e){} }
+function lockLimpiar(){ try{ localStorage.removeItem(LOCK_KEY); }catch(e){} }
+function lockActivo(){ const s=lockLeer(); return s.reset || s.until>Date.now(); }
+function lockFallo(){
+  const s=lockLeer(); s.n=(s.n||0)+1;
+  if(s.n>=LOCK_MAX){
+    s.n=0;
+    if(s.fase>=1){ s.reset=true; s.until=0; } else { s.fase=1; s.until=Date.now()+LOCK_MIN*60000; }
+  }
+  lockGuardar(s);
+  if(!s.reset && !(s.until>Date.now())) $('#lErr').textContent='Correo o clave incorrectos. Te quedan '+(LOCK_MAX-s.n)+(LOCK_MAX-s.n===1?' intento.':' intentos.');
+}
+let lockTimer=null;
+function lockPintar(){
+  const s=lockLeer(), btn=$('#lBtn'), err=$('#lErr'), rs=$('#lReset');
+  clearTimeout(lockTimer);
+  if(authMode!=='login'){ btn.disabled=false; rs.classList.remove('attn'); return; }
+  if(s.reset){
+    btn.disabled=true; err.textContent='Por seguridad se bloqueó el ingreso por varios intentos fallidos. Toca "Olvidé mi clave" para cambiarla por correo.';
+    rs.classList.add('attn'); return;
+  }
+  rs.classList.remove('attn');
+  const resta=s.until-Date.now();
+  if(resta>0){
+    btn.disabled=true; const m=Math.floor(resta/60000), sg=Math.ceil((resta%60000)/1000);
+    err.textContent='Ingreso bloqueado por seguridad (3 claves erróneas). Prueba de nuevo en '+m+':'+String(sg%60).padStart(2,'0')+', o toca "Olvidé mi clave".';
+    lockTimer=setTimeout(lockPintar,1000);
+  } else if(btn.disabled && s.until){ btn.disabled=false; if(/bloqueado/.test(err.textContent)) err.textContent=''; }
+}
+lockPintar();
 $('#nhBtn').addEventListener('click',async()=>{
   const btn=$('#nhBtn'); $('#nhErr').textContent=''; btn.disabled=true;
   try{ await joinHogarByCode($('#nhCode').value); startData(); }
