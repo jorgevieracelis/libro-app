@@ -6,7 +6,7 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v38';
+const CACHE_NAME = 'lfh-shell-v41';
 const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/navegacion.js', './js/respaldo.js', './js/ventanas-acceso.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './manifest.json', './fonts/plus-jakarta-sans-latin-wght-normal.woff2', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {

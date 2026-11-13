@@ -2,7 +2,7 @@
 /* Constantes, utilidades, modelo de datos, cálculos básicos y fusión de cambios de la pareja */
 /* ---------- Constantes ---------- */
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const SECS=['ingresos','plataformas','egresos','anticipados','fondo','retiro','tarjeta'];
+const SECS=['ingresos','ingresosVar','plataformas','egresos','anticipados','fondo','retiro','tarjeta'];
 const CUOTAS_OPC=[1,2,3,4,5,6,7,8,9,10,11,12];
 const ALLQ=['q1','q2','q3','q4'];
 const PERIODOS={mensual:{n:'Mensual',qs:['q1']},quincenal:{n:'Quincenal',qs:['q1','q2']},semanal:{n:'Semanal',qs:['q1','q2','q3','q4']}};
@@ -15,7 +15,7 @@ function qrange(q){ if(periodo!=='semanal') return ''; const i=Number(String(q).
 const delP=()=>periodo==='mensual'?'del mes':(periodo==='semanal'?'de la semana':'de la quincena');
 const estaP=()=>periodo==='mensual'?'este mes':(periodo==='semanal'?'esta semana':'esta quincena');
 const porP=()=>periodo==='mensual'?'mes':(periodo==='semanal'?'semana':'quincena');
-const MIN={ingresos:12,plataformas:14,egresos:22,anticipados:18,fondo:6,retiro:6,tarjeta:10};
+const MIN={ingresos:10,ingresosVar:10,plataformas:14,egresos:10,anticipados:10,fondo:6,retiro:6,tarjeta:10};
 const MES_RE=/^\d{4}-(0[1-9]|1[0-2])$/;
 const CATS=['Alimentación','Servicios','Transporte','Regalos','Deudas','Vivienda','Salud','Hijos','Entretenimiento','Otros'];
 const normCat=c=>{ if(c==='Alquiler') c='Vivienda'; return (typeof c==='string'&&CATS.includes(c))?c:''; };
@@ -103,7 +103,6 @@ const autoPlat=qd=>qd.plataformas.filter(p=>p.r && String(p.n).trim());
 function padSec(qd,sec){
   const arr=qd[sec];
   let need=MIN[sec];
-  if(sec==='egresos') need-=autoPlat(qd).length;
   while(arr.length<need) arr.push(blank(sec));
   if(!arr.length || !isBlank(arr[arr.length-1],sec)) arr.push(blank(sec));
 }
@@ -230,13 +229,15 @@ function activeCuotasFor(monthId,q){
 }
 const monthTarjetaTotal=(monthId,q)=>activeCuotasFor(monthId,q).reduce((s,it)=>s+it.amount,0);
 function calc(qd,md){
-  const ingresos=qd.ingresos.reduce((s,r)=>s+num(r.m),0);
+  const ingresosFijos=qd.ingresos.reduce((s,r)=>s+num(r.m),0);
+  const ingresosVar=(qd.ingresosVar||[]).reduce((s,r)=>s+num(r.m),0);
+  const ingresos=ingresosFijos+ingresosVar; /* ingresos totales */
   const egresos=autoPlat(qd).reduce((s,p)=>s+num(p.m),0)+qd.egresos.reduce((s,r)=>s+num(r.m),0);
   const antic=qd.anticipados.reduce((s,r)=>s+num(r.m),0);
   const platTotal=qd.plataformas.reduce((s,p)=>s+num(p.m),0);
   const fondo=qd.fondo.reduce((s,r)=>s+num(r.m),0);
   const retiro=qd.retiro.reduce((s,r)=>s+num(r.m),0);
   const egresosTotales=egresos+antic;
-  return {ingresos,egresos,antic,egresosTotales,fondo,retiro,balance:ingresos-egresosTotales-fondo,platTotal,pct:ingresos>0?egresosTotales/ingresos:0};
+  return {ingresos,ingresosFijos,ingresosVar,egresos,antic,egresosTotales,fondo,retiro,balance:ingresos-egresosTotales-fondo,platTotal,pct:ingresos>0?egresosTotales/ingresos:0};
 }
 

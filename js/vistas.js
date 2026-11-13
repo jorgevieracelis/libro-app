@@ -283,13 +283,13 @@ function renderSearchResults(term,host){
   if(!host) return;
   term=(term||'').trim().toLowerCase();
   if(!term){ host.innerHTML=''; return; }
-  const secLabel={ingresos:'Ingreso',egresos:'Egreso fijo',anticipados:'Egreso variable',fondo:'Fondo emergencia',retiro:'Retiro efectivo',tarjeta:'Tarjeta crédito'};
+  const secLabel={ingresos:'Ingreso fijo',ingresosVar:'Ingreso variable',egresos:'Egreso fijo',anticipados:'Egreso variable',fondo:'Fondo emergencia',retiro:'Retiro efectivo',tarjeta:'Tarjeta crédito'};
   const out=[];
   Object.keys(months).sort().forEach(mId=>{
     QS.forEach(q=>{
       const qd=months[mId][q]; if(!qd) return;
       qd.plataformas.forEach(p=>{ if(String(p.n||'').toLowerCase().includes(term)) out.push({mId,q,sec:'plataformas',n:p.n,m:num(p.m)}); });
-      ['ingresos','egresos','anticipados','fondo','retiro','tarjeta'].forEach(sec=>{
+      ['ingresos','ingresosVar','egresos','anticipados','fondo','retiro','tarjeta'].forEach(sec=>{
         (qd[sec]||[]).forEach(r=>{
           if(isBlank(r,sec)) return;
           if(String(r.n||'').toLowerCase().includes(term)) out.push({mId,q,sec,n:r.n,m:num(r.m)});
@@ -331,14 +331,15 @@ function card(q,sec,title,totalKey,hint){
 function buildQ(q){
   const v=el('div'); v.id='view-'+q; v.hidden=true;
   const k=el('div','kpis');
-  k.innerHTML='<div class="kpi"><span>Ingresos</span><b data-k="'+q+'.ingresos"></b></div>'+
+  k.innerHTML='<div class="kpi"><span>Ingresos totales</span><b data-k="'+q+'.ingresos"></b></div>'+
     '<div class="kpi"><span>Egresos totales</span><b data-k="'+q+'.egresosTotales"></b></div>'+
     '<div class="kpi soft"><span>Balance '+delP()+'</span><b data-k="'+q+'.balance"></b></div>'+
     '<div class="kpi"><span>% gastado</span><b data-k="'+q+'.pct"></b></div>';
   v.append(k);
   const g=el('div','qgrid');
   g.append(
-    card(q,'ingresos','Ingresos','ingresos','Puedes cambiar los montos cuando quieras; los ingresos pueden variar.'),
+    card(q,'ingresos','Ingresos fijos','ingresosFijos','Puedes cambiar los montos cuando quieras; los ingresos pueden variar.'),
+    card(q,'ingresosVar','Ingresos variables','ingresosVar','Cualquier ingreso extra: una changa, una venta, un trabajo puntual…'),
     card(q,'plataformas','Plataformas y suscripciones','platTotal','Netflix, internet, celulares, etc. Lo que anotes acá se refleja en <b>Egresos fijos</b> (puedes destildar "En egresos" si no quieres que cuente).'),
     card(q,'egresos','Egresos fijos','egresos','Los gastos que se repiten cada mes: tú decides cuáles cargar (la cuota de la casa o el alquiler, el seguro del auto, el colegio, los servicios…). Cada hogar es distinto.'),
     card(q,'anticipados','Egresos variables','antic',null)
@@ -359,7 +360,7 @@ function tablaPeriodos(){
   const row=(label,k,cls)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td>'+label+'</td>'+QS.map(q=>'<td data-k="'+q+'.'+k+'"></td>').join('')+(multi?'<td data-k="mes.'+k+'"></td>':'')+'</tr>';
   return '<section class="card"><header><h2>'+(multi?'Por '+porP():'Detalle del mes')+'</h2></header><div class="tbl-wrap"><table class="tbl">'+
     '<thead><tr><th></th>'+QS.map(q=>'<th>'+qname(q)+'</th>').join('')+(multi?'<th>Total del mes</th>':'')+'</tr></thead><tbody>'+
-    row('Ingresos','ingresos')+row('Egresos fijos','egresos')+row('Egresos variables','antic')+row('Egresos totales','egresosTotales')+
+    row('Ingresos fijos','ingresosFijos')+row('Ingresos variables','ingresosVar')+row('Ingresos totales','ingresos')+row('Egresos fijos','egresos')+row('Egresos variables','antic')+row('Egresos totales','egresosTotales')+
     row('Fondo de emergencia','fondo')+row('Balance','balance','strong')+row('% gastado','pct')+row('Retiro de efectivo sugerido','retiro')+row('Gastos tarjeta de crédito','tarjeta')+
     '</tbody></table></div></section>';
 }
@@ -383,7 +384,7 @@ function buildResumen(){
    '<div class="ringBox" id="ringBox" role="img" aria-label="Porcentaje del ingreso gastado"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="rBg" cx="60" cy="60" r="52"></circle><circle class="rFg" id="ringFg" cx="60" cy="60" r="52"></circle></svg>'+
    '<div class="ringTxt"><b data-k="mes.pct"></b><span>gastado</span></div></div>'+
    '<div class="heroMain"><span class="lab">Balance del mes</span><b class="big" data-k="mes.balance"></b>'+
-   '<div class="heroChips"><span class="hchip"><i></i>Ingresos <b data-k="mes.ingresos"></b></span><span class="hchip out"><i></i>Egresos <b data-k="mes.egresos"></b></span></div></div></section>'+
+   '<div class="heroChips"><span class="hchip"><i></i>Ingresos totales <b data-k="mes.ingresos"></b></span><span class="hchip out"><i></i>Egresos totales <b data-k="mes.egresosTotales"></b></span></div></div></section>'+
    '<div class="quick"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener">'+icono('guia')+'Guía de uso (PDF)</a>'+
    '<button type="button" class="btn" id="consejosBtn" aria-expanded="false" aria-controls="consejosCard">'+icono('idea')+'Consejos del mes</button></div>'+
    '<p class="warnBox" id="respWarn" hidden></p>'+

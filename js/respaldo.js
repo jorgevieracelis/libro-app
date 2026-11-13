@@ -201,7 +201,8 @@ function exportExcel(){
     QS.forEach(q=>{
       const qd=md[q], Q=q.toUpperCase(), qn=qname(q);
       const add=(sec,desc,cat,monto,pagado)=>detalle.push([label,qn,sec,desc,cat||'',monto,pagado==null?'':(pagado?'Sí':'No')]);
-      qd.ingresos.filter(r=>!isBlank(r,'ingresos')).forEach(r=>add('Ingresos',r.n,'',num(r.m)));
+      qd.ingresos.filter(r=>!isBlank(r,'ingresos')).forEach(r=>add('Ingresos fijos',r.n,'',num(r.m)));
+      (qd.ingresosVar||[]).filter(r=>!isBlank(r,'ingresosVar')).forEach(r=>add('Ingresos variables',r.n,'',num(r.m)));
       autoPlat(qd).forEach(p=>add('Egresos fijos',p.n,'',num(p.m),p.pagado));
       qd.egresos.filter(r=>!isBlank(r,'egresos')).forEach(r=>add('Egresos fijos',r.n,r.cat,num(r.m),r.pagado));
       qd.anticipados.filter(r=>!isBlank(r,'anticipados')).forEach(r=>add('Egresos variables',r.n,r.cat,num(r.m),r.pagado));

@@ -99,7 +99,7 @@ function createMonth(id,opts){
   ALLQ.forEach(q=>{
     md[q]={};
     SECS.forEach(sec=>{
-      const keep=src&&((sec==='plataformas'&&opts.plat)||(sec==='ingresos'&&opts.ing)||(sec==='egresos'&&opts.egr));
+      const keep=src&&((sec==='plataformas'&&opts.plat)||(sec==='ingresos'&&opts.ing)||(sec==='ingresosVar'&&opts.ingVar)||(sec==='egresos'&&opts.egr)||(sec==='anticipados'&&opts.egrVar));
       md[q][sec]=keep?cloneRows(src[q][sec],sec):[];
     });
     SECS.forEach(sec=>padSec(md[q],sec));
@@ -112,21 +112,24 @@ function newMonthDialog(){
   const l1=el('label'); l1.append('Mes: ');
   const inp=el('input'); inp.type='month'; inp.value=nextMonthId(); inp.className='txt'; inp.setAttribute('aria-label','Mes nuevo'); l1.append(inp);
   const l2=el('label'); const c1=el('input'); c1.type='checkbox'; c1.checked=true; l2.append(c1,'Copiar plataformas y reparto');
-  const l3=el('label'); const c2=el('input'); c2.type='checkbox'; c2.checked=true; l3.append(c2,'Copiar ingresos (después cambias los montos)');
-  const l4=el('label'); const c4=el('input'); c4.type='checkbox'; c4.checked=true; l4.append(c4,'Copiar egresos fijos (sin marcar como pagados)');
+  const mk=(txt,chk)=>{ const l=el('label'); const c=el('input'); c.type='checkbox'; c.checked=chk; l.append(c,txt); return [l,c]; };
+  const [l3,c2]=mk('Copiar ingresos fijos (después cambias los montos)',true);
+  const [l5,c5]=mk('Copiar ingresos variables',false);
+  const [l4,c4]=mk('Copiar egresos fijos (sin marcar como pagados)',true);
+  const [l6,c6]=mk('Copiar egresos variables (sin marcar como pagados)',false);
   const note=el('p','small');
   note.textContent = cur
-    ? ('Los egresos variables arrancan vacíos. Se copia desde '+monthLabel(cur)+'.')
+    ? ('Marca lo que quieres llevar al mes nuevo; lo que no marques arranca vacío. Se copia desde '+monthLabel(cur)+'.')
     : 'Es tu primer mes: arranca vacío para que cargues todo.';
   body.append(l1);
-  if(cur) body.append(l2,l3,l4);
+  if(cur) body.append(l2,l3,l5,l4,l6);
   body.append(note);
   modal('Nuevo mes',body,[
     {label:'Cancelar'},
     {label:'Crear mes',cls:'primary',onClick:()=>{
       const id=inp.value.trim();
       if(!MES_RE.test(id)){ toast('Escribe el mes como AAAA-MM'); return false; }
-      createMonth(id,{plat:c1.checked,ing:c2.checked,egr:c4.checked});
+      createMonth(id,{plat:c1.checked,ing:c2.checked,ingVar:c5.checked,egr:c4.checked,egrVar:c6.checked});
     }}
   ]);
 }

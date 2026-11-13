@@ -17,7 +17,7 @@ function refreshComputed(){
     C[qq].tarjetaCuotas=items.filter(it=>it.totalCuotas>1).reduce((s,it)=>s+it.amount,0);
   });
   const S=k=>QS.reduce((s,q)=>s+C[q][k],0);
-  const mes={ingresos:S('ingresos'), egresos:S('egresos'), antic:S('antic'), egresosTotales:S('egresosTotales'),
+  const mes={ingresos:S('ingresos'), ingresosFijos:S('ingresosFijos'), ingresosVar:S('ingresosVar'), egresos:S('egresos'), antic:S('antic'), egresosTotales:S('egresosTotales'),
              fondo:S('fondo'), retiro:S('retiro'), tarjeta:S('tarjeta'), platTotal:0};
   mes.balance=mes.ingresos-mes.egresosTotales-mes.fondo;
   mes.pct=mes.ingresos>0?mes.egresosTotales/mes.ingresos:0;

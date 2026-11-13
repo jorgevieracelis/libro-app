@@ -120,10 +120,16 @@ async function flush(){
     if(dirty.size && !retryTimer){ clearTimeout(saveTimer); saveTimer=setTimeout(flush,400); }
   }
 }
+/* Si llega una novedad del servidor (por ejemplo, el eco de tu propio guardado) mientras escribes en una línea,
+   NO se reemplaza el mes en pantalla: las líneas que ves quedarían desconectadas y lo que escribas se perdería.
+   Se espera a que sueltes el campo y entonces se aplica. */
+let remoteDiferida=null;
+const escribiendoAhora=()=>{ const a=document.activeElement; return !!(ready && a && a.matches && a.matches('input[type="text"]')); };
 function onRemote(map,definitive){
   let changed=false;
   Object.keys(map).forEach(id=>{
     if(dirty.has(id)||inflight===id) return;
+    if(ready && id===cur && escribiendoAhora()){ remoteDiferida=map; return; }
     const inc=hydrate(map[id]), incS=serialize(inc);
     if(!months[id] || JSON.stringify(serialize(months[id]))!==JSON.stringify(incS)){ months[id]=inc; changed=true; }
     baseMes[id]=incS;
@@ -150,10 +156,11 @@ function safeRender(){
   render();
 }
 document.addEventListener('focusout',()=>{
-  if(!pendingRender) return;
+  if(!pendingRender && !remoteDiferida) return;
   setTimeout(()=>{
     const a=document.activeElement;
     if(a && a.matches && a.matches('input[type="text"]')) return;
+    if(remoteDiferida){ const m=remoteDiferida; remoteDiferida=null; onRemote(m,true); }
     pendingRender=false; render();
   },80);
 });
