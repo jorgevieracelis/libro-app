@@ -2,8 +2,10 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.6';
+const APP_VERSION='1.6.1';
 const NOVEDADES=[
+ {v:'1.6.1', fecha:'13 nov 2026', items:[
+  'Arreglo: la lista de Novedades y otras ventanas largas ahora se pueden desplazar hacia arriba y hacia abajo en el teléfono']},
  {v:'1.6', fecha:'13 nov 2026', items:[
   'Pantalla de inicio animada con el logo mientras abre la app',
   'Nueva tipografía Plus Jakarta Sans, guardada dentro de la app (se ve igual en todos los teléfonos y funciona sin internet)']},
@@ -62,12 +64,12 @@ document.getElementById('verBtn').addEventListener('click',verAbrir);
 verPintar();
 
 /* ---------- Ventanas ---------- */
-function closeModal(){ $('#modal-root').replaceChildren(); document.removeEventListener('keydown',escClose); }
+function closeModal(){ $('#modal-root').replaceChildren(); document.body.classList.remove('modalOpen'); document.removeEventListener('keydown',escClose); }
 function escClose(e){ if(e.key==='Escape') closeModal(); }
 function modal(title,body,actions){
   const root=$('#modal-root'); root.replaceChildren();
   const ov=el('div','overlay'); const box=el('div','modal'); box.setAttribute('role','dialog'); box.setAttribute('aria-modal','true');
-  const h=el('h3'); h.textContent=title; box.append(h,body);
+  const h=el('h3'); h.textContent=title; const sc=el('div','modalBody'); sc.append(body); box.append(h,sc);
   const bar=el('div','actions');
   actions.forEach(a=>{
     const b=el('button','btn'+(a.cls?' '+a.cls:'')); b.type='button'; b.textContent=a.label;
@@ -76,7 +78,7 @@ function modal(title,body,actions){
   });
   box.append(bar); ov.append(box);
   ov.addEventListener('click',e=>{ if(e.target===ov) closeModal(); });
-  root.append(ov); document.addEventListener('keydown',escClose);
+  root.append(ov); document.body.classList.add('modalOpen'); document.addEventListener('keydown',escClose);
 }
 function currentMonthId(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
 function nextMonthId(){
