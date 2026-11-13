@@ -2,8 +2,10 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.6.1';
+const APP_VERSION='1.6.2';
 const NOVEDADES=[
+ {v:'1.6.2', fecha:'13 nov 2026', items:[
+  'Aviso de derechos de autor al pie de la app y en la política de privacidad']},
  {v:'1.6.1', fecha:'13 nov 2026', items:[
   'Arreglo: la lista de Novedades y otras ventanas largas ahora se pueden desplazar hacia arriba y hacia abajo en el teléfono']},
  {v:'1.6', fecha:'13 nov 2026', items:[
