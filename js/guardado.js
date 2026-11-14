@@ -212,6 +212,6 @@ function startData0(){
 function stopData(){ e2eKey=null; e2eKeyHogar=null; e2eReintento=false; clearTimeout(e2eMigTimer);
   if(unsub){ try{unsub();}catch(e){} unsub=null; }
   clearTimeout(loadTimer); clearTimeout(saveTimer); clearTimeout(retryTimer); retryTimer=null;
-  setMoneda('ARS'); setPeriodo('quincenal'); stopNotas(); calSel=null; calY=null; months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:'2027-03'}; extras={presupuesto:{},deudas:[],metas:[],repetidos:[],extraDeuda:null,orden:'bola'}; presuExtra.clear(); baseExtras=null; unwatchLive(); cur=null; ready=false; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
+  setMoneda('ARS'); setPeriodo('quincenal'); stopNotas(); calSel=null; calY=null; months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:''}; extras={presupuesto:{},deudas:[],metas:[],repetidos:[],extraDeuda:null,orden:'bola'}; presuExtra.clear(); baseExtras=null; unwatchLive(); cur=null; ready=false; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
 }
 

@@ -8,12 +8,16 @@ const NOVEDADES=[
   'Compras super/otros: la lista se ordena sola alfabéticamente por producto',
   'Todo lo que escribes (productos, descripciones, notas, nombres) empieza con mayúscula, aunque lo escribas en minúscula',
   'Los botones Papelera y Excel (.xlsx) ahora tienen el mismo estilo azul que los demás',
-  'Compras: descarga una plantilla .csv en blanco, pídele a una IA que la llene con la foto de tu factura y cárgala para que se agregue sola a la lista (con botón de instrucciones para copiar)']},
+  'Compras: descarga una plantilla .csv en blanco, pídele a una IA que la llene con la foto de tu factura y cárgala para que se agregue sola a la lista (con botón de instrucciones para copiar)',
+  'Nueva pestaña Herramientas (en Más): Buscador, Ahorro en dólares, Tu hogar, Cifrado de datos, Moneda, Modalidad de cobro y respaldos. Así Resumen queda más corta',
+  'En Herramientas: calculadora con conversor de dólares, dividir un gasto entre dos y calculadora de préstamo o cuotas (no guardan nada)',
+  'En Año: nuevo botón para compartir el resumen del año como texto (WhatsApp, correo, notas)',
+  'Ahorro en dólares: la fecha de la meta ya no viene preelegida, la eliges tú']},
  {v:'2.0.0', fecha:'14 nov 2026', items:[
   'Cifrado de extremo a extremo: tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos',
   'Eliges una clave del hogar (la usan tú y tu pareja) y recibes un código de recuperación para guardar. Si pierdes los dos, nadie puede recuperar los datos',
   'Tus datos anteriores se cifran solos la primera vez que entras con esta versión',
-  'En Resumen → Cifrado de tus datos puedes cambiar la clave del hogar o generar un código de recuperación nuevo']},
+  'En Herramientas → Cifrado de datos puedes cambiar la clave del hogar o generar un código de recuperación nuevo']},
  {v:'1.8.0', fecha:'14 nov 2026', items:[
   'Bienvenida de 3 pantallas la primera vez que entras (puedes volver a verla con el botón Ver bienvenida, al pie)',
   'Mensajes más amigables cuando una sección todavía está vacía (compras, metas, presupuesto y año)',

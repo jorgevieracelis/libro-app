@@ -72,10 +72,6 @@ function abrirMas(){
   };
   item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); });
   item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); });
-  item('herr','Herramientas y respaldo','Respaldo, importar, Excel, PDF, papelera y tu cuenta',()=>{
-    tab='resumen'; showTab();
-    const h=[...document.querySelectorAll('#view-resumen h2')].find(x=>/^Herramientas/i.test(x.textContent));
-    if(h) setTimeout(()=>h.scrollIntoView({block:'start'}),30);
-  });
+  item('herr','Herramientas','Buscador, ahorro en dólares, tu hogar, cifrado, moneda, modalidad de cobro, respaldo y cuenta',()=>{ tab='herr'; showTab(); });
   modal('Más',body,[{label:'Cerrar'}]);
 }

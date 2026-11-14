@@ -58,10 +58,11 @@ function respFreq(){ let k='quincenal'; try{ k=localStorage.getItem(RESP_FREQ_KE
 function setRespFreq(k){ try{ localStorage.setItem(RESP_FREQ_KEY,(RESP_FREQ.find(f=>f[0]===k)||RESP_FREQ[1])[0]); }catch(e){} }
 const respFreqSelect=(id,sel)=>{ const s=el('select'); if(id) s.id=id; s.setAttribute('aria-label','Cada cuánto recordar el respaldo'); RESP_FREQ.forEach(([k,t])=>{ const o=el('option'); o.value=k; o.textContent=t; if(k===sel) o.selected=true; s.append(o); }); return s; };
 function updateRespaldoAviso(root){
-  const w=$('#respWarn',root), info=$('#respInfo',root); if(!w||!info) return;
+  const w=$('#respWarn',root), info=$('#respInfo',root); if(!w&&!info) return;
   let t=0; try{ t=Number(localStorage.getItem(RESP_KEY()))||0; }catch(e){}
   const dias=t?Math.floor((Date.now()-t)/DIA_MS):null;
-  info.textContent=t?('Último respaldo en este dispositivo: '+new Date(t).toLocaleDateString('es-AR')+(dias?' (hace '+dias+(dias===1?' día':' días')+')':' (hoy)')+'.'):'Todavía no bajaste ningún respaldo desde este dispositivo.';
+  if(info) info.textContent=t?('Último respaldo en este dispositivo: '+new Date(t).toLocaleDateString('es-AR')+(dias?' (hace '+dias+(dias===1?' día':' días')+')':' (hoy)')+'.'):'Todavía no bajaste ningún respaldo desde este dispositivo.';
+  if(!w) return;
   w.replaceChildren();
   if(t && dias<respFreq()[2]){ w.hidden=true; return; }
   w.hidden=false;
@@ -71,14 +72,14 @@ function updateRespaldoAviso(root){
 }
 
 /* ---------- Ahorro en dólares (a nivel hogar, no por mes) ---------- */
-let ahorro={ahorrado:null, cotizacion:null, meta:null, fechaMeta:'2027-03'};
+let ahorro={ahorrado:null, cotizacion:null, meta:null, fechaMeta:''};
 const ahorroRef=()=>FS.doc(db,'hogares',hogarId,'ahorro','usd');
 const usd=v=>'USD '+nf.format(v);
 async function loadAhorro(){
   try{
     const s=await FS.getDoc(ahorroRef());
     if(s.exists()){ const d=s.data(); ahorro={ahorrado:d.ahorrado==null?null:Number(d.ahorrado), cotizacion:d.cotizacion==null?null:Number(d.cotizacion),
-      meta:d.meta==null?null:Number(d.meta), fechaMeta:MES_RE.test(d.fechaMeta||'')?d.fechaMeta:'2027-03'}; }
+      meta:d.meta==null?null:Number(d.meta), fechaMeta:MES_RE.test(d.fechaMeta||'')?d.fechaMeta:''}; }
   }catch(e){}
   fillAhorro(document); watchAhorro();
 }
@@ -95,10 +96,10 @@ function fillAhorro(root){
   const box=(label,inp)=>{ const d=el('div','kpi'); const s=el('span'); s.textContent=label; d.append(s,inp); return d; };
   const stl=i=>{ i.style.cssText='width:100%; font-size:18px; font-weight:700; padding:0; border:0; background:transparent'; return i; };
   const mk=(key,ph)=>stl(moneyInput(()=>ahorro[key],v=>{ahorro[key]=v;},()=>calcAhorro(c),()=>{calcAhorro(c); saveAhorro();},ph));
-  const fm=el('input','txt'); fm.type='month'; fm.value=ahorro.fechaMeta; fm.setAttribute('aria-label','Fecha de la meta'); stl(fm);
-  fm.addEventListener('change',()=>{ if(MES_RE.test(fm.value)){ ahorro.fechaMeta=fm.value; calcAhorro(c); saveAhorro(); } });
+  const fm=el('input','txt'); fm.type='month'; fm.value=ahorro.fechaMeta; fm.setAttribute('aria-label','Fecha de la meta'); stl(fm); fm.style.minWidth='0';
+  fm.addEventListener('change',()=>{ if(MES_RE.test(fm.value)){ ahorro.fechaMeta=fm.value; } else if(!fm.value){ ahorro.fechaMeta=''; } else return; calcAhorro(c); saveAhorro(); });
   grid.append(box('Total ahorrado (USD)',mk('ahorrado','USD ahorrados')),...(moneda.c==='USD'?[]:[box('Cotización ('+moneda.c+' por USD)',mk('cotizacion','Cotización'))]),
-              box('Meta (USD)',mk('meta','Meta en USD')),box('Fecha de la meta',fm));
+              box('Meta (USD)',mk('meta','Meta en USD')),(()=>{ const b=box('Fecha de la meta (elígela tú)',fm); b.style.gridColumn='1 / -1'; return b; })());
   c.append(grid);
   const dep=el('div','tools'); dep.style.marginTop='10px';
   const di=el('input','num'); di.type='text'; di.inputMode='decimal'; di.placeholder='Sumar depósito (USD)'; di.setAttribute('aria-label','Sumar depósito en USD'); di.autocomplete='off';
@@ -125,6 +126,7 @@ function calcAhorro(c){
   const falta=Math.max(0,M-A);
   if(falta===0){ line('🎉 ¡Meta cumplida! Ahorraste '+usd(A)+' de '+usd(M)+'.'); return; }
   line('Faltan '+usd(falta)+(C>0?' (≈ '+cf.format(falta*C)+')':'')+' para llegar a '+usd(M)+'.');
+  if(!ahorro.fechaMeta){ line('Elige la fecha de tu meta para ver cuánto tendrías que ahorrar por mes.'); return; }
   const meses=monthDiff(currentMonthId(),ahorro.fechaMeta);
   if(meses<=0) line('La fecha de la meta ('+monthLabel(ahorro.fechaMeta)+') ya llegó o pasó.');
   else{ const pm=falta/meses; line('Hasta '+monthLabel(ahorro.fechaMeta)+' quedan '+meses+(meses===1?' mes':' meses')+': tendrías que ahorrar unos '+usd(pm)+' por mes'+(C>0?' (≈ '+cf.format(pm*C)+')':'')+'.'); }

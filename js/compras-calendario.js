@@ -267,7 +267,10 @@ function renderCompras(q){
   fCsv.addEventListener('change',()=>{ const f=fCsv.files&&fCsv.files[0]; fCsv.value=''; if(f) importarCSVCompras(q,f); });
   const bUp=el('button','btn primary'); bUp.type='button'; bUp.textContent='Cargar compras (.csv)'; bUp.addEventListener('click',()=>fCsv.click());
   const bHelp=el('button','btn'); bHelp.type='button'; bHelp.textContent='¿Cómo uso el CSV?'; bHelp.addEventListener('click',ayudaCSV);
-  bar.append(pick,bCsv,bUp,bHelp,fCsv); c.append(bar,add);
+  bar.append(pick); c.append(bar,add);
+  const csvBox=el('div','csvbox'); csvBox.style.cssText='margin-top:22px; padding-top:14px; border-top:1px solid var(--line,#d9d9d9)';
+  const csvT=el('p','small'); csvT.style.cssText='margin:0 0 8px; font-weight:600'; csvT.textContent='Cargar una factura desde un archivo CSV';
+  const csvBar=el('div','tools'); csvBar.append(bCsv,bUp,bHelp,fCsv); csvBox.append(csvT,csvBar); c.append(csvBox);
   v.append(c); updateComprasTotals(q,c);
 }
 function openPicker(q){

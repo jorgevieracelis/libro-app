@@ -407,8 +407,17 @@ function buildResumen(){
    '<div class="kpi"><span>Límite de la tarjeta</span><div id="limiteTarjetaWrap"></div></div>'+
    '<div class="kpi"><span>Gastado este mes</span><b data-k="mes.tarjeta"></b></div>'+
    '<div class="kpi soft"><span>Disponible</span><b data-k="mes.disponibleTarjeta"></b></div>'+
-   '</div><p class="warnBox" id="tcWarn" hidden></p></section>'+
-   '<section class="card" style="margin-top:16px"><header><h2>Buscar en todos los meses</h2></header>'+
+   '</div><p class="warnBox" id="tcWarn" hidden></p></section>';
+  const lf=moneyField('',()=>months[cur].limiteTarjeta,v2=>{months[cur].limiteTarjeta=v2;},'Límite');
+  lf.wrap.style.cssText='gap:0; margin:0'; lf.inp.style.cssText='width:100%; font-size:20px; font-weight:700; padding:0; border:0; background:transparent';
+  $('#limiteTarjetaWrap',v).append(lf.inp);
+  updateRespaldoAviso(v);
+  return v;
+}
+function buildHerramientas(){
+  const v=el('div'); v.id='view-herr'; v.hidden=true;
+  v.innerHTML=
+   '<section class="card" style="margin-top:0"><header><h2>Buscador (en los meses)</h2></header>'+
    '<p class="hint">Busca un gasto o ingreso por nombre, en todos los meses cargados.</p>'+
    '<input type="text" class="txt" id="searchAll" placeholder="Ej: Netflix" autocomplete="off" style="width:100%; margin:4px 0 10px">'+
    '<div id="searchResults" class="small"></div></section>'+
@@ -417,13 +426,13 @@ function buildResumen(){
    '<p class="hint" id="hogarNombre"></p>'+
    '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta, verifique su correo y elija "Unirme con código" con este código.</p>'+
    '<div class="tools" id="hogarCodeTools"></div></section>'+
-   '<section class="card" style="margin-top:16px"><header><h2>Cifrado de tus datos</h2></header>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Cifrado de datos</h2></header>'+
    '<p class="hint">Tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos. Guarda bien tu código de recuperación: es la única salida si olvidas la clave del hogar.</p>'+
    '<div class="tools" id="e2eTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Moneda</h2></header>'+
    '<p class="hint">Es la moneda en que se muestran todos los montos del hogar. Cambiarla no convierte los números cargados: solo cambia el símbolo.</p>'+
    '<div class="tools" id="monedaTools"></div></section>'+
-   '<section class="card" style="margin-top:16px"><header><h2>Cómo cobras</h2></header>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Modalidad de cobro</h2></header>'+
    '<p class="hint">Elige cada cuánto cobras y organizas tus gastos: una vez por mes, cada 15 días o cada semana. La app arma las pestañas y los totales según tu elección.</p>'+
    '<div class="tools" id="periodoTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Herramientas</h2></header>'+
@@ -434,11 +443,9 @@ function buildResumen(){
    '<p class="hint" style="margin-top:14px">Para guardar o imprimir todo el mes:</p>'+
    '<div class="tools" id="toolsExport"></div>'+
    '<p class="small" id="sesion" style="margin-top:14px"></p></section>';
+  { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc) hc.closest('section').before(buildCalculadoras()); }
   const searchBox=$('#searchAll',v);
   searchBox.addEventListener('input',()=>renderSearchResults(searchBox.value, $('#searchResults',v)));
-  const lf=moneyField('',()=>months[cur].limiteTarjeta,v2=>{months[cur].limiteTarjeta=v2;},'Límite');
-  lf.wrap.style.cssText='gap:0; margin:0'; lf.inp.style.cssText='width:100%; font-size:20px; font-weight:700; padding:0; border:0; background:transparent';
-  $('#limiteTarjetaWrap',v).append(lf.inp);
   const tools=$('#tools',v);
   const b1=el('button','btn primary'); b1.type='button'; b1.textContent='Descargar respaldo (.json)'; b1.addEventListener('click',exportBackup);
   const b2=el('button','btn primary'); b2.type='button'; b2.textContent='Importar respaldo (.json)'; b2.addEventListener('click',()=>$('#fileImp').click());

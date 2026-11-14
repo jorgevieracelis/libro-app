@@ -76,7 +76,7 @@ function watchAhorro(){
   unsubAhorro=FS.onSnapshot(ahorroRef(),snap=>{
     if(typeof snap.exists!=='function'||!snap.exists()||(snap.metadata&&snap.metadata.hasPendingWrites)) return;
     const d=snap.data();
-    const nuevo={ahorrado:d.ahorrado==null?null:Number(d.ahorrado), cotizacion:d.cotizacion==null?null:Number(d.cotizacion), meta:d.meta==null?null:Number(d.meta), fechaMeta:MES_RE.test(d.fechaMeta||'')?d.fechaMeta:'2027-03'};
+    const nuevo={ahorrado:d.ahorrado==null?null:Number(d.ahorrado), cotizacion:d.cotizacion==null?null:Number(d.cotizacion), meta:d.meta==null?null:Number(d.meta), fechaMeta:MES_RE.test(d.fechaMeta||'')?d.fechaMeta:''};
     if(igualJ(nuevo,ahorro)) return;
     aplicarCuandoLibre(()=>{ ahorro=nuevo; fillAhorro(document); if(ready) refreshComputed(); });
   },()=>{});
@@ -382,6 +382,8 @@ function renderAnio(){
     const mp=mejorPeor(rows); if(mp){ const p=el('p','hint'); p.textContent='Mejor mes: '+MESES[mp.mejor.m-1]+' (balance '+cf.format(mp.mejor.t.balance)+'). Mes más ajustado: '+MESES[mp.peor.m-1]+' (balance '+cf.format(mp.peor.t.balance)+').'; ec.append(p); }
     const pb=el('button','btn primary'); pb.type='button'; pb.textContent='Descargar reporte del año (PDF)'; pb.style.marginTop='8px';
     pb.addEventListener('click',()=>captureAndDeliver(reporteAnualHTML(rows,T,anio),680,'libro-finanzas-reporte-'+anio,'pdf')); ec.append(pb);
+    const sb=el('button','btn'); sb.type='button'; sb.textContent='Compartir resumen (texto)'; sb.style.cssText='margin-top:8px; margin-left:8px';
+    sb.addEventListener('click',()=>compartirResumenAnual(rows,T,anio)); ec.append(sb);
   } else { ec.append(estadoVacio('grafico','Sin datos en '+anio,'Cuando cargues meses de este año, aquí verás su evolución.')); }
   v.append(ec);
   // tabla
@@ -438,7 +440,7 @@ function renderHeader(){
   $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
-function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan']; }
+function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan','herr']; }
 function renderTabs(){
   const nav=$('#tabs'); nav.replaceChildren();
   const add=(k,label,title,short)=>{
@@ -452,7 +454,7 @@ function renderTabs(){
     add(q,periodo==='mensual'?'Ingresos y egresos':qname(q),qrange(q),qname(q));
     add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q),qname(q));
   });
-  add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas');
+  add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas'); add('herr','Herramientas');
   renderBottomNav();
 }
 function showTab(){
@@ -469,7 +471,7 @@ function render(){
   renderTabs(); renderHeader();
   const main=$('#main'); main.replaceChildren();
   if(!cur||!months[cur]){ main.append(buildEmpty()); return; }
-  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildAnio(),buildCal(),buildPlan());
+  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildAnio(),buildCal(),buildPlan(),buildHerramientas());
   QS.forEach(q=>SECS.forEach(sec=>renderList(q,sec)));
   QS.forEach(renderCompras);
   refreshComputed(); showTab();
