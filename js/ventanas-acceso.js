@@ -2,8 +2,12 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.7.1';
+const APP_VERSION='1.8.0';
 const NOVEDADES=[
+ {v:'1.8.0', fecha:'14 nov 2026', items:[
+  'Bienvenida de 3 pantallas la primera vez que entras (puedes volver a verla con el botón Ver bienvenida, al pie)',
+  'Mensajes más amigables cuando una sección todavía está vacía (compras, metas, presupuesto y año)',
+  'Nueva página para pedir la eliminación de tu cuenta y tus datos']},
  {v:'1.7.1', fecha:'14 nov 2026', items:[
   'Compras super/otros: nuevo selector de Unidades (1 a 12). Escribes el precio de una unidad y la lista suma precio × unidades (ej: 3 arroces a 1.500 = 4.500)']},
  {v:'1.7.0', fecha:'13 nov 2026', items:[
@@ -73,6 +77,7 @@ function verAbrir(){
   verPintar();
 }
 document.getElementById('verBtn').addEventListener('click',verAbrir);
+document.getElementById('bvBtn').addEventListener('click',()=>mostrarBienvenida());
 verPintar();
 
 /* ---------- Ventanas ---------- */

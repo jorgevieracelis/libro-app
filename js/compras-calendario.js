@@ -139,7 +139,7 @@ function renderCompras(q){
   const head=el('div','chead'); ['Producto','Cadena','Unid.','Precio unidad','Último / total','✓',''].forEach(t=>{ const s=el('span'); s.textContent=t; head.append(s); }); c.append(head);
   const box=el('div','list'); c.append(box);
   list.forEach(r=>box.append(compraRow(q,r,c)));
-  if(!list.length){ const p=el('p','small'); p.style.cssText='padding:8px 4px'; p.textContent='Todavía no hay nada en la lista de '+estaP()+'.'; box.append(p); }
+  if(!list.length){ box.append(estadoVacio('compras','Tu lista de '+estaP()+' está vacía','Agrega lo que necesitas comprar, o elige de los artículos que ya usaste.','＋ Agregar el primero',()=>{ list.push(normCompra({})); renderCompras(q); const ins=document.querySelectorAll('#view-c'+q.slice(1)+' .crow .c-n input'); if(ins.length) ins[ins.length-1].focus(); })); }
   const bar=el('div','tools'); bar.style.marginTop='8px';
   const pick=el('button','btn primary'); pick.type='button'; pick.textContent='Elegir de mi lista'; pick.addEventListener('click',()=>openPicker(q));
   const add=el('button','add'); add.type='button'; add.textContent='＋ Agregar línea';

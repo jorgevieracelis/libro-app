@@ -158,7 +158,25 @@ body.auth .loginbox .err{text-align:center}
 #verFooter{max-width:1240px; margin:0 auto; padding:0 16px 40px; text-align:center}
 #verBtn{background:none; border:0; color:var(--muted); font-size:12px; padding:8px 12px; border-radius:99px; display:inline-flex; align-items:center; gap:7px; opacity:.85}
 .copyr{margin:2px 12px 0; font-size:11px; color:var(--muted); opacity:.75; text-align:center}
-#verBtn:hover,#verBtn:focus-visible{opacity:1; background:var(--chip)}
+#verBtn:hover,#verBtn:focus-visible,#bvBtn:hover,#bvBtn:focus-visible{opacity:1; background:var(--chip)}
+#bvBtn{background:none; border:0; color:var(--muted); font-size:12px; padding:8px 12px; border-radius:99px; opacity:.85}
+/* Bienvenida (3 pantallas) y estados vacíos */
+.bvBox{text-align:center; padding:26px 22px 18px}
+.bvStage{min-height:230px; display:flex; flex-direction:column; align-items:center; gap:10px; animation:vistaIn .25s ease both}
+.bvIco{width:64px; height:64px; padding:16px; border-radius:50%; background:var(--chip); color:var(--ring,#f28c28); fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; margin-bottom:4px}
+.bvStage h3{font-size:20px; margin:0; color:var(--brand)}
+.bvStage p{margin:0; color:var(--muted); font-size:14.5px; line-height:1.55}
+.bvDots{display:flex; justify-content:center; gap:7px; margin:6px 0 2px}
+.bvDots i{width:8px; height:8px; border-radius:50%; background:var(--line)}
+.bvDots i.on{width:22px; border-radius:6px; background:var(--ring,#f28c28)}
+.bvBar{justify-content:space-between!important}
+.bvBar .btn[hidden]{display:none}
+.bvBar .btn.primary{margin-left:auto}
+.evacio{display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; padding:22px 12px}
+.evacio .ico{width:46px; height:46px; padding:11px; border-radius:50%; background:var(--chip); color:var(--ring,#f28c28)}
+.evacio b{font-size:15px}
+.evacio span{color:var(--muted); font-size:13.5px; max-width:34ch}
+.evacio .btn{margin-top:6px}
 .verDot{width:8px; height:8px; border-radius:50%; background:#f28c28; box-shadow:0 0 0 3px rgba(242,140,40,.25)}
 .verList{margin:0 0 4px; padding-left:20px; font-size:14px; line-height:1.45}
 .verList li{margin-bottom:5px}
@@ -709,7 +727,7 @@ main{animation:vistaIn .28s ease both}
     <p class="vsCred">Texto bíblico: Traducción en lenguaje actual™ © Sociedades Bíblicas Unidas, 2002, 2004. Utilizado con permiso.</p>
   </div>
 </section>
-<div id="verFooter" hidden><button type="button" id="verBtn" aria-label="Ver las novedades de esta versión"><span id="verTxt"></span><span id="verDot" class="verDot" hidden></span></button><p class="copyr">© 2026 Ing. Jorge A. Viera C. Todos los derechos reservados.</p></div>
+<div id="verFooter" hidden><button type="button" id="verBtn" aria-label="Ver las novedades de esta versión"><span id="verTxt"></span><span id="verDot" class="verDot" hidden></span></button> <button type="button" id="bvBtn" aria-label="Ver de nuevo la bienvenida">Ver bienvenida</button><p class="copyr">© 2026 Ing. Jorge A. Viera C. Todos los derechos reservados.</p></div>
 <div id="lockScreen" class="lkBack lkFull" hidden role="dialog" aria-modal="true" aria-label="App bloqueada">
   <div class="lkBox">
     <div class="lkLogos"><img src="icon-192.png" alt="" style="width:96px;height:96px;border-radius:22px"></div>
@@ -763,6 +781,7 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/navegacion.js"></script>
 <script src="js/respaldo.js"></script>
 <script src="js/ventanas-acceso.js"></script>
+<script src="js/bienvenida.js"></script>
 <script src="js/seguridad.js"></script>
 <script src="js/arranque.js"></script>
 </body>

@@ -70,7 +70,7 @@ function toast(msg){
 let vistaActual=null;
 function setView(v){
   if(v!=='loading') ocultarSplash();
-  if(v==='app' && vistaActual!=='app') setTimeout(()=>nuevoVersiculo(),0);
+  if(v==='app' && vistaActual!=='app'){ setTimeout(()=>nuevoVersiculo(),0); setTimeout(()=>{ try{ bienvenidaSiHaceFalta(); }catch(e){} },900); }
   vistaActual=v;
   $('#loading').hidden=v!=='loading'; $('#login').hidden=v!=='login'; $('#setup').hidden=v!=='setup';
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';

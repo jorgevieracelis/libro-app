@@ -112,7 +112,7 @@ function renderPresupuesto(){
     top.append(nm,inp); row.append(top,bar); upd(); return row;
   };
   visibles.forEach(c=>host.append(mkRow(c)));
-  if(!visibles.length){ const p=el('p','small'); p.textContent='Todavía no hay gastos con categoría ni topes cargados.'; host.append(p); }
+  if(!visibles.length){ host.append(estadoVacio('presupuesto','Aún no hay gastos por categoría','Cuando anotes egresos con categoría, o le pongas un tope abajo, verás aquí cuánto llevas.')); }
   const rest=CATS_PRESU.filter(c=>!visibles.includes(c));
   if(rest.length){
     const sel=el('select','txt'); sel.setAttribute('aria-label','Poner tope a otra categoría'); sel.style.marginTop='8px';
@@ -274,7 +274,7 @@ function renderPlan(){
   const mc=el('section','card'); const mh=el('header'); const mt=el('h2'); mt.textContent='Metas de ahorro'; mh.append(mt); mc.append(mh);
   const mp=el('p','hint'); mp.textContent='Crea una meta por cada cosa para la que ahorras (vacaciones, auto, estudios…). Los montos van en tu moneda ('+moneda.c+').'; mc.append(mp);
   extras.metas.forEach(m=>mc.append(metaItem(m)));
-  if(!extras.metas.length){ const p=el('p','small'); p.textContent='Todavía no tienes metas.'; mc.append(p); }
+  if(!extras.metas.length){ mc.append(estadoVacio('meta','Aún no tienes metas','Crea una para algo que quieras lograr: vacaciones, un auto, estudios…')); }
   const nb=el('button','btn primary'); nb.type='button'; nb.textContent='＋ Nueva meta'; nb.style.marginTop='10px';
   nb.addEventListener('click',()=>{ if(extras.metas.length>=40){ toast('Llegaste al máximo de metas'); return; } extras.metas.push({id:uid(),n:'',meta:null,ahorrado:null,fecha:''}); saveExtras(); renderPlan(); });
   mc.append(nb); v.append(mc);
@@ -382,7 +382,7 @@ function renderAnio(){
     const mp=mejorPeor(rows); if(mp){ const p=el('p','hint'); p.textContent='Mejor mes: '+MESES[mp.mejor.m-1]+' (balance '+cf.format(mp.mejor.t.balance)+'). Mes más ajustado: '+MESES[mp.peor.m-1]+' (balance '+cf.format(mp.peor.t.balance)+').'; ec.append(p); }
     const pb=el('button','btn primary'); pb.type='button'; pb.textContent='Descargar reporte del año (PDF)'; pb.style.marginTop='8px';
     pb.addEventListener('click',()=>captureAndDeliver(reporteAnualHTML(rows,T,anio),680,'libro-finanzas-reporte-'+anio,'pdf')); ec.append(pb);
-  } else { const p=el('p','small'); p.textContent='No hay meses cargados en '+anio+'.'; ec.append(p); }
+  } else { ec.append(estadoVacio('grafico','Sin datos en '+anio,'Cuando cargues meses de este año, aquí verás su evolución.')); }
   v.append(ec);
   // tabla
   const tc=el('section','card'); tc.style.marginTop='16px';
@@ -419,7 +419,7 @@ function renderAnio(){
     });
     bars.append(g);
   });
-  if(!used.length){ const p=el('p','small'); p.textContent='No hay meses cargados en '+anio+'.'; bars.append(p); }
+  if(!used.length){ bars.append(estadoVacio('grafico','Sin datos en '+anio,'Cuando cargues meses de este año, verás aquí sus barras.')); }
   bc.append(bars); v.append(bc);
 }
 function buildEmpty(){
