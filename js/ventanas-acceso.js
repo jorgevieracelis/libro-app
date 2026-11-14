@@ -2,8 +2,13 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='1.8.0';
+const APP_VERSION='2.0.0';
 const NOVEDADES=[
+ {v:'2.0.0', fecha:'14 nov 2026', items:[
+  'Cifrado de extremo a extremo: tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos',
+  'Eliges una clave del hogar (la usan tú y tu pareja) y recibes un código de recuperación para guardar. Si pierdes los dos, nadie puede recuperar los datos',
+  'Tus datos anteriores se cifran solos la primera vez que entras con esta versión',
+  'En Resumen → Cifrado de tus datos puedes cambiar la clave del hogar o generar un código de recuperación nuevo']},
  {v:'1.8.0', fecha:'14 nov 2026', items:[
   'Bienvenida de 3 pantallas la primera vez que entras (puedes volver a verla con el botón Ver bienvenida, al pie)',
   'Mensajes más amigables cuando una sección todavía está vacía (compras, metas, presupuesto y año)',

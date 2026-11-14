@@ -417,6 +417,9 @@ function buildResumen(){
    '<p class="hint" id="hogarNombre"></p>'+
    '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta, verifique su correo y elija "Unirme con código" con este código.</p>'+
    '<div class="tools" id="hogarCodeTools"></div></section>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Cifrado de tus datos</h2></header>'+
+   '<p class="hint">Tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos. Guarda bien tu código de recuperación: es la única salida si olvidas la clave del hogar.</p>'+
+   '<div class="tools" id="e2eTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Moneda</h2></header>'+
    '<p class="hint">Es la moneda en que se muestran todos los montos del hogar. Cambiarla no convierte los números cargados: solo cambia el símbolo.</p>'+
    '<div class="tools" id="monedaTools"></div></section>'+
@@ -452,6 +455,7 @@ function buildResumen(){
   const m3=el('button','btn primary'); m3.type='button'; m3.textContent='Descargar plantilla completa (PDF)'; m3.addEventListener('click',exportFullPDF);
   const m4=el('button','btn'); m4.type='button'; m4.textContent='Excel (.xlsx)'; m4.addEventListener('click',exportExcel);
   te.append(m3,m4);
+  try{ e2eAjustes(v); }catch(e){}
   $('#hogarNombre',v).textContent='Hogar: '+(hogarInfo&&hogarInfo.nombre?hogarInfo.nombre:'(sin nombre)');
   const hc=$('#hogarCodeTools',v);
   const pill=el('span','pill'); pill.style.cssText='font-weight:700; letter-spacing:.06em; font-size:14px';

@@ -169,6 +169,18 @@ body.auth .loginbox .err{text-align:center}
 .bvDots{display:flex; justify-content:center; gap:7px; margin:6px 0 2px}
 .bvDots i{width:8px; height:8px; border-radius:50%; background:var(--line)}
 .bvDots i.on{width:22px; border-radius:6px; background:var(--ring,#f28c28)}
+#e2eRoot{position:fixed; inset:0; z-index:950; overflow:auto; background:var(--bg); display:flex; padding:20px 16px}
+#e2eRoot[hidden]{display:none}
+.e2eBox{margin:auto; width:min(440px,100%); background:var(--card); border-radius:20px; box-shadow:var(--shadow); padding:26px 22px; display:grid; gap:12px; text-align:center}
+.e2eBox h2{font-size:22px; color:var(--brand)}
+.e2eBox .bvIco{margin:0 auto 2px}
+.e2eBox label{display:grid; gap:6px; font-size:14px; font-weight:600; text-align:left}
+.e2eBox input[type=password],.e2eBox input[type=text]{font-size:16px; padding:13px 14px; border-radius:10px; width:100%; max-width:none}
+.e2eBox>.btn{width:100%; padding:13px 16px; font-size:16px; border-radius:10px}
+.e2eBox input[type=password],.e2eBox input[type=text]{background:var(--bg); color:var(--ink); border:1px solid var(--line)}
+.e2eBox .link{width:100%; font-size:14.5px; padding:4px 0; text-align:center}
+.e2eBox .err{text-align:center}
+.e2eBox .small{font-size:14px; line-height:1.5; color:var(--muted)}
 .bvBar{justify-content:space-between!important}
 .bvBar .btn[hidden]{display:none}
 .bvBar .btn.primary{margin-left:auto}
@@ -762,6 +774,7 @@ main{animation:vistaIn .28s ease both}
 
 <div id="netBar" role="status" hidden></div>
 <div id="toast" role="status"></div>
+<div id="e2eRoot" hidden></div>
 <div id="modal-root"></div>
 <input type="file" id="fileImp" accept=".json,application/json" hidden>
 
@@ -774,6 +787,8 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 </script>
 <script src="js/datos.js"></script>
 <script src="js/guardado.js"></script>
+<script src="js/cifrado.js"></script>
+<script src="js/cifrado-pantallas.js"></script>
 <script src="js/consejos.js"></script>
 <script src="js/vistas.js"></script>
 <script src="js/compras-calendario.js"></script>

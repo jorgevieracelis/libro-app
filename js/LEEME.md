@@ -10,6 +10,7 @@
 6. `plan.js` — presupuesto, deudas, metas, repetidos, vista anual y reportes
 7. `respaldo.js` — respaldo e importación, ahorro en dólares y papelera
 8. `ventanas-acceso.js` — novedades (`APP_VERSION`, `NOVEDADES`), ventanas, instalación, ingreso y registro
+8b. `cifrado.js` y `cifrado-pantallas.js` — cifrado de extremo a extremo (capa transparente sobre Firestore, claves, pantallas de clave/código, migración). Se cargan justo después de `guardado.js`
 9. `bienvenida.js` — bienvenida de 3 pantallas y estados vacíos (`estadoVacio`)
 9b. `seguridad.js` — bloqueo por claves erróneas, verificación de correo, borrar cuenta y bloqueo de la app
 10. `arranque.js` — arranque de Firebase y de la app

@@ -12,7 +12,7 @@
 </head>
 <body>
 <h1>Política de privacidad</h1>
-<p><strong>Última actualización:</strong> 14 de noviembre de 2026</p>
+<p><strong>Última actualización:</strong> 14 de noviembre de 2026 (versión 2.0, con cifrado de extremo a extremo)</p>
 <p>Esta aplicación es un libro de ingresos y egresos del hogar. Esta política explica qué datos guarda y qué puedes hacer con ellos.</p>
 
 <h2>Qué datos guardamos</h2>
@@ -25,7 +25,19 @@
 <p>Únicamente para mostrarte tu libro y sincronizarlo entre tus dispositivos y, si quieres, con tu pareja. No hay publicidad, no vendemos datos y no los compartimos con terceros con fines comerciales.</p>
 
 <h2>Dónde se guardan</h2>
-<p>En Google Firebase (Authentication y Cloud Firestore), región São Paulo, Brasil. Google actúa como proveedor de infraestructura. Solo las personas que forman parte de tu hogar (hasta 2) pueden ver los datos del hogar desde la app. Los datos se guardan en Firebase protegidos por conexión cifrada y reglas de acceso, pero no tienen cifrado de extremo a extremo: el administrador del servicio podría técnicamente acceder a ellos. El administrador se compromete a no consultarlos, salvo que tú lo pidas para darte soporte o que la ley lo exija. Para que la app funcione sin internet, también guarda una copia de tus datos en tu propio teléfono (almacenamiento del navegador); esa copia se borra al eliminar los datos de la app o al desinstalarla.</p>
+<p>En Google Firebase (Authentication y Cloud Firestore), región São Paulo, Brasil. Google actúa como proveedor de infraestructura. Solo las personas que forman parte de tu hogar (hasta 2) pueden abrir los datos del hogar desde la app. Los datos que cargas se guardan en Firebase <strong>cifrados de extremo a extremo</strong> (ver la sección siguiente), además de la conexión cifrada y las reglas de acceso. Para que la app funcione sin internet, también guarda una copia de tus datos en tu propio teléfono (almacenamiento del navegador); esa copia se borra al eliminar los datos de la app o al desinstalarla.</p>
+
+<h2>Cifrado de extremo a extremo</h2>
+<p>Tus datos se cifran <strong>en tu teléfono</strong> (AES-256-GCM) antes de enviarse a Firebase. Google y el administrador de la app solo ven texto ilegible y no pueden leer tus ingresos, egresos, ahorro, metas, deudas, presupuestos, notas, lista de compras ni la papelera.</p>
+<ul>
+  <li><strong>Clave del hogar:</strong> la eliges tú y la comparte con tu pareja. Nunca se envía a ningún servidor.</li>
+  <li><strong>Código de recuperación:</strong> se muestra una sola vez al activar el cifrado; sirve para abrir tus datos si olvidas la clave. Tampoco se envía a ningún servidor.</li>
+  <li><strong>Si pierdes la clave y el código, nadie puede recuperar tus datos, ni el administrador.</strong> Por eso no podemos restablecerlos ni ayudarte a verlos.</li>
+  <li><strong>Lo que NO se cifra</strong> (datos técnicos necesarios para que la app funcione): tu correo y tu identificador de usuario, el nombre y el código del hogar, quiénes son sus miembros, y el nombre técnico de los documentos (por ejemplo, el mes "2026-11") con sus fechas y tamaños.</li>
+  <li><strong>Copias que tú generas</strong> (respaldo .json, PDF, Excel) <strong>no</strong> están cifradas: quedan donde tú las guardes. Cuida esos archivos.</li>
+  <li>Sin internet, los cambios que aún no se enviaron se guardan temporalmente en tu teléfono (sin cifrar, en el almacenamiento privado de la app) hasta que se envían.</li>
+  <li>En cada teléfono la llave de datos se guarda de forma no exportable y se borra al cerrar sesión.</li>
+</ul>
 
 <h2>Respaldos y consejos</h2>
 <p>La app puede generar un archivo de respaldo (.json) con tus datos. Solo se crea cuando tú lo pides y se guarda en tu teléfono; la app no lo envía a ningún lado ni nosotros lo recibimos. Si quieres tener una copia en tu nube (por ejemplo, Google Drive), en tu correo o en WhatsApp, eres tú quien la sube o la envía por tu cuenta, y esa copia queda bajo las condiciones de ese servicio. Con ese mismo archivo puedes recuperar tus datos (Herramientas → Importar respaldo) si pierdes el acceso a tu cuenta; el archivo no sirve para entrar ni para cambiar la clave. Los consejos del mes y los cálculos de metas y deudas se hacen dentro de tu teléfono con los datos que cargaste: no se envían a ningún tercero ni a ninguna inteligencia artificial. Son orientativos y no constituyen asesoramiento financiero.</p>

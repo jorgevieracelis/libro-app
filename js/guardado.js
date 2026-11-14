@@ -21,7 +21,8 @@ function netSync(){
 }
 window.addEventListener('online',()=>{ netSync(); netUI(); if(typeof dirty!=='undefined'&&dirty.size) setTimeout(flush,800); }); window.addEventListener('offline',()=>{ netSync(); netUI(); });
 /* Las escrituras no esperan la confirmación del servidor más de 4 s: sin internet quedan guardadas en el teléfono y se envían al volver. */
-function wrapFS(m){
+function wrapFS(m0){
+  e2eRawFS=m0; const m=e2eWrapFS(m0);      /* cifrado de extremo a extremo transparente (cifrado.js) */
   const slow=p=>Promise.race([p,new Promise(r=>setTimeout(()=>{
     if(!netPend){ netPend=true; netUI(); try{ m.waitForPendingWrites(db).then(()=>{ netPend=false; netUI(); setStatus('saved'); }).catch(()=>{}); }catch(e){} }
     r();
@@ -88,7 +89,7 @@ async function guardarMes(id){
     await Promise.race([
       FS.runTransaction(db,async tx=>{
         const s=await tx.get(ref);
-        tx.set(ref, s.exists() ? mergeMes(baseMes[id]||null,local,serialize(hydrate(s.data()))) : local);
+        await tx.set(ref, s.exists() ? mergeMes(baseMes[id]||null,local,serialize(hydrate(s.data()))) : local);
       }),
       new Promise((_,rj)=>setTimeout(()=>rj(Object.assign(new Error('tiempo'),{code:'timeout'})),20000))
     ]);
@@ -149,6 +150,7 @@ function onRemote(map,definitive){
     if(dirty.size) flush();
   }
   if(changed && ready) safeRender();
+  e2eMigrarSiHaceFalta();
 }
 function safeRender(){
   const a=document.activeElement;
@@ -181,7 +183,7 @@ async function saveMoneda(code){
   try{ await FS.setDoc(monedaRef(),{moneda:code,periodo:periodo,actualizado:Date.now()}); return true; }
   catch(e){ toast('No se pudo guardar la moneda'); return false; }
 }
-function startData(){ loadMoneda().then(startData0,startData0); }
+async function startData(){ await e2eAsegurar(); loadMoneda().then(startData0,startData0); }
 function startData0(){
   ready=false; months={}; cur=null; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); unwatchLive();
   setView('loading'); $('#loadingMsg').textContent='Cargando tus datos…'; $('#loadingErr').textContent='';
@@ -198,6 +200,7 @@ function startData0(){
     }
     onRemote(map,!snap.metadata.fromCache);
   },err=>{
+    if(err&&(err.code==='e2e-decrypt'||err.code==='e2e-locked')&&!e2eReintento){ e2eReintento=true; e2eBorrarLlave(hogarId).then(()=>{ e2eKey=null; e2eKeyHogar=null; startData(); }); return; }
     if(!ready){
       $('#loadingMsg').textContent='No se pudieron cargar los datos.';
       $('#loadingErr').textContent=(err&&err.code==='permission-denied')
@@ -206,7 +209,7 @@ function startData0(){
     } else setStatus('error',err);
   });
 }
-function stopData(){
+function stopData(){ e2eKey=null; e2eKeyHogar=null; e2eReintento=false; clearTimeout(e2eMigTimer);
   if(unsub){ try{unsub();}catch(e){} unsub=null; }
   clearTimeout(loadTimer); clearTimeout(saveTimer); clearTimeout(retryTimer); retryTimer=null;
   setMoneda('ARS'); setPeriodo('quincenal'); stopNotas(); calSel=null; calY=null; months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:'2027-03'}; extras={presupuesto:{},deudas:[],metas:[],repetidos:[],extraDeuda:null,orden:'bola'}; presuExtra.clear(); baseExtras=null; unwatchLive(); cur=null; ready=false; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();

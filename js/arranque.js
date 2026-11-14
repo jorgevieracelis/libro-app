@@ -25,7 +25,7 @@ async function boot(){
   }
   AU.onAuthStateChanged(auth,user=>{
     if(user){ me=user; if(user.emailVerified) resolveHogar(); else showVerify(); }
-    else { me=null; stopData(); if(lockCfg){ lkStore(null); } lkOcultar(); $('#lockCfg').hidden=true; setView('login'); }
+    else { const hPrev=hogarId; me=null; stopData(); if(hPrev) e2eBorrarLlave(hPrev); if(lockCfg){ lkStore(null); } lkOcultar(); $('#lockCfg').hidden=true; setView('login'); }
   });
 }
 async function resolveHogar(){

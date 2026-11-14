@@ -33,7 +33,7 @@ async function guardarExtras(){
       FS.runTransaction(db,async tx=>{
         const s=await tx.get(ref);
         const final=s.exists()?mergeExtras(baseExtras||normExtras({}),local,normExtras(s.data())):local;
-        tx.set(ref,{...final,actualizado:Date.now()});
+        await tx.set(ref,{...final,actualizado:Date.now()});
       }),
       new Promise((_,rj)=>setTimeout(()=>rj(Object.assign(new Error('tiempo'),{code:'timeout'})),20000))
     ]);

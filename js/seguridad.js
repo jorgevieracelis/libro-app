@@ -44,7 +44,7 @@ $('#nhMoneda').replaceChildren(...MONEDAS.map(m=>{ const o=el('option'); o.value
 $('#nhPeriodo').replaceChildren(...PERIODO_OPC.map(([k,txt])=>{ const o=el('option'); o.value=k; o.textContent=txt; if(k==='quincenal') o.selected=true; return o; }));
 $('#nhCrear').addEventListener('click',async()=>{
   const btn=$('#nhCrear'); $('#nhErr').textContent=''; btn.disabled=true;
-  try{ await createHogar($('#nhNombre').value); setPeriodo($('#nhPeriodo').value); await saveMoneda($('#nhMoneda').value); startData(); }
+  try{ await createHogar($('#nhNombre').value); setPeriodo($('#nhPeriodo').value); await e2eAsegurar(); await saveMoneda($('#nhMoneda').value); startData(); }
   catch(e){ $('#nhErr').textContent='No se pudo crear el hogar ('+((e&&e.code)||'error')+').'; }
   finally{ btn.disabled=false; }
 });
@@ -71,7 +71,7 @@ $('#vSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
 
 /* ---------- Eliminar cuenta y datos ---------- */
 async function deleteAllInCol(colRef){
-  const snap=await FS.getDocs(colRef);
+  const snap=await (e2eRawFS||FS).getDocs(colRef);      /* sin descifrar: borrar funciona aunque no se pueda abrir la llave */
   for(const d of snap.docs) await FS.deleteDoc(d.ref);
 }
 function askDeleteAccount(){
