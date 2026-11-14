@@ -208,7 +208,7 @@ function exportExcel(){
       qd.anticipados.filter(r=>!isBlank(r,'anticipados')).forEach(r=>add('Egresos variables',r.n,r.cat,num(r.m),r.pagado));
       qd.fondo.filter(r=>!isBlank(r,'fondo')).forEach(r=>add('Fondo de emergencia',r.n,'',num(r.m)));
       qd.retiro.filter(r=>!isBlank(r,'retiro')).forEach(r=>add('Retiro de efectivo (informativo)',r.n,'',num(r.m)));
-      (qd.compras||[]).filter(r=>!compraBlank(r)).forEach(r=>add('Compras super/otros (informativo)',r.n,chainName(r),num(r.m),r.ok));
+      (qd.compras||[]).filter(r=>!compraBlank(r)).forEach(r=>add('Compras super/otros (informativo)',unidadesDe(r)>1?r.n+' (×'+unidadesDe(r)+')':r.n,chainName(r),compraTotal(r),r.ok));
       activeCuotasFor(id,q).forEach(it=>add('Tarjeta (informativo)',it.row.n+(it.totalCuotas>1?' (cuota '+it.cuotaNum+'/'+it.totalCuotas+')':''),it.row.cat,it.amount));
     });
   });

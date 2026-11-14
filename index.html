@@ -390,12 +390,13 @@ body.modalOpen{overflow:hidden}
 }
 #toast.show{opacity:1}
 
-.crow{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 112px 128px 36px 24px; gap:6px; align-items:center; padding:3px 4px; border-bottom:1px solid var(--line)}
+.crow{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 62px 112px 150px 36px 24px; gap:6px; align-items:center; padding:3px 4px; border-bottom:1px solid var(--line)}
 .crow:last-child{border-bottom:0}
-.chead{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 112px 128px 36px 24px; gap:6px; padding:8px 4px 4px; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.chead{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 62px 112px 150px 36px 24px; gap:6px; padding:8px 4px 4px; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
 .crow input,.crow select{width:100%; min-width:0; max-width:none}
 .crow .c-c input{margin-top:4px}
 .crow .c-u{font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+.crow .c-u .ctot{display:block; color:var(--text,inherit); font-weight:700; font-size:13px}
 .crow .c-u .up{color:var(--neg); font-weight:600} .crow .c-u .dn{color:var(--pos); font-weight:600}
 .crow.done .c-n input{text-decoration:line-through; opacity:.65}
 .cresumen{display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:6px 4px; font-size:13px}
@@ -409,7 +410,8 @@ body.modalOpen{overflow:hidden}
   .top{padding:10px 10px 0}
   .tab{padding:9px 10px; flex:1 0 auto}
   .chead{display:none}
-  .crow{grid-template-columns:minmax(0,1fr) 104px 36px 24px; grid-template-areas:"n n n x" "c m p x" "u u u u"; row-gap:4px; padding:8px 4px}
+  .crow{grid-template-columns:62px minmax(0,1fr) 104px 36px 24px; grid-template-areas:"n n n n x" "c c m p x" "q u u u u"; row-gap:4px; padding:8px 4px}
+  .crow .c-q{grid-area:q}
   .crow .c-n{grid-area:n} .crow .c-c{grid-area:c} .crow .c-m{grid-area:m} .crow .c-u{grid-area:u} .crow .c-p{grid-area:p} .crow .c-x{grid-area:x}
   .kpi b{font-size:19px}
   .r2{grid-template-columns:minmax(0,1fr) 112px 24px}

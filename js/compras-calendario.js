@@ -5,10 +5,13 @@ const CADENAS=['Día','Carrefour','Coto','Jumbo','Disco','Vea','Chino','Peruano'
 const normTxt=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim().replace(/\s+/g,' ');
 const chainName=r=>r.cadena==='Otros'?(String(r.otra||'').trim()||'Otros'):String(r.cadena||'');
 const compraBlank=r=>!String(r.n==null?'':r.n).trim() && r.m==null;
+/* Unidades: 1 a 12 (por defecto 1). El precio escrito es el de UNA unidad; el costo de la línea es precio × unidades. */
+const unidadesDe=r=>{ const u=Math.round(Number(r&&r.u)); return (u>=1&&u<=12)?u:1; };
+const compraTotal=r=>num(r.m)*unidadesDe(r);
 function normCompra(r){
   r=r||{};
   const cad=(typeof r.cadena==='string'&&(CADENAS.includes(r.cadena)||r.cadena==='Otros'))?r.cadena:'';
-  return {id:String(r.id||uid()), n:String(r.n==null?'':r.n), m:numOrNull(r.m), cadena:cad, otra:cad==='Otros'?String(r.otra||''):'', ult:numOrNull(r.ult), ok:r.ok===true};
+  return {id:String(r.id||uid()), n:String(r.n==null?'':r.n), m:numOrNull(r.m), u:unidadesDe(r), cadena:cad, otra:cad==='Otros'?String(r.otra||''):'', ult:numOrNull(r.ult), ok:r.ok===true};
 }
 function setChainFrom(row,name){
   if(CADENAS.includes(name)){ row.cadena=name; row.otra=''; }
@@ -69,11 +72,11 @@ function buildCompras(q){
 }
 function updateComprasTotals(q,c){
   const rows=months[cur][q].compras.filter(r=>!compraBlank(r));
-  const total=rows.reduce((s,r)=>s+num(r.m),0), hecho=rows.filter(r=>r.ok).reduce((s,r)=>s+num(r.m),0);
+  const total=rows.reduce((s,r)=>s+compraTotal(r),0), hecho=rows.filter(r=>r.ok).reduce((s,r)=>s+compraTotal(r),0);
   $('.tot',c).textContent=cf.format(total);
   const rs=$('.cresumen',c); rs.replaceChildren();
   const t=el('span'); t.textContent='Comprado: '+cf.format(hecho)+' · Falta: '+cf.format(total-hecho); rs.append(t);
-  const by={}; rows.forEach(r=>{ const k=chainName(r)||'Sin cadena'; by[k]=(by[k]||0)+num(r.m); });
+  const by={}; rows.forEach(r=>{ const k=chainName(r)||'Sin cadena'; by[k]=(by[k]||0)+compraTotal(r); });
   Object.keys(by).sort().forEach(k=>{ const g=el('span','tag'); g.textContent=k+': '+cf.format(by[k]); rs.append(g); });
 }
 function compraRow(q,row,c){
@@ -85,11 +88,16 @@ function compraRow(q,row,c){
   const ot=el('input'); ot.type='text'; ot.placeholder='¿Cuál?'; ot.setAttribute('aria-label','Nombre de la otra cadena'); ot.autocomplete='off';
   cc.append(sel,ot);
   const totals=()=>updateComprasTotals(q,c);
+  const cq=el('div','c-q'); const qs=el('select'); qs.setAttribute('aria-label','Unidades'); qs.title='Unidades';
+  for(let i=1;i<=12;i++){ const o=el('option'); o.value=String(i); o.textContent=String(i); qs.append(o); }
+  cq.append(qs);
   const cu=el('div','c-u');
   const paintUlt=()=>{
     cu.replaceChildren();
-    if(!(row.ult>0)){ cu.textContent='—'; cu.title='Todavía no hay una compra anterior'; return; }
-    cu.title='Último precio al que lo compraste'; cu.append('Últ. '+cf.format(row.ult));
+    const un=unidadesDe(row);
+    if(un>1 && num(row.m)>0){ const t=el('span','ctot'); t.textContent=un+' × '+cf.format(row.m)+' = '+cf.format(compraTotal(row)); cu.append(t); }
+    if(!(row.ult>0)){ if(!cu.firstChild){ cu.textContent='—'; cu.title='Todavía no hay una compra anterior'; } return; }
+    cu.title='Último precio (por unidad) al que lo compraste'; cu.append('Últ. '+cf.format(row.ult));
     if(num(row.m)>0){
       const p=(row.m-row.ult)/row.ult;
       if(Math.abs(p)>=0.005){ const s=el('span',p>0?'up':'dn'); s.textContent=' '+(p>0?'▲':'▼')+Math.round(Math.abs(p)*100)+'%'; cu.append(s); }
@@ -103,11 +111,12 @@ function compraRow(q,row,c){
     renderCompras(q); markDirty();
   }));
   const sync=()=>{
-    sel.value=row.cadena; ot.hidden=row.cadena!=='Otros'; ot.value=row.otra; mi.value=fmt(row.m); paintUlt();
+    qs.value=String(unidadesDe(row)); sel.value=row.cadena; ot.hidden=row.cadena!=='Otros'; ot.value=row.otra; mi.value=fmt(row.m); paintUlt();
     pb.textContent=row.ok?'✓':'×'; pb.classList.toggle('paid',row.ok);
     pb.title=row.ok?'Comprado — toca para desmarcar':'Sin comprar — toca para marcar como comprado'; pb.setAttribute('aria-label',pb.title);
     d.classList.toggle('done',row.ok);
   };
+  qs.addEventListener('change',()=>{ row.u=unidadesDe({u:qs.value}); paintUlt(); totals(); markDirty(); });
   ti.addEventListener('change',()=>{ row.n=ti.value.trim(); lookupCompra(row); sync(); totals(); markDirty(); });
   sel.addEventListener('change',()=>{ row.cadena=sel.value; if(row.cadena!=='Otros') row.otra=''; lookupCompra(row); sync(); totals(); markDirty(); });
   ot.addEventListener('change',()=>{ row.otra=ot.value.trim(); lookupCompra(row); sync(); totals(); markDirty(); });
@@ -116,7 +125,7 @@ function compraRow(q,row,c){
     if(row.ok && String(row.n).trim() && !(row.cadena==='Otros' && !String(row.otra).trim())) upsertCat(row.n,chainName(row),num(row.m)>0?num(row.m):undefined);
     sync(); totals(); markDirty();
   });
-  d.append(cn,cc,cm,cu,cp,cx); sync();
+  d.append(cn,cc,cq,cm,cu,cp,cx); sync();
   return d;
 }
 function renderCompras(q){
@@ -125,9 +134,9 @@ function renderCompras(q){
   v.replaceChildren();
   const c=el('section','card'); c.dataset.sec='compras';
   const h=el('header'); const h2=el('h2'); h2.textContent='Compras super/otros · '+qname(q); const tot=el('span','tot'); h.append(h2,tot); c.append(h);
-  const hint=el('p','hint'); hint.innerHTML='Arma tu lista antes de salir: elige artículos de <b>Mi lista</b> o escribe uno nuevo (queda guardado para la próxima). Al tildar ✓ como comprado, el precio pasa a ser el "último precio" de ese artículo en esa cadena. Es solo una lista: <b>no se resta del balance</b>.'; c.append(hint);
+  const hint=el('p','hint'); hint.innerHTML='Arma tu lista antes de salir: elige artículos de <b>Mi lista</b> o escribe uno nuevo (queda guardado para la próxima). Escribe el precio de <b>una</b> unidad y elige cuántas llevas (1 a 12): la lista suma precio × unidades. Al tildar ✓ como comprado, el precio unitario pasa a ser el "último precio" de ese artículo en esa cadena. Es solo una lista: <b>no se resta del balance</b>.'; c.append(hint);
   c.append(el('div','cresumen'));
-  const head=el('div','chead'); ['Producto','Cadena','Precio','Último precio','✓',''].forEach(t=>{ const s=el('span'); s.textContent=t; head.append(s); }); c.append(head);
+  const head=el('div','chead'); ['Producto','Cadena','Unid.','Precio unidad','Último / total','✓',''].forEach(t=>{ const s=el('span'); s.textContent=t; head.append(s); }); c.append(head);
   const box=el('div','list'); c.append(box);
   list.forEach(r=>box.append(compraRow(q,r,c)));
   if(!list.length){ const p=el('p','small'); p.style.cssText='padding:8px 4px'; p.textContent='Todavía no hay nada en la lista de '+estaP()+'.'; box.append(p); }
