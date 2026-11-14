@@ -2,8 +2,13 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.0.0';
+const APP_VERSION='2.1.0';
 const NOVEDADES=[
+ {v:'2.1.0', fecha:'14 nov 2026', items:[
+  'Compras super/otros: la lista se ordena sola alfabéticamente por producto',
+  'Todo lo que escribes (productos, descripciones, notas, nombres) empieza con mayúscula, aunque lo escribas en minúscula',
+  'Los botones Papelera y Excel (.xlsx) ahora tienen el mismo estilo azul que los demás',
+  'Compras: descarga una plantilla .csv en blanco, pídele a una IA que la llene con la foto de tu factura y cárgala para que se agregue sola a la lista (con botón de instrucciones para copiar)']},
  {v:'2.0.0', fecha:'14 nov 2026', items:[
   'Cifrado de extremo a extremo: tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos',
   'Eliges una clave del hogar (la usan tú y tu pareja) y recibes un código de recuperación para guardar. Si pierdes los dos, nadie puede recuperar los datos',

@@ -443,7 +443,7 @@ function buildResumen(){
   const b1=el('button','btn primary'); b1.type='button'; b1.textContent='Descargar respaldo (.json)'; b1.addEventListener('click',exportBackup);
   const b2=el('button','btn primary'); b2.type='button'; b2.textContent='Importar respaldo (.json)'; b2.addEventListener('click',()=>$('#fileImp').click());
   const del=el('button','btn danger'); del.type='button'; del.textContent='Eliminar este mes'; del.addEventListener('click',askDeleteMonth);
-  const bp=el('button','btn'); bp.type='button'; bp.id='btnPapelera'; bp.addEventListener('click',openPapelera);
+  const bp=el('button','btn primary'); bp.type='button'; bp.id='btnPapelera'; bp.addEventListener('click',openPapelera);
   const bAcc=el('button','btn danger'); bAcc.type='button'; bAcc.textContent='Eliminar mi cuenta y mis datos'; bAcc.addEventListener('click',askDeleteAccount);
   /* Compartir / Drive / WhatsApp / correo: quitado por ahora (en el teléfono no funcionó). shareBackup() queda para un futuro botón único. */
   tools.append(b1,b2,del,bp);
@@ -453,7 +453,7 @@ function buildResumen(){
   updatePapeleraBtn(v); updateRespaldoAviso(v); fillAhorro(v);
   const te=$('#toolsExport',v);
   const m3=el('button','btn primary'); m3.type='button'; m3.textContent='Descargar plantilla completa (PDF)'; m3.addEventListener('click',exportFullPDF);
-  const m4=el('button','btn'); m4.type='button'; m4.textContent='Excel (.xlsx)'; m4.addEventListener('click',exportExcel);
+  const m4=el('button','btn primary'); m4.type='button'; m4.textContent='Excel (.xlsx)'; m4.addEventListener('click',exportExcel);
   te.append(m3,m4);
   try{ e2eAjustes(v); }catch(e){}
   $('#hogarNombre',v).textContent='Hogar: '+(hogarInfo&&hogarInfo.nombre?hogarInfo.nombre:'(sin nombre)');

@@ -11,7 +11,7 @@ const compraTotal=r=>num(r.m)*unidadesDe(r);
 function normCompra(r){
   r=r||{};
   const cad=(typeof r.cadena==='string'&&(CADENAS.includes(r.cadena)||r.cadena==='Otros'))?r.cadena:'';
-  return {id:String(r.id||uid()), n:String(r.n==null?'':r.n), m:numOrNull(r.m), u:unidadesDe(r), cadena:cad, otra:cad==='Otros'?String(r.otra||''):'', ult:numOrNull(r.ult), ok:r.ok===true};
+  return {id:String(r.id||uid()), n:capIni(r.n), m:numOrNull(r.m), u:unidadesDe(r), cadena:cad, otra:cad==='Otros'?capIni(r.otra||''):'', ult:numOrNull(r.ult), ok:r.ok===true};
 }
 function setChainFrom(row,name){
   if(CADENAS.includes(name)){ row.cadena=name; row.otra=''; }
@@ -80,7 +80,7 @@ function updateComprasTotals(q,c){
   Object.keys(by).sort().forEach(k=>{ const g=el('span','tag'); g.textContent=k+': '+cf.format(by[k]); rs.append(g); });
 }
 function compraRow(q,row,c){
-  const d=el('div','crow');
+  const d=el('div','crow'); d._row=row;
   const cn=el('div','c-n'); const ti=el('input'); ti.type='text'; ti.value=row.n; ti.placeholder='Producto (ej: Aceite 1,5 lt)';
   ti.setAttribute('aria-label','Producto'); ti.autocomplete='off'; ti.setAttribute('list','dlProductos'); cn.append(ti);
   const cc=el('div','c-c'); const sel=el('select'); sel.setAttribute('aria-label','Cadena');
@@ -128,9 +128,123 @@ function compraRow(q,row,c){
   d.append(cn,cc,cq,cm,cu,cp,cx); sync();
   return d;
 }
+/* Orden alfabético por producto (sin importar mayúsculas ni tildes). Las líneas sin nombre quedan al final. */
+function ordenarCompras(list){
+  const orden=list.map((r,i)=>[r,i]).sort((a,b)=>{
+    const na=normTxt(a[0].n), nb=normTxt(b[0].n);
+    if(!na!==!nb) return na?-1:1;
+    return na.localeCompare(nb,'es')||a[1]-b[1];
+  }).map(x=>x[0]);
+  const cambio=orden.some((r,i)=>r!==list[i]);
+  if(cambio) list.splice(0,list.length,...orden);
+  return cambio;
+}
+/* Reordena las filas ya dibujadas sin volver a dibujar, y solo si el cursor no está dentro de la lista (para no cortar lo que se escribe) */
+function reordenarComprasEnPantalla(q,box){
+  const list=months[cur]&&months[cur][q]&&months[cur][q].compras; if(!list||!box.isConnected) return;
+  if(box.contains(document.activeElement)) return;
+  if(!ordenarCompras(list)) return;
+  const por=new Map([...box.children].filter(x=>x._row).map(x=>[x._row,x]));
+  list.forEach(r=>{ const d=por.get(r); if(d) box.append(d); });
+  markDirty();
+}
+/* ---------- CSV de compras: plantilla en blanco e importación ---------- */
+const CSV_COLS=['producto','cantidad','comercio','precio_unitario'];
+const INSTRUCCIONES_IA='Voy a pasarte la foto o el PDF de una factura de supermercado. Llena un archivo CSV con estas columnas, en este orden y con esta primera fila exacta:\n'+CSV_COLS.join(',')+'\nUna fila por producto. Reglas:\n- producto: nombre del artículo tal como aparece en la factura.\n- cantidad: cuántas unidades compré (número entero; si es por peso, el peso con punto decimal, por ejemplo 0.75).\n- comercio: nombre del supermercado o comercio de la factura (el mismo en todas las filas).\n- precio_unitario: precio de UNA unidad, solo el número, sin símbolo de moneda y sin separador de miles (por ejemplo 1250.50). Si la factura solo muestra el total de la línea, divídelo entre la cantidad.\nNo agregues columnas, títulos ni comentarios. Entrégame solo el contenido del CSV.';
+function descargarPlantillaCSV(){
+  const txt='﻿'+CSV_COLS.join(',')+'\r\n';
+  downloadBlob(new Blob([txt],{type:'text/csv;charset=utf-8'}),'plantilla-compras.csv');
+  toast('Plantilla descargada');
+}
+/* Lee texto CSV con comas o punto y coma, y comillas */
+function parseCSV(txt){
+  txt=String(txt).replace(/^﻿/,'');
+  const primera=txt.split(/\r?\n/)[0]||'';
+  const sep=(primera.split(';').length>primera.split(',').length)?';':',';
+  const filas=[]; let f=[],c='',q=false;
+  for(let i=0;i<txt.length;i++){
+    const ch=txt[i];
+    if(q){ if(ch==='"'){ if(txt[i+1]==='"'){ c+='"'; i++; } else q=false; } else c+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===sep){ f.push(c); c=''; }
+    else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&txt[i+1]==='\n') i++; f.push(c); c=''; if(f.some(x=>x.trim()!=='')) filas.push(f); f=[]; }
+    else c+=ch;
+  }
+  f.push(c); if(f.some(x=>x.trim()!=='')) filas.push(f);
+  return filas;
+}
+/* Convierte las filas del CSV en líneas de compra; devuelve {lineas, omitidas} */
+function lineasDesdeCSV(filas){
+  if(!filas.length) return {lineas:[],omitidas:0};
+  const norm=s=>normTxt(s).replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  const enc=filas[0].map(norm);
+  const idx=(...nombres)=>enc.findIndex(h=>nombres.includes(h));
+  let iN=idx('producto','articulo','item','descripcion','nombre'), iQ=idx('cantidad','cant','unidades','qty');
+  let iC=idx('comercio','supermercado','cadena','tienda','super'), iP=idx('precio_unitario','precio','costo','costo_unitario','precio_unit','valor');
+  let datos=filas.slice(1);
+  if(iN<0){ /* sin encabezado reconocible: se toma el orden de la plantilla */ iN=0; iQ=1; iC=2; iP=3; datos=filas; }
+  const lineas=[]; let omitidas=0;
+  datos.forEach(r=>{
+    const n=capIni(String(r[iN]||'').trim());
+    if(!n){ omitidas++; return; }
+    let cant=iQ>=0?parseMoney(r[iQ]||''):null; if(cant==null||Number.isNaN(cant)||cant<=0) cant=1;
+    let precio=iP>=0?parseMoney(r[iP]||''):null; if(Number.isNaN(precio)) precio=null;
+    let u=1, m=precio;
+    if(Number.isInteger(cant)&&cant<=12) u=cant;
+    else if(precio!=null) m=Math.round(precio*cant*100)/100; /* más de 12 o con decimales (peso): se guarda el total de la línea como 1 unidad */
+    const com=capIni(String(iC>=0?(r[iC]||''):'').trim());
+    lineas.push({n,u,m,comercio:com});
+  });
+  return {lineas,omitidas};
+}
+async function leerArchivoCSV(file){
+  const buf=await file.arrayBuffer();
+  try{ return new TextDecoder('utf-8',{fatal:true}).decode(buf); }
+  catch(e){ return new TextDecoder('windows-1252').decode(buf); }
+}
+function importarCSVCompras(q,file){
+  leerArchivoCSV(file).then(txt=>{
+    const {lineas,omitidas}=lineasDesdeCSV(parseCSV(txt));
+    if(!lineas.length){ toast('No encontré productos en ese archivo. Revisa que use la plantilla.'); return; }
+    const body=el('div');
+    const p=el('p','small'); p.textContent='Encontré '+lineas.length+' producto'+(lineas.length===1?'':'s')+(omitidas?' ('+omitidas+' fila'+(omitidas===1?'':'s')+' sin nombre se omitieron)':'')+'. Se agregan a la lista de '+qname(q)+'.'; body.append(p);
+    const tot=lineas.reduce((s,l)=>s+num(l.m)*l.u,0);
+    const p2=el('p','small'); p2.textContent='Total del archivo: '+cf.format(tot); body.append(p2);
+    const lab=el('label'); lab.style.cssText='display:flex; gap:8px; align-items:flex-start; margin:10px 0; font-size:14px';
+    const ck=el('input'); ck.type='checkbox'; ck.checked=true; ck.style.cssText='width:auto; margin-top:3px'; ck.setAttribute('data-nocap','');
+    lab.append(ck,document.createTextNode('Marcarlos como comprados ✓ (así el precio queda como "último precio" de cada artículo)')); body.append(lab);
+    const lst=el('div'); lst.style.cssText='max-height:32vh; overflow:auto; font-size:13px';
+    lineas.slice(0,50).forEach(l=>{ const d=el('div'); d.textContent=l.u+' × '+l.n+(l.comercio?' · '+l.comercio:'')+(l.m!=null?' · '+cf.format(l.m):' · sin precio'); lst.append(d); });
+    if(lineas.length>50){ const d=el('div'); d.textContent='… y '+(lineas.length-50)+' más'; lst.append(d); }
+    body.append(lst);
+    modal('Importar compras desde CSV',body,[
+      {label:'Cancelar'},
+      {label:'Agregar a la lista',cls:'primary',onClick:()=>{
+        const arr=months[cur][q].compras; while(arr.length && compraBlank(arr[arr.length-1])) arr.pop();
+        lineas.forEach(l=>{
+          const row=normCompra({n:l.n,m:l.m,u:l.u}); if(l.comercio) setChainFrom(row,CADENAS.find(c=>normTxt(c)===normTxt(l.comercio))||l.comercio);
+          lookupCompra(row); row.ok=ck.checked;
+          if(row.ok && row.cadena && !(row.cadena==='Otros'&&!String(row.otra).trim()) && num(row.m)>0) upsertCat(row.n,chainName(row),num(row.m));
+          arr.push(row);
+        });
+        renderCompras(q); markDirty(); toast('Se agregaron '+lineas.length+' productos');
+      }}
+    ]);
+  }).catch(()=>toast('No se pudo leer el archivo'));
+}
+function ayudaCSV(){
+  const body=el('div');
+  const p=el('p','small'); p.textContent='1) Descarga la plantilla en blanco. 2) Pásale a una IA (Claude u otra) la foto de tu factura junto con las instrucciones de abajo y pídele que llene el CSV. 3) Guarda lo que te devuelva como archivo .csv y cárgalo con "Cargar compras (.csv)".'; body.append(p);
+  const ta=el('textarea'); ta.readOnly=true; ta.value=INSTRUCCIONES_IA; ta.rows=9; ta.setAttribute('data-nocap',''); ta.style.cssText='width:100%; font-size:12.5px; margin-top:8px'; body.append(ta);
+  modal('Compras con factura (CSV)',body,[
+    {label:'Copiar instrucciones',cls:'primary',onClick:()=>{ (navigator.clipboard?navigator.clipboard.writeText(INSTRUCCIONES_IA):Promise.reject()).then(()=>toast('Instrucciones copiadas')).catch(()=>{ ta.select(); toast('Selecciónalas y cópialas'); }); return false; }},
+    {label:'Cerrar'}
+  ]);
+}
 function renderCompras(q){
   const v=document.getElementById('view-c'+q.slice(1)); if(!v||!months[cur]) return;
   const list=months[cur][q].compras;
+  ordenarCompras(list);
   v.replaceChildren();
   const c=el('section','card'); c.dataset.sec='compras';
   const h=el('header'); const h2=el('h2'); h2.textContent='Compras super/otros · '+qname(q); const tot=el('span','tot'); h.append(h2,tot); c.append(h);
@@ -138,6 +252,7 @@ function renderCompras(q){
   c.append(el('div','cresumen'));
   const head=el('div','chead'); ['Producto','Cadena','Unid.','Precio unidad','Último / total','✓',''].forEach(t=>{ const s=el('span'); s.textContent=t; head.append(s); }); c.append(head);
   const box=el('div','list'); c.append(box);
+  box.addEventListener('focusout',()=>setTimeout(()=>reordenarComprasEnPantalla(q,box),150));
   list.forEach(r=>box.append(compraRow(q,r,c)));
   if(!list.length){ box.append(estadoVacio('compras','Tu lista de '+estaP()+' está vacía','Agrega lo que necesitas comprar, o elige de los artículos que ya usaste.','＋ Agregar el primero',()=>{ list.push(normCompra({})); renderCompras(q); const ins=document.querySelectorAll('#view-c'+q.slice(1)+' .crow .c-n input'); if(ins.length) ins[ins.length-1].focus(); })); }
   const bar=el('div','tools'); bar.style.marginTop='8px';
@@ -147,7 +262,12 @@ function renderCompras(q){
     list.push(normCompra({})); renderCompras(q);
     const ins=document.querySelectorAll('#view-c'+q.slice(1)+' .crow .c-n input'); if(ins.length) ins[ins.length-1].focus();
   });
-  bar.append(pick); c.append(bar,add);
+  const bCsv=el('button','btn primary'); bCsv.type='button'; bCsv.textContent='Plantilla (.csv)'; bCsv.addEventListener('click',descargarPlantillaCSV);
+  const fCsv=el('input'); fCsv.type='file'; fCsv.accept='.csv,text/csv,text/plain'; fCsv.hidden=true;
+  fCsv.addEventListener('change',()=>{ const f=fCsv.files&&fCsv.files[0]; fCsv.value=''; if(f) importarCSVCompras(q,f); });
+  const bUp=el('button','btn primary'); bUp.type='button'; bUp.textContent='Cargar compras (.csv)'; bUp.addEventListener('click',()=>fCsv.click());
+  const bHelp=el('button','btn'); bHelp.type='button'; bHelp.textContent='¿Cómo uso el CSV?'; bHelp.addEventListener('click',ayudaCSV);
+  bar.append(pick,bCsv,bUp,bHelp,fCsv); c.append(bar,add);
   v.append(c); updateComprasTotals(q,c);
 }
 function openPicker(q){

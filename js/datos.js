@@ -62,6 +62,22 @@ function parseMoney(s){
   const n=Number(s);
   return isFinite(n)?n:NaN;
 }
+/* Primera letra en mayúscula (el resto queda como lo escribió el usuario) */
+function capIni(s){
+  s=String(s==null?'':s);
+  return s.replace(/^(\s*)(\S)/u,(m,a,b)=>a+b.toLocaleUpperCase('es'));
+}
+/* En toda la app: al terminar de escribir en un campo de texto libre, la primera letra pasa a mayúscula.
+   No toca montos, correos, claves, PIN ni códigos (los campos con data-nocap o id nhCode/searchAll quedan igual). */
+if(typeof document!=='undefined' && typeof document.addEventListener==='function'){
+  document.addEventListener('change',e=>{
+    const t=e.target; if(!t||!t.tagName) return;
+    if(t.tagName!=='INPUT'&&t.tagName!=='TEXTAREA') return;
+    if(t.tagName==='INPUT'&&t.type!=='text') return;
+    if(t.classList.contains('num')||t.inputMode==='decimal'||t.hasAttribute('data-nocap')||t.id==='nhCode'||t.id==='searchAll') return;
+    const v=capIni(t.value); if(v!==t.value) t.value=v;
+  },true);
+}
 let toastTimer=null;
 function toast(msg){
   const t=$('#toast'); t.textContent=msg; t.classList.add('show');
@@ -88,7 +104,7 @@ const blank=sec=>{
 };
 const isBlank=(r,sec)=>!String(r.n||'').trim() && r.m==null;
 function normRow(r,sec){
-  const o={id:String(r.id||uid()), n:String(r.n==null?'':r.n), m:(typeof r.m==='number'&&isFinite(r.m))?r.m:null};
+  const o={id:String(r.id||uid()), n:capIni(r.n), m:(typeof r.m==='number'&&isFinite(r.m))?r.m:null};
   if(sec==='plataformas'){ o.r=r.r!==false; o.pagado=r.pagado===true; }
   if(sec==='egresos'||sec==='anticipados'){ o.cat=normCat(r.cat); o.pagado=r.pagado===true; }
   if(sec==='tarjeta'){
