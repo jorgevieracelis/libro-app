@@ -2,8 +2,15 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.5.0';
 const NOVEDADES=[
+ {v:'2.5.0', fecha:'16 nov 2026', items:[
+  'Versículos: ahora son 260 (60 nuevos sobre las promesas de Dios para sus hijos) y cambian solos cada 5 minutos; “Ver otro” sigue funcionando y no se repite ninguno hasta mostrarlos todos',
+  'Compras: carga un ticket o factura desde una foto o un PDF; la app lee los productos en tu teléfono, tú eliges el supermercado o establecimiento, corriges lo que haga falta y la lista queda ordenada de la A a la Z',
+  'Resumen: nueva tarjeta “De un vistazo” con cuánto puedes gastar por día, tu próximo pago, avisos del presupuesto y logros',
+  'Gráfico de categorías interactivo, animaciones suaves al entrar a cada pantalla y deslizar una fila (→ pagado, ← quitar)',
+  'Herramientas → Apariencia: tema automático, claro u oscuro, 5 colores e idioma English'
+ ]},
  {v:'2.4.0', fecha:'16 nov 2026', items:[
   'Gastos recurrentes (Más → Metas y deudas): alquiler, internet, suscripciones… se cargan solos como egreso fijo en cada mes nuevo',
   'Año: nueva tarjeta que compara este mes con el mismo mes del año pasado (ingresos, egresos, balance y en qué categorías gastas más o menos)',

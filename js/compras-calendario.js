@@ -269,8 +269,11 @@ function renderCompras(q){
   const bHelp=el('button','btn'); bHelp.type='button'; bHelp.textContent='¿Cómo uso el CSV?'; bHelp.addEventListener('click',ayudaCSV);
   bar.append(pick); c.append(bar,add);
   const csvBox=el('div','csvbox'); csvBox.style.cssText='margin-top:22px; padding-top:14px; border-top:1px solid var(--line,#d9d9d9)';
-  const csvT=el('p','small'); csvT.style.cssText='margin:0 0 8px; font-weight:600'; csvT.textContent='Cargar una factura desde un archivo CSV';
-  const csvBar=el('div','tools'); csvBar.append(bCsv,bUp,bHelp,fCsv); csvBox.append(csvT,csvBar); c.append(csvBox);
+  const csvT=el('p','small'); csvT.style.cssText='margin:0 0 8px; font-weight:600'; csvT.textContent='Cargar una factura o ticket (foto, PDF o archivo CSV)';
+  const fTk=el('input'); fTk.type='file'; fTk.accept='image/*,application/pdf,.pdf'; fTk.hidden=true;
+  fTk.addEventListener('change',()=>{ const f=fTk.files&&fTk.files[0]; fTk.value=''; if(f) cargarTicket(q,f); });
+  const bTk=el('button','btn primary'); bTk.type='button'; bTk.textContent='📷 Foto o PDF del ticket'; bTk.addEventListener('click',()=>fTk.click());
+  const csvBar=el('div','tools'); csvBar.append(bTk,bCsv,bUp,bHelp,fCsv,fTk); csvBox.append(csvT,csvBar); c.append(csvBox);
   v.append(c); updateComprasTotals(q,c);
 }
 function openPicker(q){
@@ -510,8 +513,68 @@ const VERSICULOS=[
  ['El trabajo da fruto','El que trabaja tendrá suficiente comida; el que no trabaja acabará en la pobreza.','Proverbios 28:19 (TLA)'],
  ['Dormir sin preocupaciones','Cuando te acuestes, podrás dormir tranquilo y sin preocupaciones.','Proverbios 3:24 (TLA)'],
  ['Cuéntale a Dios tus problemas','Pueblo mío, ¡confía siempre en Dios! Cuando vayas a su templo, cuéntale todos tus problemas. ¡Dios es nuestro refugio!','Salmo 62:8 (TLA)'],
+ ['Ningún arma prosperará','Sin embargo, nadie ha hecho un arma capaz de destruirte. Israel, tú harás callar a todo el que te acuse, porque yo, el único Dios, hago triunfar a los que me adoran. Te juro que así será.','Isaías 54:17 (TLA)'],
+ ['Dios no se olvida de ti','Pero Dios respondió: Jerusalén, ¿acaso puede una madre olvidar o dejar de amar a su hijo? Y aunque ella lo olvidara, yo no me olvidaré de ti. Yo te llevo grabada como un tatuaje en mis manos, siempre tengo presentes tus murallas.','Isaías 49:15-16 (TLA)'],
+ ['Su palabra no vuelve vacía','Lo mismo pasa con mi palabra cuando sale de mis labios: no vuelve a mí sin antes cumplir mis órdenes, sin antes hacer lo que yo quiero.','Isaías 55:11 (TLA)'],
+ ['Eres suyo','Isaías dijo: Ahora, pueblo de Israel, Dios tu creador te dice: No tengas miedo. Yo te he liberado; te he llamado por tu nombre y tú me perteneces.','Isaías 43:1 (TLA)'],
+ ['Antes que clamen, responde','Antes de que me llamen, yo les responderé; antes de que terminen de hablar, ya los habré escuchado.','Isaías 65:24 (TLA)'],
+ ['Clama y te responderá','Llámame y te responderé. Te haré conocer cosas maravillosas y misteriosas que nunca has conocido.','Jeremías 33:3 (TLA)'],
+ ['Amor eterno','Hace mucho, mucho tiempo me aparecí ante ellos y les dije: Pueblo de Israel, siempre te he amado, siempre te he sido fiel. Por eso nunca dejaré de tratarte con bondad. Volveré a reconstruirte, y volverás a danzar alegremente, a ritmo de panderetas.','Jeremías 31:3 (TLA)'],
+ ['Cuando lo busques de corazón','Cuando ustedes me pidan algo en oración, yo los escucharé. Cuando ustedes me busquen, me encontrarán, siempre y cuando me busquen de todo corazón.','Jeremías 29:12-13 (TLA)'],
+ ['Dios restaura lo perdido','Dios habrá de devolvernos todo lo que perdimos estos años por culpa de los saltamontes que él mandó contra nosotros. Tendremos mucha comida, y alabaremos a nuestro Dios por todas las grandes maravillas que ha hecho en favor nuestro. Dios le dijo al profeta: Yo soy el Dios de los israelitas. Yo vivo en medio de mi pueblo. Ellos me reconocerán como su único Dios, pues no hay otro como yo. ¡Y no volverán a ser humillados!','Joel 2:25-26 (TLA)'],
+ ['Abre las ventanas de los cielos','Traigan a mi templo sus diezmos, y échenlos en el cofre de las ofrendas; así no les faltará alimento. ¡Pónganme a prueba con esto! Verán que abriré las ventanas del cielo, y les enviaré abundantes lluvias.','Malaquías 3:10 (TLA)'],
+ ['Su presencia te da descanso','Dios le contestó: —Yo mismo voy a acompañarte y te haré estar tranquilo.','Éxodo 33:14 (TLA)'],
+ ['Dios cumple su palabra','¡Dios no es como nosotros! No dice mentira alguna ni cambia de parecer. Dios cumple lo que promete.','Números 23:19 (TLA)'],
+ ['Dios fiel que guarda el pacto','Por eso ustedes deben reconocer a nuestro Dios, que es el Dios verdadero. Nuestro Dios cumple su pacto con todos los descendientes de quienes lo aman y obedecen sus mandamientos.','Deuteronomio 7:9 (TLA)'],
+ ['Brazos eternos debajo de ti','Dios es el Dios eterno, y siempre te protegerá; pondrá en fuga a tus enemigos, para que los destruyas.','Deuteronomio 33:27 (TLA)'],
+ ['Ni una palabra ha faltado','Grande es Dios, que le dio paz a su pueblo Israel, cumpliendo así todo lo que prometió. No ha dejado de cumplir ni una sola de las promesas que nos dio por medio de Moisés.','1 Reyes 8:56 (TLA)'],
+ ['Mi roca y mi fortaleza','Tú eres para mí la roca que me da refugio; ¡tú me cuidas y me libras! Me proteges como un escudo, y me salvas con tu poder. ¡Tú eres mi más alto escondite!','Salmo 18:2 (TLA)'],
+ ['Cuán grande es su bondad','Tú eres muy bondadoso con la gente que te honra; a la vista de todo el mundo derramas tu bondad sobre los que en ti confían.','Salmo 31:19 (TLA)'],
+ ['Los ojos de Jehová están sobre los que le temen','Pero tú cuidas siempre de quienes te respetan y confían en tu amor. En tiempos de escasez, no los dejas morir de hambre.','Salmo 33:18-19 (TLA)'],
+ ['Me libró de todos mis temores','Le pedí a Dios que me ayudara, y su respuesta fue positiva: ¡me libró del miedo que tenía!','Salmo 34:4 (TLA)'],
+ ['El ángel de Jehová acampa alrededor','Dios envía a su ángel para que salve del peligro a todos los que lo honran.','Salmo 34:7 (TLA)'],
+ ['Los oye y los libra','Dios escucha a los suyos y los libra de su angustia.','Salmo 34:17 (TLA)'],
+ ['Los libra de todas sus aflicciones','Los que son de Dios podrán tener muchos problemas, pero él los ayuda a vencerlos.','Salmo 34:19 (TLA)'],
+ ['Pon tu delicia en Jehová','Entrégale a Dios tu amor, y él te dará lo que más deseas.','Salmo 37:4 (TLA)'],
+ ['Sus pasos son ordenados','Cuando a Dios le agrada la conducta de un hombre, lo ayuda a mantenerse firme. Tal vez tenga tropiezos, pero no llegará a fracasar porque Dios le dará su apoyo.','Salmo 37:23-24 (TLA)'],
+ ['No quitará el bien a los que andan en integridad','Señor y Dios nuestro, tú nos das calor y protección; nos das honor y gloria. Tu bondad no tiene medida para los que siempre hacen lo bueno.','Salmo 84:11 (TLA)'],
+ ['Con él estaré en la angustia','Dios dice: Mi pueblo me ama y me conoce; por eso yo lo pondré a salvo. Cuando me llame, le responderé y estaré con él en su angustia; lo libraré y lo llenaré de honores.','Salmo 91:14-15 (TLA)'],
+ ['Sus consuelos alegran mi alma','En medio de mis angustias y grandes preocupaciones, tú me diste consuelo y alegría.','Salmo 94:19 (TLA)'],
+ ['Sacia al alma menesterosa','¡Dios calma la sed del sediento, y el hambre del hambriento!','Salmo 107:9 (TLA)'],
+ ['Como los montes rodean a Jerusalén','Las montañas protegen a Jerusalén, y Dios protege a Israel ahora y siempre.','Salmo 125:2 (TLA)'],
+ ['Con regocijo segarán','Las lágrimas que derramamos cuando sembramos la semilla se volverán cantos de alegría cuando cosechemos el trigo.','Salmo 126:5-6 (TLA)'],
+ ['Jehová cumplirá su propósito en mí','Dios mío, tú cumplirás en mí todo lo que has pensado hacer. Tu amor por mí no cambia, pues tú mismo me hiciste. ¡No me abandones!','Salmo 138:8 (TLA)'],
+ ['Cercano a los que le invocan','Siempre estás cerca de los que te llaman con sinceridad. Tú atiendes los ruegos de los que te honran; les das lo que necesitan y los pones a salvo.','Salmo 145:18-19 (TLA)'],
+ ['Sana a los quebrantados de corazón','Dios sanó las heridas de los que habían perdido toda esperanza.','Salmo 147:3 (TLA)'],
+ ['La bendición de Jehová enriquece','La bendición de Dios es riqueza que viene libre de preocupaciones.','Proverbios 10:22 (TLA)'],
+ ['Pedid, buscad, llamad','Pidan a Dios, y él les dará. Hablen con Dios, y encontrarán lo que buscan. Llámenlo, y él los atenderá. Porque el que confía en Dios recibe lo que pide, encuentra lo que busca y, si llama, es atendido.','Mateo 7:7-8 (TLA)'],
+ ['Donde dos o tres se reúnen','Porque allí donde dos o tres de ustedes se reúnan en mi nombre, allí estaré yo.','Mateo 18:20 (TLA)'],
+ ['Lo imposible para los hombres','Jesús les respondió: —Para la gente eso es imposible, pero todo es posible para Dios.','Lucas 18:27 (TLA)'],
+ ['No se turbe vuestro corazón','Poco después, Jesús les dijo a sus discípulos: —No se preocupen. Confíen en Dios y confíen también en mí. En la casa de mi Padre hay lugar para todos. Si no fuera cierto, no les habría dicho que voy allá a prepararles un lugar. Después de esto, volveré para llevarlos conmigo. Así estaremos juntos.','Juan 14:1-3 (TLA)'],
+ ['Nadie las arrebatará de su mano','Mis seguidores me conocen, y yo también los conozco a ellos. Son como las ovejas, que reconocen la voz de su pastor, y él las conoce a ellas. Mis seguidores me obedecen, y yo les doy vida eterna; nadie me los quitará.','Juan 10:27-28 (TLA)'],
+ ['Si permanecéis en él','Si ustedes se mantienen unidos a mí y obedecen todo lo que les he enseñado, recibirán de mi Padre todo lo que pidan.','Juan 15:7 (TLA)'],
+ ['Hijos y no esclavos','Porque el Espíritu que Dios les ha dado no los esclaviza ni les hace tener miedo. Por el contrario, el Espíritu nos convierte en hijos de Dios y nos permite llamar a Dios: ¡Papá! El Espíritu de Dios se une a nuestro espíritu, y nos asegura que somos hijos de Dios.','Romanos 8:15-16 (TLA)'],
+ ['Si dio a su Hijo, ¿cómo no nos dará todo?','Dios no nos negó ni siquiera a su propio Hijo, sino que lo entregó por nosotros, así que también nos dará junto con él todas las cosas.','Romanos 8:32 (TLA)'],
+ ['Fiel es Dios','Ustedes no han pasado por ninguna tentación que otros no hayan tenido. Y pueden confiar en Dios, pues él no va a permitir que sufran más tentaciones de las que pueden soportar. Además, cuando vengan las tentaciones, Dios mismo les mostrará cómo vencerlas, y así podrán resistir.','1 Corintios 10:13 (TLA)'],
+ ['En Cristo todas las promesas son sí','Y todas las promesas que Dios ha hecho se cumplen por medio de Jesucristo. Por eso, cuando alabamos a Dios por medio de Jesucristo, decimos Amén.','2 Corintios 1:20 (TLA)'],
+ ['Ya no eres esclavo, sino hijo y heredero','Ustedes ya no son como los esclavos de cualquier familia, sino que son hijos de Dios. Y como son sus hijos, gracias a él tienen derecho a recibir su herencia.','Gálatas 4:7 (TLA)'],
+ ['Él terminará la obra que comenzó','Dios empezó el buen trabajo en ustedes, y estoy seguro de que lo irá perfeccionando hasta el día en que Jesucristo vuelva.','Filipenses 1:6 (TLA)'],
+ ['Todo lo puedo en Cristo','Cristo me da fuerzas para enfrentarme a toda clase de situaciones.','Filipenses 4:13 (TLA)'],
+ ['Fiel es el que os llama','Él los eligió para ser parte de su pueblo, y hará todo esto porque siempre cumple lo que promete.','1 Tesalonicenses 5:24 (TLA)'],
+ ['Acerquémonos confiadamente al trono de gracia','Así que, cuando tengamos alguna necesidad, acerquémonos con confianza al trono de Dios. Él nos ayudará, porque es bueno y nos ama.','Hebreos 4:16 (TLA)'],
+ ['No te desampararé','No vivan preocupados por tener más dinero. Estén contentos con lo que tienen, porque Dios ha dicho en la Biblia: Nunca te dejaré desamparado.','Hebreos 13:5 (TLA)'],
+ ['Si alguno tiene falta de sabiduría','Si alguno de ustedes no tiene sabiduría, pídasela a Dios. Él se la da a todos en abundancia, sin echarles nada en cara.','Santiago 1:5 (TLA)'],
+ ['Preciosas y grandísimas promesas','Dios utilizó su poder para darnos todo lo que necesitamos, y para que vivamos como él quiere. Dios nos dio todo eso cuando nos hizo conocer a Jesucristo. Por medio de él, nos eligió para que seamos parte de su reino maravilloso. Además, nos ha dado todas las cosas importantes y valiosas que nos prometió. Por medio de ellas, ustedes podrán ser como Dios y no como la gente pecadora de este mundo, porque los malos deseos de esa gente destruyen a los demás.','2 Pedro 1:3-4 (TLA)'],
+ ['Si pedimos conforme a su voluntad','Confiamos en Dios, pues sabemos que él nos oye, si le pedimos algo que a él le agrada. Y así como sabemos que él oye nuestras oraciones, también sabemos que ya nos ha dado lo que le hemos pedido.','1 Juan 5:14-15 (TLA)'],
+ ['Te toma de la mano','Israelitas, yo soy su Dios y los he tomado de la mano; no deben tener miedo, porque cuentan con mi ayuda.','Isaías 41:13 (TLA)'],
+ ['Su bondad te acompaña','Estoy completamente seguro de que tu bondad y tu amor me acompañarán mientras yo viva, y de que para siempre viviré donde tú vives.','Salmo 23:6 (TLA)'],
+ ['En su presencia hay alegría','Tú me enseñaste a vivir como a ti te gusta. ¡En tu presencia soy muy feliz! ¡A tu lado soy siempre dichoso!','Salmo 16:11 (TLA)'],
+ ['Él hace lo que le pides','Yo haré todo lo que ustedes me pidan. De ese modo haré que la gente vea, a través de mí, el poder que tiene Dios el Padre.','Juan 14:13 (TLA)'],
+ ['Dios salva a los que lo reconocen','Pues la Biblia también dice: Dios salvará a los que lo reconozcan como su Dios.','Romanos 10:13 (TLA)'],
+ ['Nunca te fallará','Nadie podrá derrotarte jamás, porque yo te ayudaré, así como ayudé a Moisés. Nunca te fallaré ni te abandonaré.','Josué 1:5 (TLA)'],
+ ['Dios mismo es tu guía','Dios mismo será tu guía, y te ayudará en todo; él jamás te abandonará. ¡Echa fuera el miedo y la cobardía!','Deuteronomio 31:8 (TLA)'],
 ];
-let versIdx=-1, versOcultoDesde=0;
+let versIdx=-1, versOcultoDesde=0, versUltimo=0;
 function leerVistos(){
   try{ const a=JSON.parse(localStorage.getItem('lfh.versVistos')||'[]'); return Array.isArray(a)?a.filter(i=>Number.isInteger(i)&&i>=0&&i<VERSICULOS.length):[]; }
   catch(e){ return []; }
@@ -524,17 +587,20 @@ function nuevoVersiculo(){
   let libres=[]; for(let i=0;i<N;i++) if(!vistos.includes(i)&&i!==versIdx) libres.push(i);
   if(!libres.length) for(let i=0;i<N;i++) if(i!==versIdx) libres.push(i);
   versIdx=libres[Math.floor(Math.random()*libres.length)];
-  vistos.push(versIdx); guardarVistos(vistos); renderVersiculo();
+  vistos.push(versIdx); guardarVistos(vistos); versUltimo=Date.now(); renderVersiculo();
 }
 function renderVersiculo(){
   const v=VERSICULOS[versIdx]; if(!v) return;
   $('#vsTitle').textContent=v[0]; $('#vsText').textContent='“'+v[1]+'”'; $('#vsRef').textContent='— '+v[2];
 }
 $('#vsOtro').addEventListener('click',nuevoVersiculo);
+/* El versículo cambia solo cada 5 minutos mientras la app está abierta a la vista; "Ver otro" lo cambia cuando quieras y reinicia la cuenta. */
+const VERS_CADA_MS=5*60*1000;
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){ versOcultoDesde=Date.now(); return; }
-  if(versOcultoDesde && Date.now()-versOcultoDesde>30*60000 && !$('#versiculo').hidden) nuevoVersiculo();
+  if(versOcultoDesde && Date.now()-versOcultoDesde>=VERS_CADA_MS && !$('#versiculo').hidden) nuevoVersiculo();
 });
+setInterval(()=>{ if(!document.hidden && !$('#versiculo').hidden && Date.now()-versUltimo>=VERS_CADA_MS) nuevoVersiculo(); },15000);
 
 /* ---------- Calendario de notas ---------- */
 let notas=[], unsubNotas=null, calY=null, calM=null, calSel=null;

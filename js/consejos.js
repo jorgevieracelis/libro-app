@@ -54,7 +54,7 @@ function refreshComputed(){
     const p=b.dataset.barv.split('.'); b.textContent=cf.format(C[p[0]][p[1]]);
   });
   renderPie(md);
-  renderPresupuesto(); renderVenc(); renderComercios();
+  renderPresupuesto(); renderVenc(); renderComercios(); renderGlance();
   renderConsejos(md,mes);
 }
 /* ---------- Consejos del mes (reglas simples, calculadas en el teléfono) ---------- */
@@ -160,6 +160,8 @@ function renderPie(md){
     '<span class="pie-pct">'+(Math.round(e.pct*1000)/10).toString().replace('.',',')+' %</span></div>'
   ).join('');
   host.innerHTML='<div class="pie-svg">'+svg+'</div><div class="pie-legend">'+
-    (legend.length?rows:'<p class="small">Todavía no hay egresos con categoría este mes.</p>')+'</div>';
+    (legend.length?'<p class="pie-det" aria-live="polite">Toca una porción o una categoría para ver el detalle.</p>'+rows:'<p class="small">Todavía no hay egresos con categoría este mes.</p>')+'</div>';
+  host.querySelectorAll('.pie-row').forEach((r,i)=>{ const e=legend[i]; r.dataset.det=e.label+': '+cf.format(e.amt)+' ('+(Math.round(e.pct*1000)/10).toString().replace('.',',')+' % de tus egresos)'; });
+  pieInteractivo(host);
 }
 

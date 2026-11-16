@@ -16,6 +16,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Libro Finanzas">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>try{var _t=localStorage.getItem('lfh.tema'),_a=localStorage.getItem('lfh.acento');if(_t==='claro')document.documentElement.setAttribute('data-theme','light');else if(_t==='oscuro')document.documentElement.setAttribute('data-theme','dark');if(_a&&_a!=='clasico')document.documentElement.setAttribute('data-acento',_a);}catch(e){}</script>
 <style>
 :root{
   --bg:#f4f6fa; --card:#ffffff; --ink:#111827; --muted:#5d6679; --line:#e4e8f0;
@@ -553,6 +554,61 @@ body.modalOpen #fabRapido{display:none}
 .rapForm label{display:grid; gap:4px; font-size:13px; font-weight:600}
 .rapForm input,.rapForm select{width:100%; box-sizing:border-box}
 
+/* ---- Color de la app (Herramientas → Apariencia). "Clásico" no lleva atributo. ---- */
+:root[data-acento="azul"]{--chrome:linear-gradient(180deg,#7f9fcf 0%,#3f6aa8 22%,#1b3f7a 50%,#10305f 52%,#2a5799 100%);--chromeBd:#0c244a;--accent:#1b3f7a;--ring:#7aa2f7;--glow:rgba(63,106,168,.45)}
+:root[data-acento="azul"][data-theme="dark"]{--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="azul"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}}
+:root[data-acento="verde"]{--chrome:linear-gradient(180deg,#7fcf9f 0%,#3fa86a 22%,#1f7a4a 50%,#165c38 52%,#2a9962 100%);--chromeBd:#0f4a2c;--accent:#1e6b45;--brand:#0f3d28;--ring:#3ecf7a;--hero1:#1f6b45;--hero2:#0f3d28;--glow:rgba(46,176,100,.45)}
+:root[data-acento="verde"][data-theme="dark"]{--chrome:linear-gradient(180deg,#b4f0cd 0%,#7be3a6 24%,#3ecf7a 50%,#2eb064 52%,#52d98a 100%);--chromeBd:#1f7a46;--accent:#4ade80;--brand:#8df0b4;--ring:#3ecf7a;--hero1:#1f4a38;--hero2:#12281f;--glow:rgba(62,207,122,.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="verde"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#b4f0cd 0%,#7be3a6 24%,#3ecf7a 50%,#2eb064 52%,#52d98a 100%);--chromeBd:#1f7a46;--accent:#4ade80;--brand:#8df0b4;--ring:#3ecf7a;--hero1:#1f4a38;--hero2:#12281f;--glow:rgba(62,207,122,.45)}}
+:root[data-acento="violeta"]{--chrome:linear-gradient(180deg,#b7a2ea 0%,#8265d0 22%,#5b3fb0 50%,#46308f 52%,#6a4fc2 100%);--chromeBd:#34236e;--accent:#5b3fb0;--brand:#2f1f66;--ring:#b39dff;--hero1:#4a3594;--hero2:#261a52;--glow:rgba(130,101,208,.45)}
+:root[data-acento="violeta"][data-theme="dark"]{--chrome:linear-gradient(180deg,#e3d9ff 0%,#cdbcff 24%,#b39dff 50%,#9a82ea 52%,#bba7ff 100%);--chromeBd:#6a54b8;--accent:#b9a6ff;--brand:#d6caff;--ring:#b39dff;--hero1:#3a2f66;--hero2:#201a3d;--glow:rgba(179,157,255,.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="violeta"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#e3d9ff 0%,#cdbcff 24%,#b39dff 50%,#9a82ea 52%,#bba7ff 100%);--chromeBd:#6a54b8;--accent:#b9a6ff;--brand:#d6caff;--ring:#b39dff;--hero1:#3a2f66;--hero2:#201a3d;--glow:rgba(179,157,255,.45)}}
+:root[data-acento="naranja"]{--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%);--chromeBd:#b8620f;--accent:#9a4306;--brand:#5a2a00;--ring:#f28c28;--hero1:#b25a0a;--hero2:#6b3200;--glow:rgba(242,140,40,.45)}
+:root[data-acento="naranja"][data-theme="dark"]{--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%);--chromeBd:#b8620f;--accent:#f28c28;--brand:#ffb066;--ring:#f28c28;--glow:rgba(242,140,40,.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="naranja"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%);--chromeBd:#b8620f;--accent:#f28c28;--brand:#ffb066;--ring:#f28c28;--glow:rgba(242,140,40,.45)}}
+:root[data-acento="naranja"]:not([data-theme="dark"]) .btn.primary,:root[data-acento="naranja"]:not([data-theme="dark"]) #fabRapido{color:#2b1500; text-shadow:none}
+@media (prefers-color-scheme: dark){:root[data-acento="naranja"]:not([data-theme="light"]) .btn.primary,:root[data-acento="naranja"]:not([data-theme="light"]) #fabRapido{color:#1a0d00; text-shadow:none}}
+.swatch{display:inline-flex; align-items:center; gap:8px; min-height:44px}
+.swatch .swDot{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex:none}
+.swatch[aria-pressed="true"]{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent)}
+
+/* ---- De un vistazo, avisos y logros ---- */
+.glance .gRow{display:flex; gap:12px; align-items:flex-start; padding:10px 4px; border-top:1px solid var(--line)}
+.glance header + .gRow{border-top:0}
+.glance .gIco{font-size:20px; line-height:1.2; flex:none; width:26px; text-align:center}
+.glance .gTxt{display:grid; gap:1px; min-width:0}
+.glance .gTxt b{font-size:14px; overflow-wrap:anywhere}
+.glance .gTxt span{font-size:12.5px; color:var(--muted)}
+.glance .gRow.warn .gTxt b{color:#9a4306}
+.glance .gRow.neg .gTxt b{color:var(--neg)}
+.glance .gRow.ok .gTxt b{color:var(--pos)}
+:root[data-theme="dark"] .glance .gRow.warn .gTxt b{color:#ffb066}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .glance .gRow.warn .gTxt b{color:#ffb066}}
+#bottomNav button.alerta::after{content:""; position:absolute; top:6px; right:calc(50% - 20px); width:9px; height:9px; border-radius:50%; background:var(--neg); border:2px solid var(--card)}
+
+/* ---- Gráfico interactivo y animaciones (solo al entrar a una pestaña; se apagan con "reducir movimiento") ---- */
+.pie-svg path{cursor:pointer; transform-box:view-box; transform-origin:100px 100px; transition:transform .18s ease, opacity .18s ease}
+.pie-svg.sel path:not(.on){opacity:.3}
+.pie-svg path.on{transform:scale(1.06)}
+.pie-row{cursor:pointer; border-radius:8px; padding:5px 6px}
+.pie-row.on{background:var(--chip); font-weight:600}
+.pie-row:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.pie-det{font-size:13px; font-weight:600; margin:0 0 6px; min-height:20px; color:var(--ink)}
+@keyframes pieIn{from{opacity:0; transform:scale(.55) rotate(-30deg)} to{opacity:1; transform:none}}
+@keyframes growX{from{transform:scaleX(0)} to{transform:scaleX(1)}}
+@keyframes vistaIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+.vistaNueva{animation:vistaIn .28s ease-out both}
+.vistaNueva .pie-svg path{animation:pieIn .55s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i,0)*45ms)}
+.vistaNueva .track .fill{transform-origin:left center; animation:growX .65s cubic-bezier(.2,.8,.2,1) both}
+.vistaNueva .ringBox .rFg{transition:none}
+
+/* ---- Deslizar una fila ---- */
+.row,.row input{touch-action:pan-y}
+.row{position:relative}
+.row[data-sw="pay"]{background:color-mix(in srgb,var(--pos) 20%,transparent)}
+.row[data-sw="del"]{background:color-mix(in srgb,var(--neg) 20%,transparent)}
+
 /* ---- Zonas táctiles cómodas en teléfono (mínimo 44 px de alto en botones, listas desplegables y pestañas) ---- */
 @media (max-width:640px){
   .btn,select,.tab,.add,#verBtn,#bvBtn,.vsBtn,#nuevoMes,#lockBtn,#salir{min-height:44px}
@@ -829,6 +885,9 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/respaldo.js"></script>
 <script src="js/calculadoras.js"></script>
 <script src="js/comprobantes.js"></script>
+<script src="js/facturas.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/visual.js"></script>
 <script src="js/ventanas-acceso.js"></script>
 <script src="js/bienvenida.js"></script>
 <script src="js/seguridad.js"></script>

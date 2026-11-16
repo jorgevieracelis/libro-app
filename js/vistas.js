@@ -388,6 +388,7 @@ function buildResumen(){
    '<div class="quick"><a class="btn" href="guia-libro-de-finanzas.pdf" target="_blank" rel="noopener">'+icono('guia')+'Guía de uso (PDF)</a>'+
    '<button type="button" class="btn" id="consejosBtn" aria-expanded="false" aria-controls="consejosCard">'+icono('idea')+'Consejos del mes</button></div>'+
    '<p class="warnBox" id="respWarn" hidden></p>'+
+   '<section class="card glance" id="glanceCard" style="margin:0 0 16px" hidden></section>'+
    '<section class="card" id="vencCard" style="margin:0 0 16px" hidden></section>'+
    '<section class="card" id="consejosCard" style="margin:0 0 16px" hidden></section>'+
    '<div class="two">'+
@@ -447,7 +448,8 @@ function buildHerramientas(){
    '<p class="hint" style="margin-top:14px">Para guardar o imprimir todo el mes:</p>'+
    '<div class="tools" id="toolsExport"></div>'+
    '<p class="small" id="sesion" style="margin-top:14px"></p></section>';
-  { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc){ hc.closest('section').before(buildCalculadoras()); hc.closest('section').before(buildImportarGastos()); } }
+  { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc){ hc.closest('section').before(buildCalculadoras()); hc.closest('section').before(buildImportarGastos()); }
+    const mo=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Moneda'); if(mo) mo.closest('section').before(buildApariencia()); }
   const searchBox=$('#searchAll',v);
   searchBox.addEventListener('input',()=>renderSearchResults(searchBox.value, $('#searchResults',v)));
   const tools=$('#tools',v);

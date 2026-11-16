@@ -141,7 +141,7 @@ function renderPresupuesto(){
     const tk=el('div','track'); const f=el('div','fill'); tk.append(f); const em=el('em'); bar.append(tk,em);
     const upd=()=>{
       const g=num(spent[c]), tope=num(extras.presupuesto[c]);
-      if(tope>0){ const p=g/tope; f.style.width=Math.min(100,p*100)+'%'; f.className='fill '+(p>=1?'b':p>=0.8?'w':'i'); em.textContent=cf.format(g)+' · '+Math.round(p*100)+' %'; }
+      if(tope>0){ const p=g/tope; f.style.width=Math.min(100,p*100)+'%'; f.className='fill '+(p>=1?'b':p>=0.8?'w':'i'); em.textContent=(p>=1?'⛔ ':p>=0.8?'⚠ ':'')+cf.format(g)+' · '+Math.round(p*100)+' %'; }
       else { f.style.width='0'; em.textContent=cf.format(g)+' · sin tope'; }
     };
     const inp=moneyInput(()=>extras.presupuesto[c]==null?null:extras.presupuesto[c],v=>{ if(v>0) extras.presupuesto[c]=v; else delete extras.presupuesto[c]; },upd,()=>{ upd(); saveExtras(); refreshConsejos(); },'Tope');
@@ -563,7 +563,7 @@ function showTab(){
   if(tab==='plan') renderPlan();
   tabsValidas().forEach(t=>{const v=document.getElementById('view-'+t); if(v) v.hidden=(t!==tab);});
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
-  marcarNav();
+  marcarNav(); animarVista(tab);
 }
 function render(){
   renderTabs(); renderHeader();

@@ -6,8 +6,8 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v53';
-const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/cifrado.js', './js/cifrado-pantallas.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/navegacion.js', './js/respaldo.js', './js/calculadoras.js', './js/comprobantes.js', './js/ventanas-acceso.js', './js/bienvenida.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './eliminar-cuenta.html', './manifest.json', './fonts/plus-jakarta-sans-latin-wght-normal.woff2', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+const CACHE_NAME = 'lfh-shell-v55';
+const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/cifrado.js', './js/cifrado-pantallas.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/navegacion.js', './js/respaldo.js', './js/calculadoras.js', './js/comprobantes.js', './js/facturas.js', './js/visual.js', './js/i18n.js', './js/ventanas-acceso.js', './js/bienvenida.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './eliminar-cuenta.html', './manifest.json', './fonts/plus-jakarta-sans-latin-wght-normal.woff2', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -51,7 +51,7 @@ self.addEventListener('fetch', event => {
   }
 
   // Lector de comprobantes (vendor/tesseract, ~9 MB): se baja la primera vez que se usa y queda guardado; no se vuelve a pedir en cada uso.
-  if (url.pathname.includes('/vendor/tesseract/')) {
+  if (url.pathname.includes('/vendor/tesseract/') || url.pathname.includes('/vendor/pdfjs/')) {
     event.respondWith(
       caches.match(req).then(cached => cached || fetch(req).then(res => {
         if (res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then(c => c.put(req, copy)); }
