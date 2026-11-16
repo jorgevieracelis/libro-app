@@ -2,8 +2,14 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.5.0';
+const APP_VERSION='2.7.0';
 const NOVEDADES=[
+ {v:'2.7.0', fecha:'16 nov 2026', items:[
+  'Menú reorganizado: la tarjeta de crédito, el retiro de efectivo y el fondo de emergencia pasan a su propia pestaña «Tarjeta y fondos» (Más → Tarjeta y fondos); la configuración (tu hogar, cifrado, cerrar sesión por inactividad, apariencia, moneda y modalidad de cobro) pasa a «Opciones» ⚙ (Más → Opciones); y el respaldo queda en «Importación», dentro de Herramientas'
+ ]},
+ {v:'2.6.0', fecha:'16 nov 2026', items:[
+  'Videos de ayuda: 6 videos cortos con voz y subtítulos que explican la app paso a paso (Más → Videos de ayuda, y arriba en Herramientas)'
+ ]},
  {v:'2.5.0', fecha:'16 nov 2026', items:[
   'Versículos: ahora son 260 (60 nuevos sobre las promesas de Dios para sus hijos) y cambian solos cada 5 minutos; “Ver otro” sigue funcionando y no se repite ninguno hasta mostrarlos todos',
   'Compras: carga un ticket o factura desde una foto o un PDF; la app lee los productos en tu teléfono, tú eliges el supermercado o establecimiento, corriges lo que haga falta y la lista queda ordenada de la A a la Z',

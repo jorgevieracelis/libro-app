@@ -128,6 +128,31 @@ Object.assign(I18N_EN,{
 'Buscador, ahorro en dólares, tu hogar, cifrado, moneda, modalidad de cobro, respaldo y cuenta':'Search, dollar savings, your household, encryption, currency, pay schedule, backup and account',
 'no se resta del balance':'is not subtracted from the balance'
 });
+Object.assign(I18N_EN,{
+'Videos de ayuda: 6 videos cortos con voz y subtítulos que explican la app paso a paso (Más → Videos de ayuda, y arriba en Herramientas)':'Help videos: 6 short videos with voice and subtitles that explain the app step by step (More → Help videos, and at the top of Tools)',
+'Videos de ayuda':'Help videos',
+'Aprende la app en 6 videos cortos, con voz y subtítulos':'Learn the app in 6 short videos, with voice and subtitles',
+'Aprende a usar la app en 6 videos cortos, con voz y subtítulos. Necesitas internet para verlos.':'Learn to use the app in 6 short videos, with voice and subtitles. You need internet to watch them.',
+'Aprende a usar la app en 6 videos cortos, con voz y subtítulos (cada uno pesa unos 2 MB).':'Learn to use the app in 6 short videos, with voice and subtitles (each one is about 2 MB).',
+'Con voz y subtítulos. Necesitas internet para verlo.':'With voice and subtitles (in Spanish). You need internet to watch it.',
+'▶ Ver los videos':'▶ Watch the videos',
+'Todos los videos':'All videos',
+'Siguiente ▶':'Next ▶'
+});
+Object.assign(I18N_EN,{
+'Menú reorganizado: la tarjeta de crédito, el retiro de efectivo y el fondo de emergencia pasan a su propia pestaña «Tarjeta y fondos» (Más → Tarjeta y fondos); la configuración (tu hogar, cifrado, cerrar sesión por inactividad, apariencia, moneda y modalidad de cobro) pasa a «Opciones» ⚙ (Más → Opciones); y el respaldo queda en «Importación», dentro de Herramientas':'Reorganized menu: the credit card, cash withdrawal and emergency fund move to their own tab “Cards & funds” (More → Cards & funds); settings (your household, encryption, sign-out after inactivity, appearance, currency and pay schedule) move to “Options” ⚙ (More → Options); and the backup stays in “Import”, inside Tools',
+'Tarjeta y fondos':'Cards & funds',
+'Opciones':'Options',
+'⚙ Opciones':'⚙ Options',
+'Importación':'Import',
+'Tu cuenta':'Your account',
+'Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia':'Credit card, cash withdrawal at the bank and emergency fund',
+'Buscador, ahorro en dólares, comercios, calculadoras, importación y respaldo':'Search, dollar savings, merchants, calculators, import and backup',
+'Tu hogar, cifrado, sesión, apariencia, moneda y modalidad de cobro':'Your household, encryption, session, appearance, currency and pay schedule',
+'Aquí están tu tarjeta de crédito, el retiro de efectivo por banco y el fondo de emergencia de cada quincena. Antes estaban al final de Libro.':'Here are your credit card, the cash withdrawal at the bank and the emergency fund of each half-month. They used to be at the end of Ledger.',
+'Aquí están tu tarjeta de crédito, el retiro de efectivo por banco y el fondo de emergencia de cada mes. Antes estaban al final de Libro.':'Here are your credit card, the cash withdrawal at the bank and the emergency fund of each month. They used to be at the end of Ledger.',
+'Aquí están tu tarjeta de crédito, el retiro de efectivo por banco y el fondo de emergencia de cada semana. Antes estaban al final de Libro.':'Here are your credit card, the cash withdrawal at the bank and the emergency fund of each week. They used to be at the end of Ledger.'
+});
 /* Notas de versiones anteriores: se dejan en español (son historial). */
 
 /* Meses y días */

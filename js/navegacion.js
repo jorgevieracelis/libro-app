@@ -15,6 +15,9 @@ function ocultarSplash(forzar){
 setTimeout(()=>ocultarSplash(true),7500);
 
 const ICONOS={
+  tuerca:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  tarjeta:'<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6 15h4"/>',
+  video:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>',
   inicio:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   libro:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M9 8h6M9 12h4"/>',
   compras:'<circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.6 12.2h11L21 7H6"/>',
@@ -72,7 +75,10 @@ function abrirMas(){
   };
   item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); });
   item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); });
-  item('herr','Herramientas','Buscador, ahorro en dólares, tu hogar, cifrado, moneda, modalidad de cobro, respaldo y cuenta',()=>{ tab='herr'; showTab(); });
+  item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); });
+  item('video','Videos de ayuda','Aprende la app en 6 videos cortos, con voz y subtítulos',abrirVideos);
+  item('herr','Herramientas','Buscador, ahorro en dólares, comercios, calculadoras, importación y respaldo',()=>{ tab='herr'; showTab(); });
+  item('tuerca','Opciones','Tu hogar, cifrado, sesión, apariencia, moneda y modalidad de cobro',()=>{ tab='opc'; showTab(); });
   modal('Más',body,[{label:'Cerrar'}]);
 }
 

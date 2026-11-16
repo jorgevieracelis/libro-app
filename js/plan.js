@@ -538,7 +538,7 @@ function renderHeader(){
   $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur; const fab=$('#fabRapido'); if(fab) fab.hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
-function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan','herr']; }
+function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan','extra','herr','opc']; }
 function renderTabs(){
   const nav=$('#tabs'); nav.replaceChildren();
   const add=(k,label,title,short)=>{
@@ -552,7 +552,7 @@ function renderTabs(){
     add(q,periodo==='mensual'?'Ingresos y egresos':qname(q),qrange(q),qname(q));
     add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q),qname(q));
   });
-  add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas'); add('herr','Herramientas');
+  add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas'); add('extra','Tarjeta y fondos'); add('herr','Herramientas'); add('opc','⚙ Opciones','Opciones','Opciones');
   renderBottomNav();
 }
 function showTab(){
@@ -569,7 +569,8 @@ function render(){
   renderTabs(); renderHeader();
   const main=$('#main'); main.replaceChildren();
   if(!cur||!months[cur]){ main.append(buildEmpty()); return; }
-  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildAnio(),buildCal(),buildPlan(),buildHerramientas());
+  const vh=buildHerramientas();
+  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildExtra(),buildAnio(),buildCal(),buildPlan(),vh,vh._opc);
   QS.forEach(q=>SECS.forEach(sec=>renderList(q,sec)));
   QS.forEach(renderCompras);
   refreshComputed(); showTab();

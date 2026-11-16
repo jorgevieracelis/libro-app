@@ -6,8 +6,8 @@
 //
 // Si alguna vez hacés un cambio grande y querés forzar que todos bajen la
 // versión nueva, cambiá el número de CACHE_NAME (ej: 'lfh-shell-v13').
-const CACHE_NAME = 'lfh-shell-v55';
-const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/cifrado.js', './js/cifrado-pantallas.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/navegacion.js', './js/respaldo.js', './js/calculadoras.js', './js/comprobantes.js', './js/facturas.js', './js/visual.js', './js/i18n.js', './js/ventanas-acceso.js', './js/bienvenida.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './eliminar-cuenta.html', './manifest.json', './fonts/plus-jakarta-sans-latin-wght-normal.woff2', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
+const CACHE_NAME = 'lfh-shell-v57';
+const SHELL = ['./', './index.html', './js/datos.js', './js/guardado.js', './js/cifrado.js', './js/cifrado-pantallas.js', './js/consejos.js', './js/vistas.js', './js/compras-calendario.js', './js/plan.js', './js/navegacion.js', './js/respaldo.js', './js/calculadoras.js', './js/comprobantes.js', './js/facturas.js', './js/visual.js', './js/videos.js', './js/i18n.js', './js/ventanas-acceso.js', './js/bienvenida.js', './js/seguridad.js', './js/arranque.js', './privacidad.html', './eliminar-cuenta.html', './manifest.json', './fonts/plus-jakarta-sans-latin-wght-normal.woff2', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/xlsx.full.min.js', './vendor/firebase/firebase-app.js', './vendor/firebase/firebase-auth.js', './vendor/firebase/firebase-firestore.js', './vendor/firebase/firebase-app-check.js', './guia-libro-de-finanzas.pdf', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -28,6 +28,9 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // Firebase/CDN: sin intervenir
+
+  // Videos de ayuda (carpeta videos/): los maneja el navegador directamente (necesitan pedir trozos del archivo).
+  if (url.pathname.includes('/videos/')) return;
 
   const isPage = req.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.includes('/js/');
   if (isPage) {

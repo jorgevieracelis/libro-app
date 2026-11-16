@@ -345,14 +345,29 @@ function buildQ(q){
     card(q,'anticipados','Egresos variables','antic',null)
   );
   v.append(g);
-  v.append(card(q,'fondo','Fondo de emergencia','fondo','Lo que apartes acá se resta del balance '+delP()+', como un ahorro aparte.'));
-  v.append(card(q,'retiro','Retiro de efectivo por banco','retiro','Elige un gasto de <b>Egresos variables</b> y te completa el concepto y el monto solo (lo puedes ajustar después). Es solo para saber cuánto sacar: no se resta de nuevo del balance, porque ese gasto ya está contado en Egresos fijos o Egresos variables.'));
+  return v;
+}
+/* Tarjeta de crédito, retiro de efectivo y fondo de emergencia: ahora viven en su propia pestaña («Tarjeta y fondos»). Mismos datos e ids que antes. */
+function cardsExtra(q){
+  const out=[];
+  out.push(card(q,'fondo','Fondo de emergencia','fondo','Lo que apartes acá se resta del balance '+delP()+', como un ahorro aparte.'));
+  out.push(card(q,'retiro','Retiro de efectivo por banco','retiro','Elige un gasto de <b>Egresos variables</b> y te completa el concepto y el monto solo (lo puedes ajustar después). Es solo para saber cuánto sacar: no se resta de nuevo del balance, porque ese gasto ya está contado en Egresos fijos o Egresos variables.'));
   const tarjCard=card(q,'tarjeta','Gastos tarjeta de crédito','tarjeta','El valor de la cuota se autocompleta (Monto ÷ cuotas), editalo si el banco cobra interés. Elige el mes de la <b>1ª cuota</b> y las siguientes van a aparecer solas (de solo lectura) en los meses que vengan, hasta agotarse. Entra en el gráfico de torta como "Tarjeta de crédito". Es informativo: no se resta del balance, porque el pago de la tarjeta ya lo cargas aparte en Egresos.');
   const sums=el('div','kpis'); sums.style.cssText='margin:4px 4px 0; gap:10px';
   sums.innerHTML='<div class="kpi" style="padding:10px 12px"><span>Pagos simples</span><b style="font-size:16px" data-k="'+q+'.tarjetaSimple"></b></div>'+
     '<div class="kpi" style="padding:10px 12px"><span>En cuotas</span><b style="font-size:16px" data-k="'+q+'.tarjetaCuotas"></b></div>';
   tarjCard.append(sums);
-  v.append(tarjCard);
+  out.push(tarjCard);
+  return out;
+}
+function buildExtra(){
+  const v=el('div'); v.id='view-extra'; v.hidden=true;
+  const intro=el('p','hint'); intro.textContent='Aquí están tu tarjeta de crédito, el retiro de efectivo por banco y el fondo de emergencia de cada '+porP()+'. Antes estaban al final de Libro.';
+  v.append(intro);
+  QS.forEach(q=>{
+    if(QS.length>1){ const h=el('h2','grpTit'); h.textContent=qname(q); v.append(h); }
+    cardsExtra(q).forEach(c=>v.append(c));
+  });
   return v;
 }
 function tablaPeriodos(){
@@ -450,6 +465,7 @@ function buildHerramientas(){
    '<p class="small" id="sesion" style="margin-top:14px"></p></section>';
   { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc){ hc.closest('section').before(buildCalculadoras()); hc.closest('section').before(buildImportarGastos()); }
     const mo=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Moneda'); if(mo) mo.closest('section').before(buildApariencia()); }
+  { const vc=buildVideosCard(); vc.style.margin='0 0 16px'; v.insertBefore(vc,v.firstChild); const b0=v.children[1]; if(b0&&b0.style) b0.style.marginTop='0'; }
   const searchBox=$('#searchAll',v);
   searchBox.addEventListener('input',()=>renderSearchResults(searchBox.value, $('#searchResults',v)));
   const tools=$('#tools',v);
@@ -495,5 +511,16 @@ function buildHerramientas(){
   ps.addEventListener('change',()=>cambiarPeriodo(ps.value,ps));
   pt.append(ps);
   $('#sesion',v).textContent=me?('Sesión: '+(me.email||'')+' · ID de usuario: '+me.uid):'';
+  /* Configuración → vista «Opciones» (⚙). Lo que queda en esta vista son las herramientas. */
+  const vo=el('div'); vo.id='view-opc'; vo.hidden=true;
+  const secDe=t=>{ const h=[...v.querySelectorAll('section.card h2')].find(x=>x.textContent===t); return h?h.closest('section'):null; };
+  ['Tu hogar','Cifrado de datos','Cerrar sesión por inactividad','Apariencia','Moneda','Modalidad de cobro'].forEach(t=>{ const s=secDe(t); if(s){ s.style.marginTop=vo.children.length?'16px':'0'; vo.append(s); } });
+  const cuenta=el('section','card'); cuenta.style.marginTop='16px';
+  { const h=el('header'); const t=el('h2'); t.textContent='Tu cuenta'; h.append(t); cuenta.append(h);
+    const se=$('#sesion',v); const ts=se.nextSibling, ln=ts&&ts.nextSibling; se.style.marginTop='0';
+    cuenta.append(se); if(ts) cuenta.append(ts); if(ln) cuenta.append(ln); }
+  vo.append(cuenta);
+  { const imp=secDe('Herramientas'); if(imp){ const h2=imp.querySelector('h2'); h2.textContent='Importación'; } }
+  v._opc=vo;
   return v;
 }

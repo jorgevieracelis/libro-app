@@ -554,7 +554,10 @@ body.modalOpen #fabRapido{display:none}
 .rapForm label{display:grid; gap:4px; font-size:13px; font-weight:600}
 .rapForm input,.rapForm select{width:100%; box-sizing:border-box}
 
-/* ---- Color de la app (Herramientas → Apariencia). "Clásico" no lleva atributo. ---- */
+/* ---- Títulos de período en «Tarjeta y fondos» ---- */
+.grpTit{margin:18px 4px 8px; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--brand)}
+#view-extra > .hint{margin:0 4px 6px}
+/* ---- Color de la app (Opciones → Apariencia). "Clásico" no lleva atributo. ---- */
 :root[data-acento="azul"]{--chrome:linear-gradient(180deg,#7f9fcf 0%,#3f6aa8 22%,#1b3f7a 50%,#10305f 52%,#2a5799 100%);--chromeBd:#0c244a;--accent:#1b3f7a;--ring:#7aa2f7;--glow:rgba(63,106,168,.45)}
 :root[data-acento="azul"][data-theme="dark"]{--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}
 @media (prefers-color-scheme: dark){:root[data-acento="azul"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}}
@@ -888,6 +891,7 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/facturas.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/visual.js"></script>
+<script src="js/videos.js"></script>
 <script src="js/ventanas-acceso.js"></script>
 <script src="js/bienvenida.js"></script>
 <script src="js/seguridad.js"></script>
