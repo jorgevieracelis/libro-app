@@ -4,26 +4,62 @@
 /* Se guardan en un solo documento (hogares/{id}/ahorro/extras), que las reglas ya permiten. */
 const CATS_PRESU=CATS.concat(['Plataformas y servicios','Tarjeta de crédito']);
 const presuExtra=new Set();
-let extras={presupuesto:{},deudas:[],metas:[],repetidos:[],extraDeuda:null,orden:'bola'};
+let extras={presupuesto:{},deudas:[],metas:[],repetidos:[],comercios:[],ops:[],recurrentes:[],extraDeuda:null,orden:'bola'};
 const extrasRef=()=>FS.doc(db,'hogares',hogarId,'ahorro','extras');
 const posOrNull=v=>(typeof v==='number'&&isFinite(v)&&v>=0)?v:null;
 const shortId=x=>String(x||uid()).replace(/[^A-Za-z0-9]/g,'').slice(0,20)||uid();
 function normExtras(d){
   d=(d&&typeof d==='object')?d:{};
-  const o={presupuesto:{},deudas:[],metas:[],repetidos:[],extraDeuda:posOrNull(d.extraDeuda),orden:d.orden==='avalancha'?'avalancha':'bola'};
+  const o={presupuesto:{},deudas:[],metas:[],repetidos:[],comercios:[],ops:[],recurrentes:[],extraDeuda:posOrNull(d.extraDeuda),orden:d.orden==='avalancha'?'avalancha':'bola'};
   if(d.presupuesto&&typeof d.presupuesto==='object') CATS_PRESU.forEach(c=>{ const v=posOrNull(d.presupuesto[c]); if(v>0) o.presupuesto[c]=v; });
   (Array.isArray(d.deudas)?d.deudas:[]).slice(0,40).forEach(x=>{ if(x&&typeof x==='object') o.deudas.push({id:shortId(x.id),n:String(x.n||'').slice(0,80),saldo:posOrNull(x.saldo),cuota:posOrNull(x.cuota),tasa:posOrNull(x.tasa)}); });
   (Array.isArray(d.metas)?d.metas:[]).slice(0,40).forEach(x=>{ if(x&&typeof x==='object') o.metas.push({id:shortId(x.id),n:String(x.n||'').slice(0,80),meta:posOrNull(x.meta),ahorrado:posOrNull(x.ahorrado),fecha:MES_RE.test(x.fecha||'')?x.fecha:''}); });
   (Array.isArray(d.repetidos)?d.repetidos:[]).slice(0,60).forEach(x=>{
     if(x&&typeof x==='object'&&MES_RE.test(x.generado||'')&&String(x.texto||'').trim()) o.repetidos.push({id:shortId(x.id),tipo:String(x.tipo||'').slice(0,40),texto:String(x.texto).slice(0,100),monto:posOrNull(x.monto),dia:Math.min(31,Math.max(1,Math.round(Number(x.dia))||1)),generado:x.generado});
   });
+  (Array.isArray(d.comercios)?d.comercios:[]).slice(0,150).forEach(x=>{
+    if(x&&typeof x==='object'&&String(x.n||'').trim()){ const n=String(x.n).slice(0,60); o.comercios.push({id:shortId(x.id),n,k:normComercio(n),cat:normCat(x.cat),veces:Math.min(9999,Math.max(1,Math.round(Number(x.veces))||1))}); }
+  });
+  (Array.isArray(d.recurrentes)?d.recurrentes:[]).slice(0,40).forEach(x=>{
+    if(x&&typeof x==='object') o.recurrentes.push({id:shortId(x.id),n:String(x.n||'').slice(0,60),m:posOrNull(x.m),cat:normCat(x.cat),dia:Math.min(31,Math.max(1,Math.round(Number(x.dia))||1)),generado:MES_RE.test(x.generado||'')?x.generado:''});
+  });
+  (Array.isArray(d.ops)?d.ops:[]).slice(-300).forEach(x=>{ if(x&&typeof x==='object'&&String(x.id||'').trim()) o.ops.push({id:shortId(x.id),f:/^\d{4}-\d{2}-\d{2}$/.test(x.f||'')?x.f:''}); });
   return o;
+}
+/* Gastos recurrentes: cada mes que existe (hasta el mes que viene) se agrega solo como egreso fijo, una vez por mes.
+   Las filas tienen id fijo (rec_<gasto>_<mes>): si dos teléfonos lo generan a la vez, queda una sola. Devuelve los meses que cambiaron. */
+function aplicarRecurrentes(ex,ms,qDeDia_,hoyId){
+  const cambios=new Set(); const limite=addMonthsId(hoyId,1);
+  (ex.recurrentes||[]).forEach(r=>{
+    if(!String(r.n||'').trim()||!(num(r.m)>0)) return;
+    for(let n=0;n<36;n++){
+      const mId=addMonthsId(r.generado||addMonthsId(hoyId,-1),1);
+      if(mId>limite||!ms[mId]) break;
+      const q=qDeDia_(r.dia), arr=ms[mId][q].egresos, id='rec_'+r.id+'_'+mId;
+      if(!arr.some(x=>x.id===id)){
+        const fila={id,n:capIni(r.n),m:r.m,cat:normCat(r.cat),pagado:false};
+        const i=arr.findIndex(x=>isBlank(x,'egresos'));
+        if(i>=0) arr[i]=fila; else arr.push(fila);
+        padSec(ms[mId][q],'egresos'); cambios.add(mId);
+      }
+      r.generado=mId; cambios.add('_ex');
+    }
+  });
+  return cambios;
 }
 let baseExtras=null, extrasSaving=false, extrasAgain=false;
 async function loadExtras(){
   try{ const s=await FS.getDoc(extrasRef()); if(s.exists()){ extras=normExtras(s.data()); baseExtras=normExtras(s.data()); } else baseExtras=normExtras({}); }catch(e){}
-  renderPresupuesto(); renderVenc(); if(document.getElementById('view-plan')) renderPlan();
-  generarRepetidos(); watchExtras();
+  renderPresupuesto(); renderVenc(); renderComercios(); if(document.getElementById('view-plan')) renderPlan();
+  generarRepetidos(); generarRecurrentes(); watchExtras();
+}
+function generarRecurrentes(){
+  if(!ready||!hogarId||!extras.recurrentes||!extras.recurrentes.length) return;
+  const ch=aplicarRecurrentes(extras,months,d=>{ const q=qDeDia(d); return QS.includes(q)?q:QS[0]; },currentMonthId());
+  if(!ch.size) return;
+  const meses=[...ch].filter(x=>x!=='_ex');
+  meses.forEach(id=>markDirty(id)); saveExtras();
+  if(meses.includes(cur)) render();
 }
 /* Presupuesto, metas, deudas y repetidos: igual que los meses, se fusionan con lo que haya guardado la pareja. */
 async function guardarExtras(){
@@ -267,11 +303,40 @@ function renderPlanResumenDeudas(){
     host.append(ul);
   }
 }
+/* Si cambias el nombre, monto o categoría, la fila de ESTE mes (si todavía no está pagada) se actualiza; los meses anteriores no se tocan. */
+function sincronizarRecurrenteActual(r){
+  if(!cur||!months[cur]||!(num(r.m)>0)||!String(r.n||'').trim()) return;
+  const id='rec_'+r.id+'_'+cur; let cambio=false;
+  ALLQ.forEach(q=>{ const f=months[cur][q].egresos.find(x=>x.id===id); if(f&&f.pagado!==true){ const n=capIni(r.n), c=normCat(r.cat); if(f.n!==n||f.m!==r.m||f.cat!==c){ f.n=n; f.m=r.m; f.cat=c; cambio=true; } } });
+  if(cambio){ markDirty(cur); render(); }
+}
+function recurrenteItem(r){
+  const c=el('div','planItem');
+  const top=el('div','planTop');
+  top.append(textoInp(r.n,'Gasto (ej: Alquiler)',60,v=>{ r.n=v; saveExtras(); sincronizarRecurrenteActual(r); generarRecurrentes(); }),
+    delBtn(()=>{ extras.recurrentes=extras.recurrentes.filter(x=>x!==r); saveExtras(); renderPlan(); toast('Ya no se cargará solo. Lo ya cargado en los meses queda como está.'); }));
+  const g=el('div','planGrid');
+  g.append(lbl('Monto',moneyInput(()=>r.m,v=>{ r.m=v; },()=>{},()=>{ saveExtras(); sincronizarRecurrenteActual(r); generarRecurrentes(); },'Monto')));
+  const sc=catSelect(r.cat,v=>{ r.cat=normCat(v); saveExtras(); sincronizarRecurrenteActual(r); });
+  g.append(lbl('Categoría',sc));
+  const di=el('input','txt num'); di.type='text'; di.inputMode='numeric'; di.value=String(r.dia||1); di.maxLength=2; di.setAttribute('aria-label','Día del mes');
+  di.addEventListener('change',()=>{ const n=Math.round(Number(di.value)); r.dia=(n>=1&&n<=31)?n:1; di.value=String(r.dia); saveExtras(); });
+  g.append(lbl('Día del mes',di));
+  c.append(top,g); return c;
+}
 function renderPlan(){
   const v=document.getElementById('view-plan'); if(!v) return;
   v.replaceChildren();
+  // gastos recurrentes
+  const rc=el('section','card'); const rh=el('header'); const rt=el('h2'); rt.textContent='Gastos recurrentes'; rh.append(rt); rc.append(rh);
+  const rp=el('p','hint'); rp.textContent='Alquiler, internet, suscripciones…: anótalos una vez y se cargan solos como egreso fijo en cada mes nuevo, en la quincena o semana del día que pongas. Si cambias el nombre, el monto o la categoría, se actualiza el mes abierto (si aún no lo marcaste pagado) y los meses que vengan; los meses anteriores no se tocan.'; rc.append(rp);
+  extras.recurrentes.forEach(r=>rc.append(recurrenteItem(r)));
+  if(!extras.recurrentes.length){ rc.append(estadoVacio('recurrente','Aún no tienes gastos recurrentes','Agrega el alquiler, el internet o una suscripción y no vuelvas a cargarlos cada mes.')); }
+  const nr=el('button','btn primary'); nr.type='button'; nr.textContent='＋ Nuevo gasto recurrente'; nr.style.marginTop='10px';
+  nr.addEventListener('click',()=>{ if(extras.recurrentes.length>=40){ toast('Llegaste al máximo de gastos recurrentes'); return; } extras.recurrentes.push({id:uid().replace(/[^A-Za-z0-9]/g,''),n:'',m:null,cat:'',dia:1,generado:addMonthsId(cur||currentMonthId(),-1)}); saveExtras(); renderPlan(); });
+  rc.append(nr); v.append(rc);
   // metas
-  const mc=el('section','card'); const mh=el('header'); const mt=el('h2'); mt.textContent='Metas de ahorro'; mh.append(mt); mc.append(mh);
+  const mc=el('section','card'); mc.style.marginTop='16px'; const mh=el('header'); const mt=el('h2'); mt.textContent='Metas de ahorro'; mh.append(mt); mc.append(mh);
   const mp=el('p','hint'); mp.textContent='Crea una meta por cada cosa para la que ahorras (vacaciones, auto, estudios…). Los montos van en tu moneda ('+moneda.c+').'; mc.append(mp);
   extras.metas.forEach(m=>mc.append(metaItem(m)));
   if(!extras.metas.length){ mc.append(estadoVacio('meta','Aún no tienes metas','Crea una para algo que quieras lograr: vacaciones, un auto, estudios…')); }
@@ -326,16 +391,16 @@ function reporteAnualHTML(rows,T,y){
   const td='style="padding:6px 8px; border-bottom:1px solid #e4e8f0; text-align:right"', tdl='style="padding:6px 8px; border-bottom:1px solid #e4e8f0; text-align:left"';
   let h='<div style="font-family:Arial,Helvetica,sans-serif; color:#111827; background:#fff; padding:28px">'+
    '<h1 style="margin:0; color:#0f2a52; font-size:26px">Libro de Finanzas — Reporte '+esc(y)+'</h1>'+
-   '<p style="margin:4px 0 18px; color:#667085; font-size:13px">Un hogar organizado con propósito · Generado el '+esc(new Date().toLocaleDateString('es-AR'))+'</p>'+
+   '<p style="margin:4px 0 18px; color:#5d6679; font-size:13px">Un hogar organizado con propósito · Generado el '+esc(new Date().toLocaleDateString('es-AR'))+'</p>'+
    '<table style="width:100%; border-collapse:collapse; font-size:14px; margin-bottom:16px"><tr>'+
-   [['Ingresos del año',T.ingresos],['Egresos del año',T.egresos],['Fondo de emergencia',T.fondo],['Balance del año',T.balance]].map(([l,v])=>'<td style="padding:10px; background:#eef2f9; border-radius:6px; width:25%"><div style="font-size:12px; color:#667085">'+l+'</div><b style="font-size:16px">'+esc(cf.format(v))+'</b></td>').join('<td style="width:6px"></td>')+'</tr></table>'+
+   [['Ingresos del año',T.ingresos],['Egresos del año',T.egresos],['Fondo de emergencia',T.fondo],['Balance del año',T.balance]].map(([l,v])=>'<td style="padding:10px; background:#eef2f9; border-radius:6px; width:25%"><div style="font-size:12px; color:#5d6679">'+l+'</div><b style="font-size:16px">'+esc(cf.format(v))+'</b></td>').join('<td style="width:6px"></td>')+'</tr></table>'+
    lineChartSVG(rows,PAL_PDF,640,230)+
    '<div style="font-size:12px; margin:4px 0 14px"><b style="color:#1b3f7a">━</b> Ingresos &nbsp; <b style="color:#f28c28">━</b> Egresos &nbsp; <b style="color:#00703c">╍</b> Balance</div>';
   if(mp) h+='<p style="font-size:13px">Mejor mes: <b>'+MESES[mp.mejor.m-1]+'</b> (balance '+esc(cf.format(mp.mejor.t.balance))+'). Mes más ajustado: <b>'+MESES[mp.peor.m-1]+'</b> (balance '+esc(cf.format(mp.peor.t.balance))+').</p>';
   h+='<table style="width:100%; border-collapse:collapse; font-size:13px"><tr style="background:#0f2a52; color:#fff"><th style="padding:7px 8px; text-align:left">Mes</th><th style="padding:7px 8px; text-align:right">Ingresos</th><th style="padding:7px 8px; text-align:right">Egresos</th><th style="padding:7px 8px; text-align:right">Fondo</th><th style="padding:7px 8px; text-align:right">Balance</th><th style="padding:7px 8px; text-align:right">% gastado</th></tr>';
   u.forEach(r=>{ h+='<tr><td '+tdl+'>'+MESES[r.m-1]+'</td><td '+td+'>'+esc(cf.format(r.t.ingresos))+'</td><td '+td+'>'+esc(cf.format(r.t.egresos))+'</td><td '+td+'>'+esc(cf.format(r.t.fondo))+'</td><td '+td+'>'+esc(cf.format(r.t.balance))+'</td><td '+td+'>'+pctTxt(r.t.pct)+'</td></tr>'; });
   h+='<tr style="font-weight:bold"><td '+tdl+'>Total</td><td '+td+'>'+esc(cf.format(T.ingresos))+'</td><td '+td+'>'+esc(cf.format(T.egresos))+'</td><td '+td+'>'+esc(cf.format(T.fondo))+'</td><td '+td+'>'+esc(cf.format(T.balance))+'</td><td '+td+'>'+(T.ingresos>0?pctTxt(T.egresos/T.ingresos):'0 %')+'</td></tr></table>'+
-   '<p style="font-size:11px; color:#667085; margin-top:14px">Moneda: '+esc(moneda.n)+' ('+esc(moneda.c)+'). Reporte informativo generado en tu teléfono.</p></div>';
+   '<p style="font-size:11px; color:#5d6679; margin-top:14px">Moneda: '+esc(moneda.n)+' ('+esc(moneda.c)+'). Reporte informativo generado en tu teléfono.</p></div>';
   return h;
 }
 
@@ -349,6 +414,39 @@ function monthTotals(id){
   const ingresos=S('ingresos'), egresos=S('egresosTotales'), fondo=S('fondo');
   return {ingresos, egresos, fondo, balance:ingresos-egresos-fondo, pct:ingresos>0?egresos/ingresos:0,
           tarjeta:QS.reduce((a,q)=>a+monthTarjetaTotal(id,q),0)};
+}
+/* Compara dos meses (A = este, B = el de comparación): ingresos, egresos, balance y categorías. */
+function compararMeses(idA,idB){
+  const a=monthTotals(idA), b=monthTotals(idB);
+  const par=(x,y)=>({a:x,b:y,dif:x-y,pct:y>0?(x-y)/y:null});
+  const ca=monthCategoryTotals(months[idA]), cb=monthCategoryTotals(months[idB]);
+  const cats=[...new Set([...Object.keys(ca),...Object.keys(cb)])].map(c=>({c,...par(num(ca[c]),num(cb[c]))})).filter(x=>x.a>0||x.b>0).sort((x,y)=>Math.abs(y.dif)-Math.abs(x.dif));
+  return {ingresos:par(a.ingresos,b.ingresos), egresos:par(a.egresos,b.egresos), balance:par(a.balance,b.balance), cats};
+}
+function renderComparacion(host){
+  const idA=cur, idB=cur?addMonthsId(cur,-12):null;
+  const c=el('section','card'); c.style.marginTop='16px'; const h=el('header'); const t=el('h2'); t.textContent='Contra el mismo mes del año pasado'; h.append(t); c.append(h);
+  if(!idA||!months[idA]){ host.append(c); return; }
+  if(!months[idB]){
+    const p=el('p','small'); p.textContent='No tienes cargado '+monthLabel(idB)+', así que todavía no hay con qué comparar '+monthLabel(idA)+'. Cuando cargues ese mes (o importes un respaldo que lo tenga) lo verás aquí.'; c.append(p); host.append(c); return;
+  }
+  const r=compararMeses(idA,idB);
+  const p0=el('p','hint'); p0.textContent=monthLabel(idA)+' contra '+monthLabel(idB)+'.'; c.append(p0);
+  const fila=(nombre,x,masEsMalo)=>{
+    const d=el('div'); d.style.cssText='display:grid; gap:2px; padding:9px 4px; border-top:1px solid var(--line)';
+    const l=el('b'); l.textContent=nombre;
+    const v=el('span'); v.style.cssText='font-variant-numeric:tabular-nums; overflow-wrap:anywhere';
+    let txt=cf.format(x.a)+' (antes '+cf.format(x.b)+')';
+    if(x.dif!==0){ txt+=' · '+(x.dif>0?'▲ ':'▼ ')+cf.format(Math.abs(x.dif))+(x.pct!=null?' ('+pctTxt(Math.abs(x.pct))+')':''); }
+    else txt+=' · igual';
+    v.textContent=txt; d.append(l,v); return d;
+  };
+  c.append(fila('Ingresos',r.ingresos),fila('Egresos',r.egresos),fila('Balance',r.balance));
+  const sube=r.cats.filter(x=>x.dif>0).slice(0,3), baja=r.cats.filter(x=>x.dif<0).slice(0,3);
+  const lista=(tit,arr,verbo)=>{ if(!arr.length) return; const q=el('p','small'); q.style.margin='10px 4px 0'; q.textContent=tit+arr.map(x=>' '+x.c+' ('+verbo+' '+cf.format(Math.abs(x.dif))+')').join(','); c.append(q); };
+  lista('Gastas más en:',sube,'+'); lista('Gastas menos en:',baja,'−');
+  const nota=el('p','hint'); nota.style.marginTop='8px'; nota.textContent='Ojo: si este mes todavía no terminó, los egresos pueden seguir subiendo.'; c.append(nota);
+  host.append(c);
 }
 function renderAnio(){
   const v=document.getElementById('view-anio'); if(!v) return;
@@ -374,7 +472,7 @@ function renderAnio(){
     kpi('Promedio de balance mensual',used.length?cf.format(T.balance/used.length):cf.format(0)));
   head.append(kp);
   const note=el('p','hint'); note.textContent='Suma de '+used.length+(used.length===1?' mes cargado':' meses cargados')+'. Toca un mes para abrirlo.'; head.append(note);
-  v.append(head);
+  v.append(head); renderComparacion(v);
   // evolución
   const ec=el('section','card'); ec.style.marginTop='16px'; const eh=el('header'); const e2=el('h2'); e2.textContent='Evolución mes a mes'; eh.append(e2); ec.append(eh);
   if(used.length){
@@ -437,7 +535,7 @@ function renderHeader(){
   Object.keys(months).sort().reverse().forEach(id=>{
     const o=el('option'); o.value=id; o.textContent=monthLabel(id); if(id===cur) o.selected=true; sel.append(o);
   });
-  $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur;
+  $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur; const fab=$('#fabRapido'); if(fab) fab.hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
 function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan','herr']; }

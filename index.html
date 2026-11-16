@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.google.com; style-src 'self' 'unsafe-inline' https://www.gstatic.com; img-src 'self' data: blob: https://www.gstatic.com https://www.google.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://www.google.com; frame-src https://*.firebaseapp.com https://*.web.app https://www.google.com https://recaptcha.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com https://www.google.com; style-src 'self' 'unsafe-inline' https://www.gstatic.com; img-src 'self' data: blob: https://www.gstatic.com https://www.google.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.gstatic.com https://www.google.com; frame-src https://*.firebaseapp.com https://*.web.app https://www.google.com https://recaptcha.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0f2a52">
@@ -18,7 +18,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
-  --bg:#f4f6fa; --card:#ffffff; --ink:#111827; --muted:#667085; --line:#e4e8f0;
+  --bg:#f4f6fa; --card:#ffffff; --ink:#111827; --muted:#5d6679; --line:#e4e8f0;
   --brand:#0f2a52; --accent:#1b3f7a; --soft:#e6edf8; --chip:#eef2f9;
   --pos:#00703c; --neg:#c00000; --inc:#1b3f7a; --exp:#f28c28;
   --field:#ffffff; --danger:#c00000; --shadow:0 1px 2px rgba(20,30,60,.06),0 6px 18px rgba(20,30,60,.05);
@@ -333,6 +333,15 @@ input.mid{text-align:center}
 .card[data-sec="fondo"] > header h2{color:var(--gold-ink)}
 .card[data-sec="retiro"] .head{background:var(--ve-blue)}
 .card[data-sec="retiro"] > header h2{color:var(--ve-blue)}
+/* Tema oscuro: los títulos y el ✓ de pagado quedaban casi invisibles (oscuro sobre oscuro / blanco sobre verde claro) */
+:root[data-theme="dark"] .card[data-sec="fondo"] > header h2{color:var(--gold)}
+:root[data-theme="dark"] .card[data-sec="retiro"] > header h2{color:var(--brand)}
+:root[data-theme="dark"] .pay.paid{color:#052e16}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .card[data-sec="fondo"] > header h2{color:var(--gold)}
+  :root:not([data-theme="light"]) .card[data-sec="retiro"] > header h2{color:var(--brand)}
+  :root:not([data-theme="light"]) .pay.paid{color:#052e16}
+}
 .pay{
   width:28px; height:28px; border-radius:50%; padding:0; line-height:1; font-size:14px; font-weight:800;
   border:2px solid var(--neg); color:var(--neg); background:transparent; display:flex; align-items:center; justify-content:center;
@@ -531,6 +540,28 @@ main{animation:vistaIn .28s ease both}
 .quick .btn{display:inline-flex; align-items:center; gap:8px; text-decoration:none}
 .ico{width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
 
+/* ---- Botón flotante: compra rápida ---- */
+#fabRapido{position:fixed; right:18px; bottom:calc(18px + env(safe-area-inset-bottom,0px)); z-index:45; width:56px; height:56px; border-radius:50%; border:1px solid var(--chromeBd); background:var(--chrome); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:var(--chromeHi),0 6px 18px rgba(16,24,40,.35); cursor:pointer; padding:0}
+#fabRapido[hidden]{display:none}
+#fabRapido .ico{width:28px; height:28px; stroke-width:2.6}
+#fabRapido:active{transform:scale(.94)}
+:root[data-theme="dark"] #fabRapido{color:#1a0d00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #fabRapido{color:#1a0d00}}
+body.modalOpen #fabRapido{display:none}
+@media (max-width:640px){ #fabRapido{bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px)} }
+.rapForm{display:grid; gap:10px}
+.rapForm label{display:grid; gap:4px; font-size:13px; font-weight:600}
+.rapForm input,.rapForm select{width:100%; box-sizing:border-box}
+
+/* ---- Zonas táctiles cómodas en teléfono (mínimo 44 px de alto en botones, listas desplegables y pestañas) ---- */
+@media (max-width:640px){
+  .btn,select,.tab,.add,#verBtn,#bvBtn,.vsBtn,#nuevoMes,#lockBtn,#salir{min-height:44px}
+  .x,.pay,.dup{position:relative}
+  .x::after,.pay::after,.dup::after{content:""; position:absolute; left:-3px; right:-3px; top:-9px; bottom:-9px}
+  .dup{width:24px; height:24px}
+  summary{min-height:44px; display:flex; align-items:center}
+  #ahorroCard input,.calcCard input{min-height:40px}
+}
 /* ---- Navegación inferior (solo teléfono) ---- */
 #bottomNav{display:none}
 .tab .short{display:none}
@@ -652,6 +683,7 @@ main{animation:vistaIn .28s ease both}
   <nav class="tabs" id="tabs" role="tablist" hidden></nav>
 </header>
 <nav id="bottomNav" aria-label="Secciones" hidden></nav>
+<button type="button" id="fabRapido" aria-label="Agregar compra rápida" title="Compra rápida" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <aside id="authHero" aria-hidden="true">
   <svg class="deco" viewBox="0 0 520 360" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -796,6 +828,7 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/navegacion.js"></script>
 <script src="js/respaldo.js"></script>
 <script src="js/calculadoras.js"></script>
+<script src="js/comprobantes.js"></script>
 <script src="js/ventanas-acceso.js"></script>
 <script src="js/bienvenida.js"></script>
 <script src="js/seguridad.js"></script>

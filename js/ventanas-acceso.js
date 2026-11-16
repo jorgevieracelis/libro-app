@@ -2,8 +2,23 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.1.0';
+const APP_VERSION='2.4.0';
 const NOVEDADES=[
+ {v:'2.4.0', fecha:'16 nov 2026', items:[
+  'Gastos recurrentes (Más → Metas y deudas): alquiler, internet, suscripciones… se cargan solos como egreso fijo en cada mes nuevo',
+  'Año: nueva tarjeta que compara este mes con el mismo mes del año pasado (ingresos, egresos, balance y en qué categorías gastas más o menos)',
+  'Importar gastos desde Excel o CSV (Más → Herramientas): cada gasto va al mes y la quincena de su fecha, y si importas el mismo archivo dos veces no se duplica',
+  'Seguridad: la sesión se cierra sola si pasan varios días sin abrir la app (14 por defecto, tú eliges en Herramientas)',
+  'Más legible: textos secundarios con mejor contraste, títulos y ✓ visibles en tema oscuro y botones más fáciles de tocar en el teléfono'
+ ]},
+ {v:'2.3.0', fecha:'16 nov 2026', items:[
+  'Comprobantes de billeteras (Mercado Pago, Ualá y otras): en el botón ＋ toca “Cargar comprobante”, elige la foto o captura y la app lee monto, fecha y a quién le pagaste. La lectura se hace en tu teléfono: la imagen no se envía a ningún lado',
+  'La app recuerda a cada comercio con su categoría (Herramientas → Comercios recordados): la próxima vez la categoría se completa sola, y te avisa si cargas dos veces el mismo comprobante',
+  'La compra rápida ahora tiene fecha y manda el gasto a la quincena o semana que corresponde'
+ ]},
+ {v:'2.2.0', fecha:'16 nov 2026', items:[
+  'Nuevo botón flotante (+): compra rápida. Escribes concepto, monto y categoría y se guarda como egreso variable ya pagado, en el período que corresponde'
+ ]},
  {v:'2.1.0', fecha:'14 nov 2026', items:[
   'Compras super/otros: la lista se ordena sola alfabéticamente por producto',
   'Todo lo que escribes (productos, descripciones, notas, nombres) empieza con mayúscula, aunque lo escribas en minúscula',
@@ -132,7 +147,7 @@ function createMonth(id,opts){
     SECS.forEach(sec=>padSec(md[q],sec));
     md[q].compras=[];
   });
-  months[id]=md; tab='resumen'; dirty.add(id); persistPend(); render(); flush();
+  months[id]=md; tab='resumen'; dirty.add(id); persistPend(); render(); flush(); generarRecurrentes();
 }
 function newMonthDialog(){
   const body=el('div');

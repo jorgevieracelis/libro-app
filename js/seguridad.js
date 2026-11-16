@@ -223,3 +223,31 @@ $('#lkSave').addEventListener('click',async ()=>{
 lockCfg=lkLoad();
 if(lockCfg) lkMostrar();
 
+/* ---------- Cierre de sesión por inactividad (en este teléfono) ---------- */
+/* El bloqueo con huella/PIN solo tapa la pantalla. Esto cierra la sesión de verdad si pasan varios días sin abrir la app
+   (al cerrarla, la llave de cifrado también se borra del teléfono). Se mide con la hora del teléfono. */
+const IDLE_KEY='lfh.idleDias', ACT_KEY='lfh.ultimaActividad';
+const IDLE_OPC=[[0,'Nunca'],[3,'3 días'],[7,'7 días'],[14,'14 días (recomendado)'],[30,'30 días']];
+function idleDias(){
+  try{ const v=localStorage.getItem(IDLE_KEY); if(v!=null){ const n=Number(v); if(IDLE_OPC.some(o=>o[0]===n)) return n; } }catch(e){}
+  return 14;
+}
+function idleGuardar(d){ try{ localStorage.setItem(IDLE_KEY,String(d)); }catch(e){} idleMarcar(true); }
+let idleUlt=0;
+function idleMarcar(forzar){
+  const t=Date.now(); if(!forzar && t-idleUlt<60000) return; idleUlt=t;
+  try{ localStorage.setItem(ACT_KEY,String(t)); }catch(e){}
+}
+function idleExpirado(){
+  const d=idleDias(); if(!d) return false;
+  let ult=0; try{ ult=Number(localStorage.getItem(ACT_KEY))||0; }catch(e){}
+  if(!ult) return false;
+  return (Date.now()-ult)>d*86400000;
+}
+function idleCerrar(){
+  try{ localStorage.removeItem(ACT_KEY); }catch(e){}
+  toast('Cerramos tu sesión porque pasaron varios días sin usar la app. Ingresa de nuevo.');
+  if(auth) AU.signOut(auth);
+}
+['pointerdown','keydown','scroll'].forEach(ev=>document.addEventListener(ev,()=>{ if(me) idleMarcar(false); },{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&me){ if(idleExpirado()) idleCerrar(); else idleMarcar(true); } });

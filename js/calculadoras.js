@@ -60,7 +60,7 @@ function calcCard(titulo,hint){
   const d=document.createElement('details'); d.className='card calcCard'; d.style.marginTop='16px';
   const s=document.createElement('summary'); s.style.cssText='cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:8px';
   const h=document.createElement('h2'); h.textContent=titulo; h.style.margin='0';
-  const fl=document.createElement('span'); fl.textContent='▾'; fl.setAttribute('aria-hidden','true'); fl.style.cssText='font-size:18px; color:var(--mut,#667085)';
+  const fl=document.createElement('span'); fl.textContent='▾'; fl.setAttribute('aria-hidden','true'); fl.style.cssText='font-size:18px; color:var(--muted,#5d6679)';
   s.append(h,fl); d.append(s);
   const p=el('p','hint'); p.textContent=hint; p.style.marginTop='8px'; d.append(p);
   return d;

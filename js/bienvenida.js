@@ -4,6 +4,7 @@
 /* ---------- Estados vacíos ---------- */
 const EV_ICO={
   compras:'<circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.6 12.2h11L21 7H6"/>',
+  recurrente:'<path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v4h-4"/>',
   meta:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
   grafico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   presupuesto:'<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/>'

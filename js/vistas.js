@@ -422,6 +422,7 @@ function buildHerramientas(){
    '<input type="text" class="txt" id="searchAll" placeholder="Ej: Netflix" autocomplete="off" style="width:100%; margin:4px 0 10px">'+
    '<div id="searchResults" class="small"></div></section>'+
    '<section class="card" id="ahorroCard" style="margin-top:16px"></section>'+
+   '<section class="card" id="comerciosCard" style="margin-top:16px"></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Tu hogar</h2></header>'+
    '<p class="hint" id="hogarNombre"></p>'+
    '<p class="small">Para que tu pareja vea este mismo libro: que cree su cuenta, verifique su correo y elija "Unirme con código" con este código.</p>'+
@@ -429,6 +430,9 @@ function buildHerramientas(){
    '<section class="card" style="margin-top:16px"><header><h2>Cifrado de datos</h2></header>'+
    '<p class="hint">Tus datos se cifran en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlos. Guarda bien tu código de recuperación: es la única salida si olvidas la clave del hogar.</p>'+
    '<div class="tools" id="e2eTools"></div></section>'+
+   '<section class="card" style="margin-top:16px"><header><h2>Cerrar sesión por inactividad</h2></header>'+
+   '<p class="hint">Si no abres la app durante este tiempo, se cierra la sesión en este teléfono y tendrás que ingresar de nuevo (con tu clave del hogar). Así, si pierdes el teléfono, nadie entra a tus datos aunque lo desbloqueen. Es distinto del bloqueo con huella o PIN, que solo tapa la pantalla.</p>'+
+   '<div class="tools" id="idleTools"></div></section>'+
    '<section class="card" style="margin-top:16px"><header><h2>Moneda</h2></header>'+
    '<p class="hint">Es la moneda en que se muestran todos los montos del hogar. Cambiarla no convierte los números cargados: solo cambia el símbolo.</p>'+
    '<div class="tools" id="monedaTools"></div></section>'+
@@ -443,7 +447,7 @@ function buildHerramientas(){
    '<p class="hint" style="margin-top:14px">Para guardar o imprimir todo el mes:</p>'+
    '<div class="tools" id="toolsExport"></div>'+
    '<p class="small" id="sesion" style="margin-top:14px"></p></section>';
-  { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc) hc.closest('section').before(buildCalculadoras()); }
+  { const hc=[...v.querySelectorAll('section.card h2')].find(h=>h.textContent==='Herramientas'); if(hc){ hc.closest('section').before(buildCalculadoras()); hc.closest('section').before(buildImportarGastos()); } }
   const searchBox=$('#searchAll',v);
   searchBox.addEventListener('input',()=>renderSearchResults(searchBox.value, $('#searchResults',v)));
   const tools=$('#tools',v);
@@ -479,6 +483,10 @@ function buildHerramientas(){
   MONEDAS.forEach(m=>{ const o=el('option'); o.value=m.c; o.textContent=m.n+' ('+m.c+')'; if(m.c===moneda.c) o.selected=true; sel.append(o); });
   sel.addEventListener('change',async()=>{ const prev=moneda.c; setMoneda(sel.value); if(await saveMoneda(sel.value)){ render(); toast('Moneda cambiada'); } else { setMoneda(prev); sel.value=prev; } });
   mt.append(sel);
+  { const it=$('#idleTools',v); const is=el('select'); is.setAttribute('aria-label','Cerrar sesión por inactividad');
+    IDLE_OPC.forEach(([d,txt])=>{ const o=el('option'); o.value=String(d); o.textContent=txt; if(d===idleDias()) o.selected=true; is.append(o); });
+    is.addEventListener('change',()=>{ idleGuardar(Number(is.value)); toast(Number(is.value)?'Se cerrará la sesión tras '+is.value+' días sin abrir la app':'La sesión no se cerrará por inactividad'); });
+    it.append(is); }
   const pt=$('#periodoTools',v);
   const ps=el('select'); ps.setAttribute('aria-label','Cómo cobras');
   PERIODO_OPC.forEach(([k,txt])=>{ const o=el('option'); o.value=k; o.textContent=txt; if(k===periodo) o.selected=true; ps.append(o); });

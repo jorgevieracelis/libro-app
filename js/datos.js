@@ -92,7 +92,7 @@ function setView(v){
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
   document.body.classList.toggle('auth',v==='login'||v==='verify'||v==='nohogar');
   const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app; $('#versiculo').hidden=!app; $('#verFooter').hidden=!app;
-  $('#tabs').hidden=!(app&&cur); $('#bottomNav').hidden=!(app&&cur);
+  $('#tabs').hidden=!(app&&cur); $('#bottomNav').hidden=!(app&&cur); { const fab=$('#fabRapido'); if(fab) fab.hidden=!(app&&cur); }
 }
 
 /* ---------- Modelo de datos ---------- */
@@ -217,7 +217,7 @@ function mergeMes(base,local,server){
 }
 function mergeExtras(base,local,server){
   const o={...server};
-  ['deudas','metas','repetidos'].forEach(k=>{ o[k]=mergeLista(base&&base[k],local[k]||[],server[k]||[]); });
+  ['deudas','metas','repetidos','comercios','ops','recurrentes'].forEach(k=>{ o[k]=mergeLista(base&&base[k],local[k]||[],server[k]||[]); });
   const pb=(base&&base.presupuesto)||{}, pl=local.presupuesto||{}, p={...(server.presupuesto||{})};
   new Set([...Object.keys(pb),...Object.keys(pl)]).forEach(c=>{ if(!igualJ(pl[c],pb[c])){ if(pl[c]==null) delete p[c]; else p[c]=pl[c]; } });
   o.presupuesto=p;

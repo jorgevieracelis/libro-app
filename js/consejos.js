@@ -54,7 +54,7 @@ function refreshComputed(){
     const p=b.dataset.barv.split('.'); b.textContent=cf.format(C[p[0]][p[1]]);
   });
   renderPie(md);
-  renderPresupuesto(); renderVenc();
+  renderPresupuesto(); renderVenc(); renderComercios();
   renderConsejos(md,mes);
 }
 /* ---------- Consejos del mes (reglas simples, calculadas en el teléfono) ---------- */

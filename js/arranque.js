@@ -24,7 +24,7 @@ async function boot(){
     $('#loadingMsg').textContent='No se pudo cargar Firebase. Revisa tu conexión a internet y recarga.'; return;
   }
   AU.onAuthStateChanged(auth,user=>{
-    if(user){ me=user; if(user.emailVerified) resolveHogar(); else showVerify(); }
+    if(user){ if(idleExpirado()){ idleCerrar(); return; } me=user; idleMarcar(true); if(user.emailVerified) resolveHogar(); else showVerify(); }
     else { const hPrev=hogarId; me=null; stopData(); if(hPrev) e2eBorrarLlave(hPrev); if(lockCfg){ lkStore(null); } lkOcultar(); $('#lockCfg').hidden=true; setView('login'); }
   });
 }
