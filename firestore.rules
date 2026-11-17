@@ -6,6 +6,13 @@ service cloud.firestore {
     function verificado() {
       return request.auth != null && request.auth.token.email_verified == true;
     }
+    // Documento cifrado de extremo a extremo: el servidor solo ve texto cifrado.
+    function sobreCifrado() {
+      return request.resource.data.keys().hasOnly(['v','iv','ct'])
+        && request.resource.data.v == 'e1'
+        && request.resource.data.iv is string && request.resource.data.iv.size() <= 64
+        && request.resource.data.ct is string && request.resource.data.ct.size() <= 900000;
+    }
     function esMiembro(hogarId) {
       return verificado()
         && request.auth.uid in get(/databases/$(database)/documents/hogares/$(hogarId)).data.miembros;
@@ -35,41 +42,43 @@ service cloud.firestore {
             && request.resource.data.miembros == resource.data.miembros.removeAll([request.auth.uid]))
         );
 
+      // Cifrado de extremo a extremo: un miembro puede guardar o cambiar SOLO el bloque 'e2e'
+      // (la llave de datos envuelta con la clave del hogar y con el código de recuperación; nunca la llave en claro).
+      allow update: if verificado()
+        && request.auth.uid in resource.data.miembros
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['e2e'])
+        && request.resource.data.e2e is map;
+
       // Borrar el hogar: solo si queda una única persona y es quien lo borra.
       allow delete: if verificado() && resource.data.miembros == [request.auth.uid];
 
       match /meses/{mesId} {
-        allow read, write: if esMiembro(hogarId);
+        allow read, delete: if esMiembro(hogarId);
+        allow create, update: if esMiembro(hogarId) && sobreCifrado();
       }
 
       // Ahorro en dólares del hogar (un solo documento: ahorro/usd).
       match /ahorro/{docId} {
-        allow read, write: if esMiembro(hogarId);
+        allow read, delete: if esMiembro(hogarId);
+        allow create, update: if esMiembro(hogarId) && sobreCifrado();
       }
 
       // Lista de artículos del súper (un documento por producto y cadena).
       match /catalogo/{itemId} {
-        allow read, write: if esMiembro(hogarId);
+        allow read, delete: if esMiembro(hogarId);
+        allow create, update: if esMiembro(hogarId) && sobreCifrado();
       }
 
       // Notas del calendario (un documento por nota).
       match /notas/{notaId} {
         allow read, delete: if esMiembro(hogarId);
-        allow create, update: if esMiembro(hogarId)
-          && request.resource.data.keys().hasOnly(['fecha','texto','hecho','creado','tipo','monto','exportada'])
-          && (!('tipo' in request.resource.data) || (request.resource.data.tipo is string && request.resource.data.tipo.size() <= 40))
-          && (!('monto' in request.resource.data) || (request.resource.data.monto is number && request.resource.data.monto >= 0))
-          && (!('exportada' in request.resource.data) || request.resource.data.exportada is bool)
-          && request.resource.data.fecha is string && request.resource.data.fecha.size() == 10
-          && request.resource.data.texto is string
-          && request.resource.data.texto.size() > 0 && request.resource.data.texto.size() <= 500
-          && request.resource.data.hecho is bool
-          && request.resource.data.creado is number;
+        allow create, update: if esMiembro(hogarId) && sobreCifrado();
       }
 
       // Papelera: copia de los meses eliminados.
       match /papelera/{mesId} {
-        allow read, write: if esMiembro(hogarId);
+        allow read, delete: if esMiembro(hogarId);
+        allow create, update: if esMiembro(hogarId) && sobreCifrado();
       }
     }
 
