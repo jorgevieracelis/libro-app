@@ -538,7 +538,7 @@ function renderHeader(){
   $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur; const fab=$('#fabRapido'); if(fab) fab.hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
-function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','cal','plan','extra','herr','opc']; }
+function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','comp','cal','plan','extra','herr','opc']; }
 function renderTabs(){
   const nav=$('#tabs'); nav.replaceChildren();
   const add=(k,label,title,short)=>{
@@ -552,13 +552,14 @@ function renderTabs(){
     add(q,periodo==='mensual'?'Ingresos y egresos':qname(q),qrange(q),qname(q));
     add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q),qname(q));
   });
-  add('anio','Año'); add('cal','Calendario'); add('plan','Metas y deudas'); add('extra','Tarjeta y fondos'); add('herr','Herramientas'); add('opc','⚙ Opciones','Opciones','Opciones');
+  add('anio','Año'); add('comp','Comparativas'); add('cal','Calendario'); add('plan','Metas y deudas'); add('extra','Tarjeta y fondos'); add('herr','Herramientas'); add('opc','⚙ Opciones','Opciones','Opciones');
   renderBottomNav();
 }
 function showTab(){
   if(!tabsValidas().includes(tab)) tab='resumen';
   if(tab!=='resumen') consejosCerrar();
   if(tab==='anio') renderAnio();
+  if(tab==='comp') renderComparativas();
   if(tab==='cal') renderCal();
   if(tab==='plan') renderPlan();
   tabsValidas().forEach(t=>{const v=document.getElementById('view-'+t); if(v) v.hidden=(t!==tab);});
@@ -570,7 +571,7 @@ function render(){
   const main=$('#main'); main.replaceChildren();
   if(!cur||!months[cur]){ main.append(buildEmpty()); return; }
   const vh=buildHerramientas();
-  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildExtra(),buildAnio(),buildCal(),buildPlan(),vh,vh._opc);
+  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildExtra(),buildAnio(),buildComp(),buildCal(),buildPlan(),vh,vh._opc);
   QS.forEach(q=>SECS.forEach(sec=>renderList(q,sec)));
   QS.forEach(renderCompras);
   refreshComputed(); showTab();

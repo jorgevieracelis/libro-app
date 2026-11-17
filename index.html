@@ -97,6 +97,14 @@ main{max-width:1240px; margin:0 auto; padding:16px 16px 48px}
 #loading{text-align:center; color:var(--muted)}
 #loading .err{color:var(--neg); margin-top:12px}
 
+.nhOpc{display:grid; gap:8px}
+.nhOpc .btn[aria-pressed="false"]{background:var(--card); color:var(--brand); border:1px solid var(--line)}
+.nhSec{display:grid; gap:12px}
+.nhSec[hidden]{display:none}
+.nhNota{background:var(--chip); padding:10px 12px; border-radius:12px; text-align:left; line-height:1.45}
+.nhMas{border:1px solid var(--line); border-radius:12px; padding:10px 12px}
+.nhMas summary{cursor:pointer; font-size:14px; color:var(--muted); font-weight:600}
+.nhMas label{margin-top:10px}
 .loginbox{background:var(--card); border-radius:16px; padding:24px; box-shadow:var(--shadow); display:grid; gap:12px}
 .loginbox h2{font-size:18px; color:var(--brand)}
 .loginbox label{display:grid; gap:4px; font-size:12px; color:var(--muted)}
@@ -205,6 +213,37 @@ body.auth .loginbox .err{text-align:center}
 .vsBox blockquote{margin:0; font-size:clamp(16px,1.6vw,19px); line-height:1.6; color:#e8eef9; font-style:italic}
 .vsRef{margin-top:12px; font-weight:800; color:#f28c28; font-size:15px}
 .vsCred{margin-top:14px; font-size:11px; color:#9fb2d4}
+.cmpBar{display:grid; gap:3px; padding:8px 4px; border-top:1px solid var(--line)}
+.cmpBar .t{display:flex; justify-content:space-between; font-size:13px; font-weight:600}
+.cmpBar .b{height:10px; border-radius:6px; background:var(--accent)}
+.cmpBar .b.o{background:var(--muted); opacity:.55}
+.cmpBar .b.neg{background:var(--neg)}
+.cmpCat{display:grid; grid-template-columns:1fr auto auto; gap:10px; padding:7px 4px; border-top:1px solid var(--line); font-size:14px; align-items:center}
+.cmpEvo{display:flex; align-items:stretch; gap:8px; height:150px; margin-top:10px; padding:0 4px}
+.cmpEvo .col{flex:1; display:flex; flex-direction:column; min-width:0}
+.cmpEvo .par{flex:1; display:flex; align-items:flex-end; justify-content:center; gap:3px; border-bottom:1px solid var(--line)}
+.cmpEvo .par i{display:block; width:42%; max-width:22px; border-radius:4px 4px 0 0}
+.cmpEvo .col small{font-size:10px; color:var(--muted); margin-top:4px; text-align:center}
+.cmpEvo .col.sel small{color:var(--brand); font-weight:700}
+.calVistas{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px}
+.calVistas .btn{padding-left:4px; padding-right:4px}
+.calSemana{display:grid; gap:6px; margin-top:8px}
+.calSemRow{display:flex; align-items:center; gap:10px; min-height:52px; padding:8px 12px; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:12px; color:var(--ink)}
+.calSemRow b{min-width:58px; color:var(--brand)}
+.calSemRow span:not(.calCnt){flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.calSemRow .calCnt{position:static}
+.calSemRow.today{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.calSemRow.sel{background:var(--soft)}
+.calAnio{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px}
+@media (min-width:700px){ .calAnio{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.calMini{display:block; text-align:left; padding:10px; background:var(--card); border:1px solid var(--line); border-radius:12px; color:var(--ink)}
+.calMini:hover{border-color:var(--accent)}
+.calMini.today{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.calMini b{display:block; color:var(--brand); margin-bottom:6px}
+.calMini .g{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; font-size:10px; text-align:center; margin-bottom:6px}
+.calMini .g i{font-style:normal; padding:2px 0; border-radius:4px; color:var(--muted)}
+.calMini .g i.has{background:var(--accent); color:#fff; font-weight:700}
+.calMini .g i.hoy{outline:1px solid var(--accent)}
 .calNav{display:flex; gap:6px}
 .calGrid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; margin-top:8px}
 .calDow{text-align:center; font-size:12px; font-weight:700; color:var(--muted); padding:4px 0}
@@ -495,7 +534,7 @@ body.modalOpen{overflow:hidden}
   --r:18px; --r-sm:12px;
   --hero1:#1d4486; --hero2:#0d2650; --ring:#f28c28; --ringBg:rgba(255,255,255,.18);
   --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.06);
-  --nav-h:64px;
+  --nav-h:70px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){ --hero1:#263a63; --hero2:#16213b; --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25); }
@@ -558,9 +597,26 @@ body.modalOpen #fabRapido{display:none}
 .grpTit{margin:18px 4px 8px; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--brand)}
 #view-extra > .hint{margin:0 4px 6px}
 /* ---- Color de la app (Opciones → Apariencia). "Clásico" no lleva atributo. ---- */
-:root[data-acento="azul"]{--chrome:linear-gradient(180deg,#7f9fcf 0%,#3f6aa8 22%,#1b3f7a 50%,#10305f 52%,#2a5799 100%);--chromeBd:#0c244a;--accent:#1b3f7a;--ring:#7aa2f7;--glow:rgba(63,106,168,.45)}
-:root[data-acento="azul"][data-theme="dark"]{--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}
-@media (prefers-color-scheme: dark){:root[data-acento="azul"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#b9d0ff 0%,#8fb2fa 24%,#6d97ee 50%,#5580d6 52%,#7aa2f7 100%);--chromeBd:#3f64b5;--accent:#7aa2f7;--brand:#a9c3ff;--ring:#7aa2f7;--glow:rgba(122,162,247,.45)}}
+:root[data-acento="azul"]{--chrome:linear-gradient(180deg,#95a3c3 0%,#485f97 22%,#14327a 50%,#10275f 52%,#2c4687 100%);--chromeBd:#0b1c43;--accent:#14327a;--brand:#0b1f4d;--ring:#7f9ff0;--hero1:#173a8c;--hero2:#0b1f4d;--glow:rgba(20,50,122,0.45)}
+:root[data-acento="azul"][data-theme="dark"]{--chrome:linear-gradient(180deg,#c5d4f8 0%,#a5bcf4 24%,#7f9ff0 50%,#708cd3 52%,#8eabf2 100%);--chromeBd:#53679c;--accent:#8ca9f2;--brand:#bfcff8;--ring:#7f9ff0;--hero1:#303c5b;--hero2:#192030;--glow:rgba(127,159,240,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="azul"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#c5d4f8 0%,#a5bcf4 24%,#7f9ff0 50%,#708cd3 52%,#8eabf2 100%);--chromeBd:#53679c;--accent:#8ca9f2;--brand:#bfcff8;--ring:#7f9ff0;--hero1:#303c5b;--hero2:#192030;--glow:rgba(127,159,240,0.45)}}
+:root[data-acento="celeste"]{--chrome:linear-gradient(180deg,#93c5e2 0%,#449bcd 22%,#0f7fbf 50%,#0c6395 52%,#278cc5 100%);--chromeBd:#084669;--accent:#0b6aa3;--brand:#06415f;--ring:#6ccbf5;--hero1:#0e75ad;--hero2:#07405f;--glow:rgba(15,127,191,0.45)}
+:root[data-acento="celeste"][data-theme="dark"]{--chrome:linear-gradient(180deg,#bde8fa 0%,#98dbf8 24%,#6ccbf5 50%,#5fb3d8 52%,#7ed1f6 100%);--chromeBd:#46849f;--accent:#7bd0f6;--brand:#b6e5fa;--ring:#6ccbf5;--hero1:#294d5d;--hero2:#162931;--glow:rgba(108,203,245,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="celeste"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#bde8fa 0%,#98dbf8 24%,#6ccbf5 50%,#5fb3d8 52%,#7ed1f6 100%);--chromeBd:#46849f;--accent:#7bd0f6;--brand:#b6e5fa;--ring:#6ccbf5;--hero1:#294d5d;--hero2:#162931;--glow:rgba(108,203,245,0.45)}}
+:root[data-acento="rojo"]{--chrome:linear-gradient(180deg,#e49da1 0%,#d1565c 22%,#c4262e 50%,#991e24 52%,#ca3c43 100%);--chromeBd:#6c1519;--accent:#b01f27;--brand:#5c0f14;--ring:#ff8a8f;--hero1:#a31d24;--hero2:#5a0f13;--glow:rgba(196,38,46,0.45)}
+:root[data-acento="rojo"][data-theme="dark"]{--chrome:linear-gradient(180deg,#ffcacd 0%,#ffadb1 24%,#ff8a8f 50%,#e0797e 52%,#ff989c 100%);--chromeBd:#a65a5d;--accent:#ff969a;--brand:#ffc4c7;--ring:#ff8a8f;--hero1:#613436;--hero2:#331c1d;--glow:rgba(255,138,143,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="rojo"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#ffcacd 0%,#ffadb1 24%,#ff8a8f 50%,#e0797e 52%,#ff989c 100%);--chromeBd:#a65a5d;--accent:#ff969a;--brand:#ffc4c7;--ring:#ff8a8f;--hero1:#613436;--hero2:#331c1d;--glow:rgba(255,138,143,0.45)}}
+:root[data-acento="rosado"]{--chrome:linear-gradient(180deg,#eda9c5 0%,#df699b 22%,#d63f7f 50%,#a73163 52%,#da528c 100%);--chromeBd:#762346;--accent:#b8346a;--brand:#6b1236;--ring:#ff9fc6;--hero1:#c23372;--hero2:#6b1236;--glow:rgba(214,63,127,0.45)}
+:root[data-acento="rosado"][data-theme="dark"]{--chrome:linear-gradient(180deg,#ffd4e5 0%,#ffbcd7 24%,#ff9fc6 50%,#e08cae 52%,#ffabcd 100%);--chromeBd:#a66781;--accent:#ffa9cc;--brand:#ffcfe2;--ring:#ff9fc6;--hero1:#613c4b;--hero2:#332028;--glow:rgba(255,159,198,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="rosado"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#ffd4e5 0%,#ffbcd7 24%,#ff9fc6 50%,#e08cae 52%,#ffabcd 100%);--chromeBd:#a66781;--accent:#ffa9cc;--brand:#ffcfe2;--ring:#ff9fc6;--hero1:#613c4b;--hero2:#332028;--glow:rgba(255,159,198,0.45)}}
+:root[data-acento="amarillo"]{--chrome:linear-gradient(180deg,#f9e48c 0%,#f5cf38 22%,#f2c200 50%,#bd9700 52%,#f3c81a 100%);--chromeBd:#856b00;--accent:#8a6a00;--brand:#4d3b00;--ring:#ffe066;--hero1:#a07a00;--hero2:#5c4600;--glow:rgba(242,194,0,0.45)}
+:root[data-acento="amarillo"][data-theme="dark"]{--chrome:linear-gradient(180deg,#fff1ba 0%,#ffe994 24%,#ffe066 50%,#e0c55a 52%,#ffe478 100%);--chromeBd:#a69242;--accent:#ffe375;--brand:#fff0b2;--ring:#ffe066;--hero1:#615527;--hero2:#332d14;--glow:rgba(255,224,102,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="amarillo"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#fff1ba 0%,#ffe994 24%,#ffe066 50%,#e0c55a 52%,#ffe478 100%);--chromeBd:#a69242;--accent:#ffe375;--brand:#fff0b2;--ring:#ffe066;--hero1:#615527;--hero2:#332d14;--glow:rgba(255,224,102,0.45)}}
+:root[data-acento="negro"]{--chrome:linear-gradient(180deg,#9f9fa1 0%,#59595c 22%,#2a2a2e 50%,#212124 52%,#3f3f43 100%);--chromeBd:#171719;--accent:#26262a;--brand:#101012;--ring:#aab0ba;--hero1:#2b2b30;--hero2:#0e0e10;--glow:rgba(42,42,46,0.45)}
+:root[data-acento="negro"][data-theme="dark"]{--chrome:linear-gradient(180deg,#e9ebed 0%,#dde0e4 24%,#cfd2d8 50%,#b6b9be 52%,#d5d7dd 100%);--chromeBd:#87888c;--accent:#d4d6dc;--brand:#e7e8ec;--ring:#cfd2d8;--hero1:#4f5052;--hero2:#292a2b;--glow:rgba(207,210,216,0.45)}
+@media (prefers-color-scheme: dark){:root[data-acento="negro"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#e9ebed 0%,#dde0e4 24%,#cfd2d8 50%,#b6b9be 52%,#d5d7dd 100%);--chromeBd:#87888c;--accent:#d4d6dc;--brand:#e7e8ec;--ring:#cfd2d8;--hero1:#4f5052;--hero2:#292a2b;--glow:rgba(207,210,216,0.45)}}
+:root[data-acento="amarillo"]:not([data-theme="dark"]) .btn.primary,:root[data-acento="amarillo"]:not([data-theme="dark"]) #fabRapido{color:#2b2100; text-shadow:none}
+@media (prefers-color-scheme: dark){:root[data-acento="amarillo"]:not([data-theme="light"]) .btn.primary,:root[data-acento="amarillo"]:not([data-theme="light"]) #fabRapido{color:#1a1400; text-shadow:none}}
 :root[data-acento="verde"]{--chrome:linear-gradient(180deg,#7fcf9f 0%,#3fa86a 22%,#1f7a4a 50%,#165c38 52%,#2a9962 100%);--chromeBd:#0f4a2c;--accent:#1e6b45;--brand:#0f3d28;--ring:#3ecf7a;--hero1:#1f6b45;--hero2:#0f3d28;--glow:rgba(46,176,100,.45)}
 :root[data-acento="verde"][data-theme="dark"]{--chrome:linear-gradient(180deg,#b4f0cd 0%,#7be3a6 24%,#3ecf7a 50%,#2eb064 52%,#52d98a 100%);--chromeBd:#1f7a46;--accent:#4ade80;--brand:#8df0b4;--ring:#3ecf7a;--hero1:#1f4a38;--hero2:#12281f;--glow:rgba(62,207,122,.45)}
 @media (prefers-color-scheme: dark){:root[data-acento="verde"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#b4f0cd 0%,#7be3a6 24%,#3ecf7a 50%,#2eb064 52%,#52d98a 100%);--chromeBd:#1f7a46;--accent:#4ade80;--brand:#8df0b4;--ring:#3ecf7a;--hero1:#1f4a38;--hero2:#12281f;--glow:rgba(62,207,122,.45)}}
@@ -572,6 +628,15 @@ body.modalOpen #fabRapido{display:none}
 @media (prefers-color-scheme: dark){:root[data-acento="naranja"]:not([data-theme="light"]){--chrome:linear-gradient(180deg,#ffc58a 0%,#f7a24d 24%,#f28c28 50%,#d9761a 52%,#f59a3c 100%);--chromeBd:#b8620f;--accent:#f28c28;--brand:#ffb066;--ring:#f28c28;--glow:rgba(242,140,40,.45)}}
 :root[data-acento="naranja"]:not([data-theme="dark"]) .btn.primary,:root[data-acento="naranja"]:not([data-theme="dark"]) #fabRapido{color:#2b1500; text-shadow:none}
 @media (prefers-color-scheme: dark){:root[data-acento="naranja"]:not([data-theme="light"]) .btn.primary,:root[data-acento="naranja"]:not([data-theme="light"]) #fabRapido{color:#1a0d00; text-shadow:none}}
+/* ---------- Íconos en burbuja metalizada (Opción 4): la burbuja toma el color de la app; la sección activa se ilumina ---------- */
+.bub{display:grid; place-items:center; width:40px; height:40px; border-radius:12px; flex:none;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--hero1) 55%,#fff) 0%,color-mix(in srgb,var(--hero1) 80%,#fff) 22%,var(--hero1) 50%,var(--hero2) 52%,color-mix(in srgb,var(--hero1) 92%,#000) 100%);
+  border:1px solid color-mix(in srgb,var(--hero2) 65%,#000); box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 1px 2px rgba(0,0,0,.3)}
+.bub .ico{width:22px; height:22px; color:#fff!important; stroke-width:2}
+#bottomNav .bub{width:34px; height:34px; border-radius:11px}
+#bottomNav .bub .ico{width:20px; height:20px}
+#bottomNav button[aria-current="page"] .bub{background:linear-gradient(180deg,color-mix(in srgb,var(--ring) 55%,#fff) 0%,color-mix(in srgb,var(--ring) 80%,#fff) 24%,var(--ring) 50%,color-mix(in srgb,var(--ring) 85%,#000) 52%,color-mix(in srgb,var(--ring) 92%,#fff) 100%); border-color:color-mix(in srgb,var(--ring) 60%,#000)}
+#bottomNav button[aria-current="page"] .bub .ico{color:#1a1205!important}
 .swatch{display:inline-flex; align-items:center; gap:8px; min-height:44px}
 .swatch .swDot{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex:none}
 .swatch[aria-pressed="true"]{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent)}
@@ -795,7 +860,7 @@ body.modalOpen #fabRapido{display:none}
   <div class="loginbox">
     <h2>Verifica tu correo</h2>
     <p class="small" id="vMsg"></p>
-    <p class="small">Abre el enlace que te mandamos (mira también en Spam) y después toca el botón de abajo.</p>
+    <p class="small">Abre el enlace que te mandamos (mira también en Spam) y vuelve aquí: lo detectamos solo. Si no avanza, toca el botón.</p>
     <button class="btn primary" id="vOk" type="button">Ya verifiqué mi correo</button>
     <button class="btn" id="vResend" type="button">Reenviar correo</button>
     <p class="err" id="vErr" role="alert"></p>
@@ -805,15 +870,27 @@ body.modalOpen #fabRapido{display:none}
 
 <div id="nohogar" class="center auth" hidden>
   <div class="loginbox">
-    <h2>Tu hogar</h2>
-    <p class="small" id="nhMsg">Tu cuenta todavía no pertenece a ningún hogar. Crea uno nuevo o sumate al de tu pareja.</p>
-    <label>Nombre de tu hogar <input type="text" class="txt" id="nhNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
-    <label>Moneda <select id="nhMoneda"></select></label>
-    <label>¿Cómo cobras? <select id="nhPeriodo"></select></label>
-    <button class="btn primary" id="nhCrear" type="button">Crear mi hogar</button>
-    <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
-      <label>¿Tu pareja ya tiene un hogar? Escribe su código <input type="text" class="txt" id="nhCode" autocomplete="off"></label>
-      <button class="btn" id="nhBtn" type="button">Unirme con código</button>
+    <h2>Empecemos</h2>
+    <p class="small" id="nhMsg">Tu libro vive en un «hogar»: el espacio donde guardas tus finanzas, solo o con tu pareja.</p>
+    <div class="nhOpc" role="group" aria-label="¿Cómo quieres empezar?">
+      <button class="btn primary" id="nhOpNuevo" type="button" aria-pressed="true">Soy el primero de mi hogar</button>
+      <button class="btn" id="nhOpUnir" type="button" aria-pressed="false">Mi pareja ya tiene un hogar</button>
+    </div>
+    <div class="nhSec" id="nhNuevo">
+      <label>Nombre de tu hogar <input type="text" class="txt" id="nhNombre" autocomplete="off" placeholder="Ej: Familia Pérez"></label>
+      <label>Clave del hogar (mínimo 8 caracteres) <input type="password" class="txt" id="nhClave" autocomplete="new-password" autocapitalize="off" placeholder="Una frase fácil de recordar"></label>
+      <label>Repite la clave <input type="password" class="txt" id="nhClave2" autocomplete="new-password" autocapitalize="off"></label>
+      <p class="small nhNota"><b>🔒 Con esta clave se cifran tus datos en tu teléfono.</b> Ni Google ni el creador de la app pueden leerlos. Tú y tu pareja la usarán para abrirlos en cada teléfono nuevo. Si la olvidas, solo el código de recuperación que te daremos enseguida puede rescatarlos.</p>
+      <details class="nhMas"><summary>Ajustes opcionales (moneda y cobro)</summary>
+        <label>Moneda <select id="nhMoneda"></select></label>
+        <label>¿Cómo cobras? <select id="nhPeriodo"></select></label>
+      </details>
+      <button class="btn primary" id="nhCrear" type="button">Crear mi hogar</button>
+    </div>
+    <div class="nhSec" id="nhUnirme" hidden>
+      <label>Escribe el código que te dio tu pareja <input type="text" class="txt" id="nhCode" autocomplete="off" autocapitalize="characters"></label>
+      <p class="small">Lo encuentra en su app: Más → Opciones → Tu hogar. Después te pediremos la clave del hogar que ella eligió.</p>
+      <button class="btn primary" id="nhBtn" type="button">Unirme con código</button>
     </div>
     <p class="err" id="nhErr" role="alert"></p>
     <button class="link" id="nhSalir" type="button" style="margin-top:14px">Salir</button>
@@ -884,6 +961,7 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/vistas.js"></script>
 <script src="js/compras-calendario.js"></script>
 <script src="js/plan.js"></script>
+<script src="js/comparativas.js"></script>
 <script src="js/navegacion.js"></script>
 <script src="js/respaldo.js"></script>
 <script src="js/calculadoras.js"></script>

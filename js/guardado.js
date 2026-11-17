@@ -200,7 +200,13 @@ function startData0(){
     }
     onRemote(map,!snap.metadata.fromCache);
   },err=>{
-    if(err&&(err.code==='e2e-decrypt'||err.code==='e2e-locked')&&!e2eReintento){ e2eReintento=true; e2eBorrarLlave(hogarId).then(()=>{ e2eKey=null; e2eKeyHogar=null; startData(); }); return; }
+    const que=e2eDecidirError(err&&err.code,e2eReintento);
+    if(que!=='fallar'){
+      e2eReintento++;
+      /* 1.er fallo: solo se vuelve a leer la llave del teléfono (NO se borra). 2.º fallo seguido: la llave de verdad no sirve → se borra y se pide la clave. */
+      (que==='borrar'?e2eBorrarLlave(hogarId):Promise.resolve()).then(()=>{ e2eKey=null; e2eKeyHogar=null; startData(); });
+      return;
+    }
     if(!ready){
       $('#loadingMsg').textContent='No se pudieron cargar los datos.';
       $('#loadingErr').textContent=(err&&err.code==='permission-denied')
@@ -209,9 +215,9 @@ function startData0(){
     } else setStatus('error',err);
   });
 }
-function stopData(){ e2eKey=null; e2eKeyHogar=null; e2eReintento=false; clearTimeout(e2eMigTimer);
+function stopData(){ e2eKey=null; e2eKeyHogar=null; e2eReintento=0; clearTimeout(e2eMigTimer);
   if(unsub){ try{unsub();}catch(e){} unsub=null; }
   clearTimeout(loadTimer); clearTimeout(saveTimer); clearTimeout(retryTimer); retryTimer=null;
-  setMoneda('ARS'); setPeriodo('quincenal'); stopNotas(); calSel=null; calY=null; months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:''}; extras={presupuesto:{},deudas:[],metas:[],repetidos:[],comercios:[],ops:[],recurrentes:[],extraDeuda:null,orden:'bola'}; presuExtra.clear(); baseExtras=null; unwatchLive(); cur=null; ready=false; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
+  setMoneda('ARS'); setPeriodo('quincenal'); stopNotas(); calSel=null; calY=null; calVista='mes'; months={}; papelera=[]; catalogo=new Map(); ahorro={ahorrado:null,cotizacion:null,meta:null,fechaMeta:''}; extras={presupuesto:{},deudas:[],metas:[],repetidos:[],comercios:[],ops:[],recurrentes:[],extraDeuda:null,orden:'bola'}; presuExtra.clear(); baseExtras=null; unwatchLive(); cur=null; ready=false; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); hogarId=null; hogarInfo=null; $('#main').replaceChildren(); closeModal();
 }
 

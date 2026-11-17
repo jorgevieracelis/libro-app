@@ -24,6 +24,7 @@ const ICONOS={
   cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   mas:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/>',
   anio:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',
+  comp:'<path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',
   metas:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
   herr:'<path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.5 2.5-2.2-.5-.5-2.2z"/>',
   guia:'<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M9 13h6M9 17h6"/>',
@@ -50,7 +51,7 @@ function renderBottomNav(){
   const nav=document.getElementById('bottomNav'); if(!nav) return;
   nav.replaceChildren();
   [['inicio','Resumen'],['libro','Libro'],['compras','Compras'],['cal','Calendario'],['mas','Más']].forEach(([g,t])=>{
-    const b=el('button'); b.type='button'; b.dataset.g=g; b.innerHTML=icono(g)+'<span>'+t+'</span>';
+    const b=el('button'); b.type='button'; b.dataset.g=g; b.innerHTML='<span class="bub">'+icono(g)+'</span><span>'+t+'</span>';
     b.addEventListener('click',()=>{ if(g==='mas') abrirMas(); else irAGrupo(g); });
     nav.append(b);
   });
@@ -69,14 +70,15 @@ function abrirMas(){
   const body=el('div'); body.className='masList';
   const item=(ic,titulo,desc,fn)=>{
     const b=el('button','btn masItem'); b.type='button';
-    b.innerHTML=icono(ic)+'<span><b>'+titulo+'</b><small>'+desc+'</small></span>';
+    b.innerHTML='<span class="bub">'+icono(ic)+'</span><span><b>'+titulo+'</b><small>'+desc+'</small></span>';
     b.addEventListener('click',()=>{ closeModal(); fn(); window.scrollTo(0,0); });
     body.append(b);
   };
   item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); });
+  item('comp','Comparativas','Compara meses, trimestres, semestres o años',()=>{ tab='comp'; showTab(); });
   item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); });
   item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); });
-  item('video','Videos de ayuda','Aprende la app en 6 videos cortos, con voz y subtítulos',abrirVideos);
+  item('video','Videos de ayuda','Aprende la app en 7 videos cortos, con voz y subtítulos',abrirVideos);
   item('herr','Herramientas','Buscador, ahorro en dólares, comercios, calculadoras, importación y respaldo',()=>{ tab='herr'; showTab(); });
   item('tuerca','Opciones','Tu hogar, cifrado, sesión, apariencia, moneda y modalidad de cobro',()=>{ tab='opc'; showTab(); });
   modal('Más',body,[{label:'Cerrar'}]);

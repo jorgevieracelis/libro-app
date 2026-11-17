@@ -2,8 +2,21 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.7.0';
+const APP_VERSION='2.9.0';
 const NOVEDADES=[
+ {v:'2.9.0', fecha:'17 nov 2026', items:[
+  'Íconos nuevos: cada sección de la barra de abajo y del menú Más va dentro de una burbuja metalizada que toma el color que elijas; la sección activa se ilumina',
+  'Nuevos colores metalizados en Apariencia: Rojo, Celeste, Rosado, Amarillo y Negro; el Azul ahora es un azul oscuro',
+  'El calendario tiene 4 vistas: Día, Semana, Mes (la de siempre) y Año',
+  'Nueva herramienta Comparativas (Más → Comparativas): compara meses, trimestres, semestres o años, con barras y evolución de los últimos 6 períodos',
+  'Primer uso más corto: el correo se verifica solo al volver a la app; «Empecemos» une tu hogar y la clave de cifrado en una sola pantalla (la moneda se propone según tu país y los ajustes quedan opcionales); «Mi pareja ya tiene un hogar» es una opción clara desde el inicio; el código de recuperación se puede compartir; y la bienvenida ahora muestra lo mejor de la app, con el video de 1 minuto'
+ ]},
+ {v:'2.8.0', fecha:'17 nov 2026', items:[
+  'Nuevo video «Lo mejor de la app» (1 minuto): un vistazo a lo que hace distinta a Libro de Finanzas (Más → Videos de ayuda)'
+ ]},
+ {v:'2.7.1', fecha:'17 nov 2026', items:[
+  'Corregido: después de una actualización la app podía pedir de nuevo la clave del hogar aunque no hiciera falta. Ahora la llave de cifrado guardada en el teléfono solo se descarta si el error se repite, y la app le pide al navegador que no la borre por falta de espacio'
+ ]},
  {v:'2.7.0', fecha:'16 nov 2026', items:[
   'Menú reorganizado: la tarjeta de crédito, el retiro de efectivo y el fondo de emergencia pasan a su propia pestaña «Tarjeta y fondos» (Más → Tarjeta y fondos); la configuración (tu hogar, cifrado, cerrar sesión por inactividad, apariencia, moneda y modalidad de cobro) pasa a «Opciones» ⚙ (Más → Opciones); y el respaldo queda en «Importación», dentro de Herramientas'
  ]},

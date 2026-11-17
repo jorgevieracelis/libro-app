@@ -603,7 +603,7 @@ document.addEventListener('visibilitychange',()=>{
 setInterval(()=>{ if(!document.hidden && !$('#versiculo').hidden && Date.now()-versUltimo>=VERS_CADA_MS) nuevoVersiculo(); },15000);
 
 /* ---------- Calendario de notas ---------- */
-let notas=[], unsubNotas=null, calY=null, calM=null, calSel=null;
+let notas=[], unsubNotas=null, calY=null, calM=null, calSel=null, calVista='mes';   /* vista: dia | semana | mes | anio (por defecto, mes) */
 const NOTA_RE=/^\d{4}-\d{2}-\d{2}$/;
 const notasCol=()=>FS.collection(db,'hogares',hogarId,'notas');
 const notaRef=id=>FS.doc(db,'hogares',hogarId,'notas',id);
@@ -690,34 +690,91 @@ function renderCal(focusInput){
   v.replaceChildren();
   const byDay={}; notas.forEach(n=>{ (byDay[n.fecha]=byDay[n.fecha]||[]).push(n); });
   Object.values(byDay).forEach(a=>a.sort((x,y)=>x.creado-y.creado));
-  // --- mes ---
+  // --- vistas: día, semana, mes y año ---
+  const selD=()=>{ const q=calSel.split('-').map(Number); return new Date(q[0],q[1]-1,q[2]); };
+  const irA=d=>{ calSel=ymd(d); calY=d.getFullYear(); calM=d.getMonth(); };
+  const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+  const lunes=d=>{ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; };
   const c=el('section','card');
-  const h=el('header'); const h2=el('h2'); h2.textContent=MESES[calM]+' '+calY; h.append(h2);
+  const h=el('header'); const h2=el('h2');
+  if(calVista==='anio') h2.textContent=String(calY);
+  else if(calVista==='dia') h2.textContent=cap(selD().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}))+' '+selD().getFullYear();
+  else if(calVista==='semana'){ const l=lunes(selD()), f=new Date(l.getFullYear(),l.getMonth(),l.getDate()+6); const mm=d=>MESES[d.getMonth()].slice(0,3).toLowerCase(); h2.textContent=l.getDate()+(l.getMonth()===f.getMonth()?'':' '+mm(l))+' – '+f.getDate()+' '+mm(f)+' '+f.getFullYear(); }
+  else h2.textContent=MESES[calM]+' '+calY;
+  h.append(h2);
   const nav=el('div','calNav');
   const mkb=(txt,lab,fn)=>{ const b=el('button','btn'); b.type='button'; b.textContent=txt; b.setAttribute('aria-label',lab); b.addEventListener('click',fn); return b; };
-  nav.append(
-    mkb('◀','Mes anterior',()=>{ calM--; if(calM<0){calM=11;calY--;} renderCal(); }),
+  const paso=dir=>{
+    if(calVista==='anio'){ calY+=dir; }
+    else if(calVista==='mes'){ calM+=dir; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} }
+    else { const d=selD(); d.setDate(d.getDate()+dir*(calVista==='semana'?7:1)); irA(d); }
+    renderCal();
+  };
+  const NOMV={dia:['día','Día anterior','Día siguiente'],semana:['semana','Semana anterior','Semana siguiente'],mes:['mes','Mes anterior','Mes siguiente'],anio:['año','Año anterior','Año siguiente']}[calVista];
+  nav.append(mkb('◀',NOMV[1],()=>paso(-1)),
     mkb('Hoy','Ir a hoy',()=>{ calY=hoy.getFullYear(); calM=hoy.getMonth(); calSel=hoyS; renderCal(); }),
-    mkb('▶','Mes siguiente',()=>{ calM++; if(calM>11){calM=0;calY++;} renderCal(); }));
+    mkb('▶',NOMV[2],()=>paso(1)));
   h.append(nav); c.append(h);
-  const grid=el('div','calGrid');
-  DOW.forEach(d=>{ const s=el('div','calDow'); s.textContent=d; grid.append(s); });
-  const lead=(new Date(calY,calM,1).getDay()+6)%7, dim=new Date(calY,calM+1,0).getDate();
-  for(let i=0;i<lead;i++) grid.append(el('div','calEmpty'));
-  for(let d=1;d<=dim;d++){
-    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const list=byDay[ds]||[];
-    const b=el('button','calDay'+(ds===hoyS?' today':'')+(ds===calSel?' sel':'')); b.type='button';
-    const nm=el('span','calNum'); nm.textContent=d; b.append(nm);
-    if(list.length){
-      const cnt=el('span','calCnt'); cnt.textContent=list.length; b.append(cnt);
-      const sn=el('span','calSnip'); sn.textContent=list[0].texto; b.append(sn);
+  const vs=el('div','calVistas'); vs.setAttribute('role','group'); vs.setAttribute('aria-label','Vista del calendario');
+  [['dia','Día'],['semana','Semana'],['mes','Mes'],['anio','Año']].forEach(([k,t])=>{
+    const b=el('button','btn'+(k===calVista?' primary':'')); b.type='button'; b.textContent=t; b.setAttribute('aria-pressed',String(k===calVista));
+    b.addEventListener('click',()=>{ if(k===calVista) return; calVista=k; renderCal(); });
+    vs.append(b);
+  });
+  c.append(vs);
+  if(calVista==='mes'){
+    const grid=el('div','calGrid');
+    DOW.forEach(d=>{ const s=el('div','calDow'); s.textContent=d; grid.append(s); });
+    const lead=(new Date(calY,calM,1).getDay()+6)%7, dim=new Date(calY,calM+1,0).getDate();
+    for(let i=0;i<lead;i++) grid.append(el('div','calEmpty'));
+    for(let d=1;d<=dim;d++){
+      const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const list=byDay[ds]||[];
+      const b=el('button','calDay'+(ds===hoyS?' today':'')+(ds===calSel?' sel':'')); b.type='button';
+      const nm=el('span','calNum'); nm.textContent=d; b.append(nm);
+      if(list.length){
+        const cnt=el('span','calCnt'); cnt.textContent=list.length; b.append(cnt);
+        const sn=el('span','calSnip'); sn.textContent=list[0].texto; b.append(sn);
+      }
+      b.setAttribute('aria-label',d+' de '+MESES[calM]+(list.length?(', '+list.length+(list.length===1?' nota':' notas')):''));
+      b.addEventListener('click',()=>{ calSel=ds; renderCal(true); });
+      grid.append(b);
     }
-    b.setAttribute('aria-label',d+' de '+MESES[calM]+(list.length?(', '+list.length+(list.length===1?' nota':' notas')):''));
-    b.addEventListener('click',()=>{ calSel=ds; renderCal(true); });
-    grid.append(b);
+    c.append(grid);
+  } else if(calVista==='semana'){
+    const l=lunes(selD()); const lista=el('div','calSemana');
+    for(let i=0;i<7;i++){
+      const d=new Date(l.getFullYear(),l.getMonth(),l.getDate()+i), ds=ymd(d), list=byDay[ds]||[];
+      const b=el('button','calSemRow'+(ds===hoyS?' today':'')+(ds===calSel?' sel':'')); b.type='button';
+      const f=el('b'); f.textContent=DOW[i]+' '+d.getDate(); b.append(f);
+      const tx=el('span'); tx.textContent=list.length?list.map(n=>n.texto).join(' · '):'Sin notas'; if(!list.length) tx.className='small'; b.append(tx);
+      if(list.length){ const cnt=el('span','calCnt'); cnt.textContent=list.length; b.append(cnt); }
+      b.setAttribute('aria-label',cap(d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}))+(list.length?(', '+list.length+(list.length===1?' nota':' notas')):', sin notas'));
+      b.addEventListener('click',()=>{ calSel=ds; renderCal(true); });
+      lista.append(b);
+    }
+    c.append(lista);
+  } else if(calVista==='anio'){
+    const ga=el('div','calAnio');
+    for(let m=0;m<12;m++){
+      const b=el('button','calMini'+((calY===hoy.getFullYear()&&m===hoy.getMonth())?' today':'')); b.type='button';
+      const t=el('b'); t.textContent=MESES[m]; b.append(t);
+      const g=el('div','g');
+      const lead=(new Date(calY,m,1).getDay()+6)%7, dim=new Date(calY,m+1,0).getDate(); let nn=0;
+      for(let i=0;i<lead;i++) g.append(el('i'));
+      for(let d=1;d<=dim;d++){
+        const ds=calY+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'); const k=(byDay[ds]||[]).length; nn+=k;
+        const x=el('i',(k?'has':'')+(ds===hoyS?' hoy':'')); x.textContent=d; g.append(x);
+      }
+      b.append(g);
+      const r=el('span','small'); r.textContent=nn?(nn+(nn===1?' nota':' notas')):'Sin notas'; b.append(r);
+      b.setAttribute('aria-label',MESES[m]+' '+calY+(nn?(', '+nn+(nn===1?' nota':' notas')):', sin notas')+'. Abrir el mes');
+      b.addEventListener('click',()=>{ calM=m; calVista='mes'; const sd=selD(); if(sd.getFullYear()!==calY||sd.getMonth()!==m) calSel=calY+'-'+String(m+1).padStart(2,'0')+'-01'; renderCal(); });
+      ga.append(b);
+    }
+    c.append(ga);
   }
-  c.append(grid); v.append(c);
+  v.append(c);
   // --- día elegido ---
   const sp=calSel.split('-').map(Number);
   const sdt=new Date(sp[0],sp[1]-1,sp[2]);

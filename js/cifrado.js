@@ -12,7 +12,18 @@ const E2E_IT=600000, E2E_IT_REC=100000;
 const e2eEncPath=p=>{ const s=String(p||'').split('/'); return s[0]==='hogares' && s.length>=4 && E2E_COLS.includes(s[2]); };
 let e2eKey=null;          /* llave del hogar actual (CryptoKey no exportable) */
 let e2eKeyHogar=null;     /* hogar al que pertenece e2eKey */
-let e2eReintento=false;   /* ya se intentó volver a pedir la clave tras un error de descifrado */
+let e2eReintento=0;       /* cuántas veces se reintentó tras un error de descifrado en esta sesión */
+/* Qué hacer cuando falla abrir los datos. La llave guardada en el teléfono SOLO se borra (y se pide la clave) si el error
+   se repite tras un reintento: un fallo momentáneo (por ejemplo, la llave aún no cargada justo después de actualizar la app)
+   ya no hace perder la llave. Devuelve 'reintentar', 'borrar' o 'fallar'. */
+function e2eDecidirError(code,intentos){
+  if(code!=='e2e-decrypt' && code!=='e2e-locked') return 'fallar';
+  if(intentos<1) return 'reintentar';
+  if(intentos<2) return 'borrar';
+  return 'fallar';
+}
+/* Pide al navegador que no borre los datos de la app (incluida la llave) cuando falta espacio. */
+function e2ePersistir(){ try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){} }
 let e2eLegacy=false;      /* se vio algún documento sin cifrar: hay que migrarlo */
 const e2eTE=new TextEncoder(), e2eTD=new TextDecoder();
 const e2eRand=n=>crypto.getRandomValues(new Uint8Array(n));
@@ -141,6 +152,7 @@ function e2eIDB(){
   });
 }
 async function e2eGuardarLlave(hId,key){
+  e2ePersistir();
   try{ const d=await e2eIDB(); await new Promise((ok,no)=>{ const t=d.transaction('k','readwrite'); t.objectStore('k').put(key,hId); t.oncomplete=ok; t.onerror=()=>no(t.error); }); d.close(); }catch(e){}
 }
 async function e2eLeerLlave(hId){

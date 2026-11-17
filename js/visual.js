@@ -144,7 +144,7 @@ function animarVista(id){
 
 /* ---------- Apariencia: tema (automático, claro, oscuro) y color. Se guarda solo en este teléfono ---------- */
 const TEMAS=[['auto','Automático'],['claro','Claro'],['oscuro','Oscuro']];
-const ACENTOS=[['clasico','Clásico','#1b3f7a'],['azul','Azul','#3f6aa8'],['verde','Verde','#1e6b45'],['violeta','Violeta','#5b3fb0'],['naranja','Naranja','#d9761a']];
+const ACENTOS=[['clasico','Clásico','#1b3f7a'],['azul','Azul','#14327a'],['celeste','Celeste','#1fa3e0'],['verde','Verde','#1e6b45'],['violeta','Violeta','#5b3fb0'],['rojo','Rojo','#c4262e'],['rosado','Rosado','#e0508a'],['naranja','Naranja','#d9761a'],['amarillo','Amarillo','#f2c200'],['negro','Negro','#2a2a2e']];
 function aparienciaLeer(){ let t='auto',a='clasico'; try{ t=localStorage.getItem('lfh.tema')||'auto'; a=localStorage.getItem('lfh.acento')||'clasico'; }catch(e){} return {t:TEMAS.some(x=>x[0]===t)?t:'auto',a:ACENTOS.some(x=>x[0]===a)?a:'clasico'}; }
 function aparienciaAplicar(t,a){
   const r=document.documentElement;
@@ -170,7 +170,7 @@ function buildApariencia(){
   const fila=el('div'); fila.style.cssText='display:flex; gap:10px; flex-wrap:wrap'; fila.setAttribute('role','group'); fila.setAttribute('aria-label','Color de la app');
   ACENTOS.forEach(([k,n,col])=>{
     const b=el('button','btn swatch'); b.type='button'; b.setAttribute('aria-pressed',String(k===acento)); b.setAttribute('aria-label','Color '+n);
-    const d=el('span','swDot'); d.style.background=col; d.setAttribute('aria-hidden','true'); const tx=el('span'); tx.textContent=n; b.append(d,tx);
+    const d=el('span','swDot'); d.style.background=col; d.style.background='linear-gradient(180deg,color-mix(in srgb,'+col+' 45%,#fff) 0%,'+col+' 50%,color-mix(in srgb,'+col+' 75%,#000) 52%,'+col+' 100%)'; d.setAttribute('aria-hidden','true'); const tx=el('span'); tx.textContent=n; b.append(d,tx);
     b.addEventListener('click',()=>{ acento=k; aparienciaGuardar(tema,acento); fila.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); });
     fila.append(b);
   });

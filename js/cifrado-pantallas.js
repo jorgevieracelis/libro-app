@@ -36,15 +36,33 @@ function e2eAsegurar(){
     const fin=()=>{ e2eKeyHogar=hogarId; e2eCerrar(); resolve(); };
     const meta=hogarInfo&&hogarInfo.e2e;
     if(meta){
-      const k=await e2eLeerLlave(hogarId);
-      if(k){ e2eKey=k; fin(); return; }
+      let k=await e2eLeerLlave(hogarId);
+      if(!k){ await new Promise(r=>setTimeout(r,400)); k=await e2eLeerLlave(hogarId); }   /* un fallo momentáneo de lectura no debe pedir la clave */
+      if(k){ e2eKey=k; e2ePersistir(); fin(); return; }
       e2ePedirClave(fin);
     } else e2eActivar(fin);
   });
 }
 
 /* ---------- 1) Activar el cifrado (hogar nuevo o hogar que todavía tiene datos sin cifrar) ---------- */
-function e2eActivar(fin){
+let e2eClaveInicial=null;   /* clave escrita en la pantalla «Empecemos»: activa el cifrado sin pedirla otra vez */
+/* Crea la llave de datos con la clave elegida y la guarda en el hogar. Lanza un error si falla (sin conexión, etc.). */
+async function e2eActivarCon(a,fin){
+  const {dek,cod,meta}=await e2eCrear(a);
+  const ref=FS.doc(db,'hogares',hogarId); let ya=null;
+  await FS.runTransaction(db,async tx=>{ const s=await tx.get(ref); const d=s.data()||{}; if(d.e2e){ ya=d; return; } tx.update(ref,{e2e:meta}); });
+  if(ya){ hogarInfo=ya; e2eGuardarCacheHogar(); e2ePedirClave(fin,'Tu pareja ya activó el cifrado de este hogar. Escribe la clave del hogar que eligió.'); return; }
+  hogarInfo={...hogarInfo,e2e:meta}; e2eGuardarCacheHogar();
+  const k=await e2eFija(dek); e2eKey=k; await e2eGuardarLlave(hogarId,k);
+  e2eMostrarCodigo(cod,()=>e2eMigrarPantalla(fin));
+}
+function e2eActivar(fin,errInicial){
+  if(e2eClaveInicial){
+    const a=e2eClaveInicial; e2eClaveInicial=null;
+    const bx=e2ePantalla('Protegiendo tus datos',['Un momento…']);
+    e2eEspera().then(()=>e2eActivarCon(a,fin)).catch(e=>e2eActivar(fin,'No se pudo activar ('+((e&&e.code)||'error')+'). Revisa tu conexión y prueba de nuevo.'));
+    return;
+  }
   const box=e2ePantalla('Protege tus datos',[
     'Tus finanzas son privadas. Con el cifrado, tus datos se convierten en texto ilegible EN TU TELÉFONO antes de enviarse: ni Google ni el creador de la app pueden leerlos.',
     'Elige la clave del hogar. La usarán tú y tu pareja para abrir los datos en cada teléfono nuevo.'
@@ -54,7 +72,7 @@ function e2eActivar(fin){
   const aviso=el('p','small'); aviso.style.cssText='background:var(--chip); padding:10px 12px; border-radius:12px; text-align:left';
   aviso.innerHTML='<b>Importante:</b> si olvidas esta clave y también pierdes el código de recuperación que te daremos, <b>nadie podrá recuperar tus datos</b>. Tampoco nosotros.';
   box.append(aviso);
-  const err=e2eErrEl(box);
+  const err=e2eErrEl(box); if(errInicial) err.textContent=errInicial;
   const btn=e2eBoton(box,'Activar cifrado','primary',async()=>{
     err.textContent='';
     const a=e2eNormClave(c1.value), b=e2eNormClave(c2.value);
@@ -62,15 +80,8 @@ function e2eActivar(fin){
     if(a!==b){ err.textContent='Las dos claves no coinciden.'; return; }
     if(!navigator.onLine){ err.textContent='Para activar el cifrado necesitas conexión a internet.'; return; }
     btn.disabled=true; btn.textContent='Protegiendo…'; await e2eEspera();
-    try{
-      const {dek,cod,meta}=await e2eCrear(a);
-      const ref=FS.doc(db,'hogares',hogarId); let ya=null;
-      await FS.runTransaction(db,async tx=>{ const s=await tx.get(ref); const d=s.data()||{}; if(d.e2e){ ya=d; return; } tx.update(ref,{e2e:meta}); });
-      if(ya){ hogarInfo=ya; e2eGuardarCacheHogar(); e2ePedirClave(fin,'Tu pareja ya activó el cifrado de este hogar. Escribe la clave del hogar que eligió.'); return; }
-      hogarInfo={...hogarInfo,e2e:meta}; e2eGuardarCacheHogar();
-      const k=await e2eFija(dek); e2eKey=k; await e2eGuardarLlave(hogarId,k);
-      e2eMostrarCodigo(cod,()=>e2eMigrarPantalla(fin));
-    }catch(e){
+    try{ await e2eActivarCon(a,fin); }
+    catch(e){
       btn.disabled=false; btn.textContent='Activar cifrado';
       err.textContent='No se pudo activar ('+((e&&e.code)||'error')+'). Revisa tu conexión y prueba de nuevo.';
     }
@@ -80,8 +91,8 @@ function e2eActivar(fin){
 
 /* ---------- 2) Código de recuperación ---------- */
 function e2eMostrarCodigo(cod,siguiente){
-  const box=e2ePantalla('Guarda tu código de recuperación',[
-    'Este código es la única forma de recuperar tus datos si olvidas la clave del hogar. Guárdalo en un lugar seguro (papel, gestor de contraseñas o Drive personal). No se vuelve a mostrar.'
+  const box=e2ePantalla('Último paso: guarda tu código',[
+    'Este código es la única forma de recuperar tus datos si olvidas la clave del hogar. Cópialo o compártelo a un lugar seguro (tu gestor de contraseñas, una nota privada o un papel). No se vuelve a mostrar.'
   ]);
   const code=el('div'); code.textContent=e2eFmtCod(cod); code.style.cssText='font:700 20px/1.3 ui-monospace,Menlo,Consolas,monospace; letter-spacing:.08em; text-align:center; padding:14px 10px; border-radius:12px; background:var(--chip); word-break:break-all; user-select:all';
   box.append(code);
@@ -93,7 +104,10 @@ function e2eMostrarCodigo(cod,siguiente){
     const txt='Libro de Finanzas — código de recuperación\n\nGuárdalo en un lugar seguro. Con este código puedes volver a abrir tus datos si olvidas la clave del hogar.\n\n'+e2eFmtCod(cod)+'\n';
     const a=el('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'})); a.download='codigo-recuperacion-libro-de-finanzas.txt'; document.body.append(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
   });
-  fila.append(bC,bD); box.append(fila);
+  const bS=el('button','btn'); bS.type='button'; bS.textContent='Compartir';
+  bS.addEventListener('click',async()=>{ try{ await navigator.share({title:'Código de recuperación — Libro de Finanzas',text:'Código de recuperación de Libro de Finanzas (guárdalo en un lugar seguro): '+e2eFmtCod(cod)}); }catch(e){ if(!e||e.name!=='AbortError') toast('No se pudo compartir: usa Copiar'); } });
+  if(navigator.share) fila.append(bC,bS,bD); else fila.append(bC,bD);
+  box.append(fila);
   const lab=el('label'); lab.style.cssText='display:flex; gap:8px; align-items:flex-start; text-align:left; font-size:13px';
   const ck=el('input'); ck.type='checkbox'; ck.style.cssText='width:auto; margin-top:3px'; lab.append(ck,document.createTextNode('Ya guardé mi código de recuperación en un lugar seguro.'));
   box.append(lab);

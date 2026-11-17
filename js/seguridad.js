@@ -42,11 +42,42 @@ $('#nhBtn').addEventListener('click',async()=>{
 });
 $('#nhMoneda').replaceChildren(...MONEDAS.map(m=>{ const o=el('option'); o.value=m.c; o.textContent=m.n+' ('+m.c+')'; return o; }));
 $('#nhPeriodo').replaceChildren(...PERIODO_OPC.map(([k,txt])=>{ const o=el('option'); o.value=k; o.textContent=txt; if(k==='quincenal') o.selected=true; return o; }));
+/* La moneda se propone según el país del teléfono (si no se reconoce, queda la primera de la lista). */
+function monedaPorDefecto(){
+  const reg=((navigator.language||'').split('-')[1]||'').toUpperCase();
+  const m={AR:'ARS',VE:'VES',BR:'BRL',CO:'COP',PE:'PEN',CL:'CLP',PY:'PYG',MX:'MXN',UY:'UYU',CA:'CAD',US:'USD',EC:'USD',PA:'USD',SV:'USD',PR:'USD',ES:'EUR',DE:'EUR',FR:'EUR',IT:'EUR',PT:'EUR'};
+  return m[reg]||MONEDAS[0].c;
+}
+/* El resumen de «Ajustes opcionales» muestra lo elegido, para que no pase desapercibido. */
+function nhResumen(){
+  const mo=MONEDAS.find(x=>x.c===$('#nhMoneda').value), pe=PERIODO_OPC.find(x=>x[0]===$('#nhPeriodo').value);
+  $('#nhNuevo .nhMas summary').textContent='Ajustes opcionales · '+(mo?mo.n:'')+' · cobro '+(pe?pe[0]:'');
+}
+function nhModo(unir){
+  $('#nhNuevo').hidden=unir; $('#nhUnirme').hidden=!unir;
+  $('#nhOpNuevo').setAttribute('aria-pressed',String(!unir)); $('#nhOpUnir').setAttribute('aria-pressed',String(unir));
+  $('#nhOpNuevo').classList.toggle('primary',!unir); $('#nhOpUnir').classList.toggle('primary',unir);
+  $('#nhErr').textContent='';
+  (unir?$('#nhCode'):$('#nhNombre')).focus();
+}
+function nhInicio(){
+  $('#nhMoneda').value=monedaPorDefecto(); $('#nhPeriodo').value='quincenal'; nhResumen();
+  $('#nhClave').value=''; $('#nhClave2').value=''; $('#nhNuevo .nhMas').open=false;
+  nhModo(false);
+}
+$('#nhOpNuevo').addEventListener('click',()=>nhModo(false));
+$('#nhOpUnir').addEventListener('click',()=>nhModo(true));
+$('#nhMoneda').addEventListener('change',nhResumen); $('#nhPeriodo').addEventListener('change',nhResumen);
 $('#nhCrear').addEventListener('click',async()=>{
-  const btn=$('#nhCrear'); $('#nhErr').textContent=''; btn.disabled=true;
-  try{ await createHogar($('#nhNombre').value); setPeriodo($('#nhPeriodo').value); await e2eAsegurar(); await saveMoneda($('#nhMoneda').value); startData(); }
-  catch(e){ $('#nhErr').textContent='No se pudo crear el hogar ('+((e&&e.code)||'error')+').'; }
-  finally{ btn.disabled=false; }
+  const btn=$('#nhCrear'), err=$('#nhErr'); err.textContent='';
+  const a=e2eNormClave($('#nhClave').value), b=e2eNormClave($('#nhClave2').value);
+  if(a.length<E2E_MIN){ err.textContent='La clave del hogar debe tener al menos '+E2E_MIN+' caracteres.'; return; }
+  if(a!==b){ err.textContent='Las dos claves no coinciden.'; return; }
+  if(!navigator.onLine){ err.textContent='Para crear tu hogar y activar el cifrado necesitas conexión a internet.'; return; }
+  btn.disabled=true; btn.textContent='Creando…';
+  try{ await createHogar($('#nhNombre').value); setPeriodo($('#nhPeriodo').value); e2eClaveInicial=a; await e2eAsegurar(); await saveMoneda($('#nhMoneda').value); startData(); }
+  catch(e){ e2eClaveInicial=null; err.textContent='No se pudo crear el hogar ('+((e&&e.code)||'error')+').'; }
+  finally{ btn.disabled=false; btn.textContent='Crear mi hogar'; }
 });
 $('#nhSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
 
@@ -54,14 +85,29 @@ $('#nhSalir').addEventListener('click',()=>{ if(auth) AU.signOut(auth); });
 function showVerify(){
   setView('verify'); $('#vErr').textContent='';
   $('#vMsg').textContent='Te mandamos un correo a '+(me.email||'')+' para confirmar que es tuyo.';
+  verifVigilar();
 }
-$('#vOk').addEventListener('click',async()=>{
-  $('#vErr').textContent='';
+/* Detecta solo cuando el correo ya está verificado (al volver a la app y cada pocos segundos), sin tener que tocar el botón. */
+let verifTimer=null, verifBusy=false;
+async function verifComprobar(manual){
+  if(verifBusy||!me||vistaActual!=='verify') return false;
+  verifBusy=true;
   try{
     await me.reload(); await me.getIdToken(true);
-    if(me.emailVerified) resolveHogar(); else $('#vErr').textContent='Todavía no figura verificado. Abre el enlace del correo y prueba de nuevo.';
-  }catch(e){ $('#vErr').textContent='No se pudo comprobar ('+((e&&e.code)||'error')+').'; }
-});
+    if(me.emailVerified){ clearTimeout(verifTimer); verifTimer=null; resolveHogar(); return true; }
+    if(manual) $('#vErr').textContent='Todavía no figura verificado. Abre el enlace del correo y prueba de nuevo.';
+  }catch(e){ if(manual) $('#vErr').textContent='No se pudo comprobar ('+((e&&e.code)||'error')+').'; }
+  finally{ verifBusy=false; }
+  return false;
+}
+function verifVigilar(){
+  clearTimeout(verifTimer);
+  if(vistaActual!=='verify'||!me){ verifTimer=null; return; }
+  verifTimer=setTimeout(async()=>{ if(!document.hidden) await verifComprobar(false); verifVigilar(); },4000);
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&vistaActual==='verify') verifComprobar(false); });
+window.addEventListener('focus',()=>{ if(vistaActual==='verify') verifComprobar(false); });
+$('#vOk').addEventListener('click',()=>verifComprobar(true));
 $('#vResend').addEventListener('click',async()=>{
   $('#vErr').textContent='';
   try{ await AU.sendEmailVerification(me); toast('Te lo reenviamos'); }

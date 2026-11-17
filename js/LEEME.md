@@ -8,6 +8,7 @@
 4. `vistas.js` — filas editables y vistas principales
 5. `compras-calendario.js` — compras del súper, versículo del día y calendario
 6. `plan.js` — presupuesto, deudas, metas, repetidos, vista anual y reportes
+6b. `comparativas.js` — comparativas por período (mensual, trimestral, semestral y anual); va justo después de `plan.js`
 7. `respaldo.js` — respaldo e importación, ahorro en dólares y papelera
 8. `ventanas-acceso.js` — novedades (`APP_VERSION`, `NOVEDADES`), ventanas, instalación, ingreso y registro
 8b. `cifrado.js` y `cifrado-pantallas.js` — cifrado de extremo a extremo (capa transparente sobre Firestore, claves, pantallas de clave/código, migración). Se cargan justo después de `guardado.js`

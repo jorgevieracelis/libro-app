@@ -1,7 +1,8 @@
 'use strict';
-/* Videos de ayuda: 6 videos cortos con voz y subtítulos (carpeta videos/ del sitio). Se ven con el reproductor del teléfono;
+/* Videos de ayuda: 7 videos cortos con voz y subtítulos (carpeta videos/ del sitio). Se ven con el reproductor del teléfono;
    hace falta internet para verlos (no se guardan en el teléfono). Más → Videos de ayuda. */
 const VIDEOS=[
+ {id:'por-que-libro-de-finanzas',t:'Lo mejor de la app (1 minuto)',d:'Un vistazo a lo que hace distinta a Libro de Finanzas.'},
  {id:'conoce-la-app',t:'1. Conoce la app',d:'Resumen, Libro, Compras, Calendario y Más.'},
  {id:'anotar-gastos',t:'2. Anota tus ingresos y gastos',d:'Libro, categorías, pagado, deslizar y compra rápida.'},
  {id:'comprobantes-y-tickets',t:'3. Comprobantes y tickets',d:'Carga pagos de billeteras y tickets del súper (foto o PDF).'},
@@ -28,7 +29,7 @@ function verVideo(i){
 }
 function abrirVideos(){
   const body=el('div'); body.className='masList';
-  const intro=el('p','hint'); intro.textContent='Aprende a usar la app en 6 videos cortos, con voz y subtítulos (cada uno pesa unos 2 MB).'; body.append(intro);
+  const intro=el('p','hint'); intro.textContent='Aprende a usar la app en 7 videos cortos, con voz y subtítulos (cada uno pesa unos 2 MB).'; body.append(intro);
   VIDEOS.forEach((v,i)=>{
     const b=el('button','btn masItem'); b.type='button';
     b.innerHTML='<img alt="" width="56" height="56" loading="lazy" style="border-radius:12px; object-fit:cover; flex:none; background:var(--chip)" src="'+videoUrl(v.id,'jpg')+'"><span><b></b><small></small></span>';
@@ -42,7 +43,7 @@ function abrirVideos(){
 function buildVideosCard(){
   const c=el('section','card'); c.id='videosCard'; c.style.marginTop='16px';
   const h=el('header'); const t=el('h2'); t.textContent='Videos de ayuda'; h.append(t); c.append(h);
-  const p=el('p','hint'); p.textContent='Aprende a usar la app en 6 videos cortos, con voz y subtítulos. Necesitas internet para verlos.'; c.append(p);
+  const p=el('p','hint'); p.textContent='Aprende a usar la app en 7 videos cortos, con voz y subtítulos. Necesitas internet para verlos.'; c.append(p);
   const tools=el('div','tools'); const b=el('button','btn primary'); b.type='button'; b.textContent='▶ Ver los videos'; b.addEventListener('click',abrirVideos); tools.append(b); c.append(tools);
   return c;
 }

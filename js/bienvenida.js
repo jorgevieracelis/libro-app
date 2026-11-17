@@ -21,15 +21,16 @@ function estadoVacio(ico,titulo,texto,botonTxt,onClick){
 
 /* ---------- Bienvenida ---------- */
 const BV_SLIDES=[
-  {ico:'<path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z"/><path d="M8 9h7M8 13h7"/>',
-   t:'Anota tu mes',
-   x:'Cada quincena tiene sus ingresos y egresos. Escribe el nombre y el monto, y toca ✓ cuando algo ya esté pagado. Los ingresos pueden ser fijos o variables, y el súper tiene su propia lista de compras con unidades y último precio.'},
-  {ico:'<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5V12l5.5 3.5"/>',
-   t:'Mira cómo vas',
-   x:'En Resumen ves tu balance, cuánto llevas gastado y consejos del mes. Puedes ponerle tope a cada categoría, fijar metas de ahorro y calcular cómo salir de tus deudas.'},
+  {ico:'<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+   t:'Tus datos son solo tuyos',
+   x:'Todo lo que anotas se cifra en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlo. Además puedes bloquear la app con huella o PIN.'},
+  {ico:'<path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.2"/>',
+   t:'Menos escribir',
+   x:'Anota un gasto en segundos con el botón ＋. Sube la captura de un pago de Mercado Pago o Ualá, o la foto de un ticket del súper, y la app lee el monto por ti, dentro de tu teléfono.'},
   {ico:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.8 3-5.5 6-5.5s5.5 1.7 6 5.5"/><circle cx="17.5" cy="9.5" r="2.4"/><path d="M16.5 14.8c2.6.1 4.1 1.5 4.5 4.2"/>',
-   t:'Compártelo y respáldalo',
-   x:'Puedes invitar a tu pareja con el código de tu hogar: los dos ven lo mismo, en vivo. Y en Herramientas puedes bajar un respaldo cuando quieras. Activa el bloqueo con huella o PIN para proteger la app.'}
+   t:'En pareja y al día',
+   x:'Invita a tu pareja con el código de tu hogar: los dos ven lo mismo, en vivo. En Resumen ves cómo vas con tu mes, tus metas y tus deudas.',
+   video:true}
 ];
 const bvKey=()=>'lfh.bienvenida.'+((typeof me!=='undefined'&&me&&me.uid)||'x');
 function bvVista(){ try{ return localStorage.getItem(bvKey())==='1'; }catch(e){ return false; } }
@@ -50,6 +51,7 @@ function mostrarBienvenida(){
     const ic=document.createElementNS('http://www.w3.org/2000/svg','svg'); ic.setAttribute('viewBox','0 0 24 24'); ic.setAttribute('class','bvIco'); ic.setAttribute('aria-hidden','true'); ic.innerHTML=s.ico;
     const h=el('h3'); h.textContent=s.t; const p=el('p'); p.textContent=s.x;
     stage.append(ic,h,p);
+    if(s.video){ const v=el('button','btn'); v.type='button'; v.textContent='▶ Ver el video de 1 minuto'; v.style.marginTop='10px'; v.addEventListener('click',()=>{ cerrar(); try{ verVideo(0); }catch(e){} }); stage.append(v); }
     dots.replaceChildren(); BV_SLIDES.forEach((_,k)=>{ const d=el('i'); if(k===i) d.className='on'; dots.append(d); });
     next.textContent=i===BV_SLIDES.length-1?'¡Empezar!':'Siguiente';
     skip.hidden=i===BV_SLIDES.length-1;

@@ -55,7 +55,7 @@ async function resolveHogar(){
 }
 function showNoHogar(){
   setView('nohogar');
-  $('#nhErr').textContent=''; $('#nhCode').value='';
+  $('#nhErr').textContent=''; $('#nhCode').value=''; nhInicio();
 }
 setAuthMode('login');
 boot();
