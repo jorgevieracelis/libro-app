@@ -1,5 +1,5 @@
 'use strict';
-/* Comprobantes de billeteras digitales (Mercado Pago, Ualá, etc.): lectura de la foto o captura DENTRO del teléfono
+/* Comprobantes de pago de billeteras virtuales y bancos: lectura de la foto o captura DENTRO del teléfono
    (OCR con Tesseract, guardado en vendor/tesseract). La imagen no se envía a ningún servidor.
    Aquí también viven los "comercios recordados": a quién le pagas y en qué categoría cae (se guardan cifrados dentro de extras). */
 

@@ -5,7 +5,7 @@ const VIDEOS=[
  {id:'por-que-libro-de-finanzas',t:'Lo mejor de la app (1 minuto)',d:'Un vistazo a lo que hace distinta a Libro de Finanzas.'},
  {id:'conoce-la-app',t:'1. Conoce la app',d:'Resumen, Libro, Compras, Calendario y Más.'},
  {id:'anotar-gastos',t:'2. Anota tus ingresos y gastos',d:'Libro, categorías, pagado, deslizar y compra rápida.'},
- {id:'comprobantes-y-tickets',t:'3. Comprobantes y tickets',d:'Carga pagos de billeteras y tickets del súper (foto o PDF).'},
+ {id:'comprobantes-y-tickets',t:'3. Comprobantes y tickets',d:'Carga pagos de tu billetera virtual o banco y tickets del súper (foto o PDF).'},
  {id:'resumen-y-presupuesto',t:'4. Resumen, presupuesto y metas',d:'Entiende a dónde va tu dinero y ponle límites.'},
  {id:'calendario-y-ano',t:'5. Calendario y año',d:'Pagos que no se olvidan y tu año completo.'},
  {id:'seguridad-y-respaldo',t:'6. Seguridad y tu información',d:'Cifrado, bloqueo, respaldo y apariencia.'}

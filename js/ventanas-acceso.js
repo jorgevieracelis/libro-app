@@ -2,8 +2,20 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.9.0';
+const APP_VERSION='2.11.0';
 const NOVEDADES=[
+ {v:'2.11.0', fecha:'18 nov 2026', items:[
+  'Nueva herramienta «Evolución de precios» (Más → Evolución de precios): ve qué subió (▲ rojo) y qué bajó (▼ verde) entre un mes y otro en el súper, el alquiler, las plataformas y cualquier egreso; filtra, ordena, busca y toca un artículo para ver todo su historial',
+  'Al escribir el monto de un egreso o una plataforma que ya existía en un mes anterior, aparece junto al monto cuánto cambió: ▲ rojo si subió, ▼ verde si bajó',
+  'Donde antes decía Mercado Pago o Ualá ahora dice «tu billetera virtual o tu banco», para que se entienda en cualquier país'
+ ]},
+ {v:'2.10.0', fecha:'18 nov 2026', items:[
+  'Se quitó el idioma inglés: la app queda solo en español',
+  'Al pulsar botones, pestañas e íconos ya no sale el recuadro naranja: el toque es del color del tema y sigue la forma de cada botón',
+  'Cada lista (ingresos, egresos, tarjeta…) empieza con 4 líneas vacías; puedes agregar más con «＋ Agregar línea» o quitarlas con la ×',
+  'Gráfico de egresos por categoría: ahora puedes elegirlo (torta, dona, barras horizontales, barras verticales o puntos) en Más → Opciones → Apariencia; y al cambiar de sección vuelve a mostrarse completo, sin ninguna porción marcada',
+  'La app abre más rápido: usa tu hogar y tu moneda guardados en el teléfono y los confirma por detrás, y el logo de carga muestra qué está haciendo. En Opciones → Apariencia ves cuánto tardó el último arranque'
+ ]},
  {v:'2.9.0', fecha:'17 nov 2026', items:[
   'Íconos nuevos: cada sección de la barra de abajo y del menú Más va dentro de una burbuja metalizada que toma el color que elijas; la sección activa se ilumina',
   'Nuevos colores metalizados en Apariencia: Rojo, Celeste, Rosado, Amarillo y Negro; el Azul ahora es un azul oscuro',
@@ -38,7 +50,7 @@ const NOVEDADES=[
   'Más legible: textos secundarios con mejor contraste, títulos y ✓ visibles en tema oscuro y botones más fáciles de tocar en el teléfono'
  ]},
  {v:'2.3.0', fecha:'16 nov 2026', items:[
-  'Comprobantes de billeteras (Mercado Pago, Ualá y otras): en el botón ＋ toca “Cargar comprobante”, elige la foto o captura y la app lee monto, fecha y a quién le pagaste. La lectura se hace en tu teléfono: la imagen no se envía a ningún lado',
+  'Comprobantes de pago de tu billetera virtual o de tu banco: en el botón ＋ toca “Cargar comprobante”, elige la foto o captura y la app lee monto, fecha y a quién le pagaste. La lectura se hace en tu teléfono: la imagen no se envía a ningún lado',
   'La app recuerda a cada comercio con su categoría (Herramientas → Comercios recordados): la próxima vez la categoría se completa sola, y te avisa si cargas dos veces el mismo comprobante',
   'La compra rápida ahora tiene fecha y manda el gasto a la quincena o semana que corresponde'
  ]},

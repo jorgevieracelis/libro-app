@@ -168,22 +168,36 @@ document.addEventListener('focusout',()=>{
 });
 
 const monedaRef=()=>FS.doc(db,'hogares',hogarId,'ahorro','config');
-async function loadMoneda(){
-  setMoneda('ARS'); setPeriodo('quincenal');
+function monedaDesdeCache(){
+  try{ const d=JSON.parse(localStorage.getItem('lfh.cfg.'+hogarId)||'null'); if(d&&(d.moneda||d.periodo)){ setMoneda(d.moneda||'ARS'); setPeriodo(d.periodo||'quincenal'); return true; } }catch(e){}
+  return false;
+}
+/* rapido=true: ya se abrió con lo guardado; esto solo confirma con el servidor y, si cambió algo, vuelve a dibujar. */
+async function loadMoneda(rapido){
+  if(!rapido){ setMoneda('ARS'); setPeriodo('quincenal'); }
   const ck='lfh.cfg.'+hogarId; let d=null;
   try{
-    const s=await Promise.race([FS.getDoc(monedaRef()), new Promise((_,rj)=>setTimeout(()=>rj(new Error('tiempo')),5000))]);
+    const s=await Promise.race([FS.getDoc(monedaRef()), new Promise((_,rj)=>setTimeout(()=>rj(new Error('tiempo')),rapido?15000:5000))]);
     if(s.exists()){ d=s.data(); try{ localStorage.setItem(ck,JSON.stringify({moneda:d.moneda,periodo:d.periodo})); }catch(e){} }
   }catch(e){
+    if(rapido) return;
     try{ d=JSON.parse(localStorage.getItem(ck)||'null'); }catch(e2){}
   }
-  if(d){ if(d.moneda) setMoneda(d.moneda); if(d.periodo) setPeriodo(d.periodo); }
+  if(d){
+    const m0=moneda&&moneda.c, p0=periodo;
+    if(d.moneda) setMoneda(d.moneda); if(d.periodo) setPeriodo(d.periodo);
+    if(rapido && ((moneda&&moneda.c)!==m0||periodo!==p0) && cur && months[cur]) render();
+  }
 }
 async function saveMoneda(code){
   try{ await FS.setDoc(monedaRef(),{moneda:code,periodo:periodo,actualizado:Date.now()}); return true; }
   catch(e){ toast('No se pudo guardar la moneda'); return false; }
 }
-async function startData(){ await e2eAsegurar(); loadMoneda().then(startData0,startData0); }
+async function startData(){
+  await e2eAsegurar(); marca('llave de cifrado');
+  if(monedaDesdeCache()){ startData0(); loadMoneda(true); }      /* abre al instante con lo guardado y confirma por detrás */
+  else loadMoneda().then(startData0,startData0);
+}
 function startData0(){
   ready=false; months={}; cur=null; dirty.clear(); Object.keys(baseMes).forEach(k=>delete baseMes[k]); unwatchLive();
   setView('loading'); $('#loadingMsg').textContent='Cargando tus datos…'; $('#loadingErr').textContent='';

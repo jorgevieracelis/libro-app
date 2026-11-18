@@ -2,6 +2,16 @@
 /* Pantalla de inicio animada, íconos de línea y barra de navegación inferior (teléfono) */
 /* El logo animado se ve desde que abre la página. Se quita cuando la app ya está lista, pero no antes de SPLASH_MIN ms
    (para que se alcance a ver) y, por si algo tarda mucho, nunca después de 7,5 s (así se ve el mensaje de conexión). */
+/* Cronómetro de arranque: se guardan los tiempos (ms desde que abrió la página) de cada etapa; el último se ve en Más → Opciones → Apariencia. */
+const ARR_T=[];
+function marca(nombre){ ARR_T.push([nombre,Math.round(performance.now())]); }
+marca('página');
+/* Mensaje y barra de progreso bajo el logo, mientras la app abre */
+function splashFase(pct,msg){
+  const s=document.getElementById('splash'); if(!s) return;
+  const m=s.querySelector('#spMsg'); if(m&&msg) m.textContent=msg;
+  const b=s.querySelector('#spBar i'); if(b) b.style.width=pct+'%';
+}
 const SPLASH_MIN=900;
 let splashQuitado=false;
 function ocultarSplash(forzar){
@@ -24,6 +34,7 @@ const ICONOS={
   cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   mas:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/>',
   anio:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',
+  precios:'<path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
   comp:'<path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',
   metas:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
   herr:'<path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.5 2.5-2.2-.5-.5-2.2z"/>',
@@ -76,6 +87,7 @@ function abrirMas(){
   };
   item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); });
   item('comp','Comparativas','Compara meses, trimestres, semestres o años',()=>{ tab='comp'; showTab(); });
+  item('precios','Evolución de precios','Qué subió y qué bajó: súper, alquiler y lo que cargues en egresos',()=>{ tab='precios'; showTab(); });
   item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); });
   item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); });
   item('video','Videos de ayuda','Aprende la app en 7 videos cortos, con voz y subtítulos',abrirVideos);
@@ -95,7 +107,7 @@ function compraRapida(){
   if(!cur||!months[cur]) return;
   const f=el('div','rapForm');
   const lab=(t,c)=>{ const l=el('label'); l.append(t,c); return l; };
-  /* Comprobante (foto o captura de Mercado Pago, Ualá, etc.): se lee en el teléfono */
+  /* Comprobante (foto o captura de tu billetera virtual o banco): se lee en el teléfono */
   const cam=el('button','btn'); cam.type='button'; cam.textContent='📷 Cargar comprobante';
   const fi=el('input'); fi.type='file'; fi.accept='image/*'; fi.hidden=true;
   const estado=el('p','small'); estado.setAttribute('role','status'); estado.style.margin='0';

@@ -84,9 +84,10 @@ function payBtn(row){
 }
 function catRow(q,sec,row){
   const d=el('div','row r3'+(isBlank(row,sec)?' blank':''));
-  const cn=el('div','c-n'); cn.append(txtInput(row.n,'Concepto',v=>{row.n=v; afterEdit(q,sec,row,d);}));
+  const pd=el('span','pdelta'); pd.hidden=true; const pintar=()=>prPintarDelta(pd,sec,row.n,row.m);   /* ▲ rojo / ▼ verde contra la vez anterior */
+  const cn=el('div','c-n'); cn.append(txtInput(row.n,'Concepto',v=>{row.n=v; afterEdit(q,sec,row,d); pintar();}));
   const cc=el('div','c-c'); cc.append(catSelect(row.cat,v=>{row.cat=v; afterEdit(q,sec,row,d);}));
-  const cm=el('div','c-m'); cm.append(moneyInput(()=>row.m,v=>{row.m=v;},()=>refreshComputed(),()=>afterEdit(q,sec,row,d)));
+  const cm=el('div','c-m'); cm.append(moneyInput(()=>row.m,v=>{row.m=v;},()=>{refreshComputed(); pintar();},()=>{afterEdit(q,sec,row,d); pintar();}),pd); pintar();
   const cp=el('div','c-p'); cp.append(payBtn(row));
   const cx=el('div','c-x'); cx.append(dupBtn(()=>duplicateRow(q,sec,row)), delBtn(()=>removeRow(q,sec,row.id)));
   d.append(cn,cc,cm,cp,cx);
@@ -209,8 +210,9 @@ function tarjetaCarriedItem(it){
 }
 function platRow(q,p){
   const d=el('div','row rpl'+(isBlank(p,'plataformas')?' blank':''));
-  const cn=el('div','c-n'); cn.append(txtInput(p.n,'Plataforma o gasto fijo',v=>{p.n=v; afterEdit(q,'plataformas',p,d);}));
-  const cm=el('div','c-m'); cm.append(moneyInput(()=>p.m,v=>{p.m=v;},()=>refreshComputed(),()=>afterEdit(q,'plataformas',p,d)));
+  const pd=el('span','pdelta'); pd.hidden=true; const pintar=()=>prPintarDelta(pd,'plataformas',p.n,p.m);
+  const cn=el('div','c-n'); cn.append(txtInput(p.n,'Plataforma o gasto fijo',v=>{p.n=v; afterEdit(q,'plataformas',p,d); pintar();}));
+  const cm=el('div','c-m'); cm.append(moneyInput(()=>p.m,v=>{p.m=v;},()=>{refreshComputed(); pintar();},()=>{afterEdit(q,'plataformas',p,d); pintar();}),pd); pintar();
   const cr=el('label','chk c-r'); cr.title='Reflejar en Egresos';
   const ck=el('input'); ck.type='checkbox'; ck.checked=p.r!==false; ck.setAttribute('aria-label','Reflejar en Egresos');
   ck.addEventListener('change',()=>{p.r=ck.checked; afterEdit(q,'plataformas',p,d);});
@@ -228,7 +230,7 @@ function autoRow(label,tag,bindAttr,bindVal,payRow){
 }
 function renderList(q,sec){
   const host=document.getElementById(q+'-'+sec); if(!host) return;
-  const qd=months[cur][q]; padSec(qd,sec);
+  const qd=months[cur][q];
   host.replaceChildren();
   if(sec==='egresos') autoPlat(qd).forEach(p=>host.append(autoRow(p.n,'Plataformas','data-aut',p.id,p)));
   if(sec==='tarjeta') activeCuotasFor(cur,q).filter(it=>!it.isOrigin).forEach(it=>host.append(tarjetaCarriedItem(it)));

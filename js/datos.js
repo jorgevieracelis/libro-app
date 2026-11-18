@@ -15,7 +15,7 @@ function qrange(q){ if(periodo!=='semanal') return ''; const i=Number(String(q).
 const delP=()=>periodo==='mensual'?'del mes':(periodo==='semanal'?'de la semana':'de la quincena');
 const estaP=()=>periodo==='mensual'?'este mes':(periodo==='semanal'?'esta semana':'esta quincena');
 const porP=()=>periodo==='mensual'?'mes':(periodo==='semanal'?'semana':'quincena');
-const MIN={ingresos:10,ingresosVar:10,plataformas:14,egresos:10,anticipados:10,fondo:6,retiro:6,tarjeta:10};
+const BLANKS=4;   /* líneas vacías que cada lista muestra por defecto; el usuario puede agregar más (＋ Agregar línea) o quitarlas (×). Las vacías no se guardan en el servidor. */
 const MES_RE=/^\d{4}-(0[1-9]|1[0-2])$/;
 const CATS=['Alimentación','Servicios','Transporte','Regalos','Deudas','Vivienda','Salud','Hijos','Entretenimiento','Otros'];
 const normCat=c=>{ if(c==='Alquiler') c='Vivienda'; return (typeof c==='string'&&CATS.includes(c))?c:''; };
@@ -86,7 +86,9 @@ function toast(msg){
 let vistaActual=null;
 function setView(v){
   if(v!=='loading') ocultarSplash();
-  if(v==='app' && vistaActual!=='app'){ setTimeout(()=>nuevoVersiculo(),0); setTimeout(()=>{ try{ bienvenidaSiHaceFalta(); }catch(e){} },900); }
+  if(v==='app' && vistaActual!=='app'){
+    try{ marca('app lista'); localStorage.setItem('lfh.arranque',JSON.stringify({t:Date.now(),m:ARR_T})); }catch(e){}
+    setTimeout(()=>nuevoVersiculo(),0); setTimeout(()=>{ try{ bienvenidaSiHaceFalta(); }catch(e){} },900); }
   vistaActual=v;
   $('#loading').hidden=v!=='loading'; $('#login').hidden=v!=='login'; $('#setup').hidden=v!=='setup';
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
@@ -118,9 +120,7 @@ function normRow(r,sec){
 const autoPlat=qd=>qd.plataformas.filter(p=>p.r && String(p.n).trim());
 function padSec(qd,sec){
   const arr=qd[sec];
-  let need=MIN[sec];
-  while(arr.length<need) arr.push(blank(sec));
-  if(!arr.length || !isBlank(arr[arr.length-1],sec)) arr.push(blank(sec));
+  for(let i=arr.filter(r=>isBlank(r,sec)).length;i<BLANKS;i++) arr.push(blank(sec));
 }
 function categoryTotals(qd){
   const totals={};
@@ -135,21 +135,50 @@ function monthCategoryTotals(md){
   QS.map(q=>categoryTotals(md[q])).forEach(t=>Object.keys(t).forEach(k=>{ out[k]=(out[k]||0)+t[k]; }));
   return out;
 }
-function buildPieSVG(totals){
+/* Gráfico de egresos por categoría: 5 tipos a elegir en Más → Opciones → Apariencia (se guarda solo en cada teléfono).
+   Todas las marcas llevan la clase "gx" y su número (data-i) para que se puedan tocar y resaltar igual que en la torta. */
+const GRAFICOS=[['torta','Torta'],['dona','Dona'],['barrash','Barras horizontales'],['barrasv','Barras verticales'],['puntos','Puntos']];
+function graficoTipo(){ let t='torta'; try{ t=localStorage.getItem('lfh.grafico')||'torta'; }catch(e){} return GRAFICOS.some(g=>g[0]===t)?t:'torta'; }
+function graficoGuardar(t){ try{ localStorage.setItem('lfh.grafico',t); }catch(e){} }
+function buildPieSVG(totals,tipo){
+  tipo=tipo||graficoTipo();
   const entries=Object.entries(totals).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
   const total=entries.reduce((s,[,v])=>s+v,0);
-  const CX=100,CY=100,R=92; let ang=-Math.PI/2, paths='';
-  entries.forEach(([k,v],i)=>{
-    const frac=v/total, a2=ang+frac*Math.PI*2;
-    const x1=CX+R*Math.cos(ang), y1=CY+R*Math.sin(ang);
-    const x2=CX+R*Math.cos(a2), y2=CY+R*Math.sin(a2);
-    const large=(a2-ang)>Math.PI?1:0;
-    paths+='<path d="M'+CX+' '+CY+' L'+x1.toFixed(2)+' '+y1.toFixed(2)+' A'+R+' '+R+' 0 '+large+' 1 '+x2.toFixed(2)+' '+y2.toFixed(2)+' Z" fill="'+PIE_PAL[i%PIE_PAL.length]+'"></path>';
-    ang=a2;
-  });
-  if(!entries.length) paths='<circle cx="100" cy="100" r="92" fill="var(--chip)"></circle>';
-  const svg='<svg viewBox="0 0 200 200" role="img" aria-label="Egresos por categoría">'+paths+'</svg>';
-  const legend=entries.map(([k,v],i)=>({color:PIE_PAL[i%PIE_PAL.length],label:k,amt:v,pct:total>0?v/total:0}));
+  const col=i=>PIE_PAL[i%PIE_PAL.length];
+  const n=entries.length, max=n?entries[0][1]:1;
+  let marks='';
+  if(tipo==='torta'||tipo==='dona'){
+    const CX=100,CY=100,R=92,r0=tipo==='dona'?56:0; let ang=-Math.PI/2;
+    entries.forEach(([k,v],i)=>{
+      const frac=v/total, a2=ang+(n===1?0.9999:frac)*Math.PI*2, large=(a2-ang)>Math.PI?1:0;
+      const P=(r,a)=>(CX+r*Math.cos(a)).toFixed(2)+' '+(CY+r*Math.sin(a)).toFixed(2);
+      const d=r0
+        ? 'M'+P(R,ang)+' A'+R+' '+R+' 0 '+large+' 1 '+P(R,a2)+' L'+P(r0,a2)+' A'+r0+' '+r0+' 0 '+large+' 0 '+P(r0,ang)+' Z'
+        : 'M'+CX+' '+CY+' L'+P(R,ang)+' A'+R+' '+R+' 0 '+large+' 1 '+P(R,a2)+' Z';
+      marks+='<path class="gx" data-i="'+i+'" d="'+d+'" fill="'+col(i)+'"></path>';
+      ang=a2;
+    });
+  } else if(tipo==='barrash'||tipo==='puntos'){
+    const gap=Math.min(6,120/Math.max(n,1)/4), h=(196-gap*(n-1))/Math.max(n,1);
+    entries.forEach(([k,v],i)=>{
+      const y=2+i*(h+gap), len=Math.max(2,v/max*176);
+      if(tipo==='barrash'){
+        marks+='<rect class="gx" data-i="'+i+'" x="2" y="'+y.toFixed(2)+'" width="'+len.toFixed(2)+'" height="'+h.toFixed(2)+'" rx="'+Math.min(5,h/2).toFixed(1)+'" fill="'+col(i)+'"></rect>';
+      } else {
+        const rad=Math.max(3,Math.min(9,h/2)), cy=(y+h/2).toFixed(2), x2=(rad+len*0.97).toFixed(2);
+        marks+='<g class="gx" data-i="'+i+'"><line x1="'+rad+'" y1="'+cy+'" x2="'+x2+'" y2="'+cy+'" stroke="'+col(i)+'" stroke-width="'+Math.max(2,Math.min(4,h/3)).toFixed(1)+'" stroke-linecap="round"></line><circle cx="'+x2+'" cy="'+cy+'" r="'+rad.toFixed(1)+'" fill="'+col(i)+'"></circle><rect x="0" y="'+y.toFixed(2)+'" width="200" height="'+h.toFixed(2)+'" fill="transparent"></rect></g>';
+      }
+    });
+  } else {   /* barras verticales */
+    const gap=Math.min(6,120/Math.max(n,1)/4), w=(196-gap*(n-1))/Math.max(n,1);
+    entries.forEach(([k,v],i)=>{
+      const hh=Math.max(2,v/max*176), x=2+i*(w+gap);
+      marks+='<rect class="gx" data-i="'+i+'" x="'+x.toFixed(2)+'" y="'+(198-hh).toFixed(2)+'" width="'+w.toFixed(2)+'" height="'+hh.toFixed(2)+'" rx="'+Math.min(5,w/2).toFixed(1)+'" fill="'+col(i)+'"></rect>';
+    });
+  }
+  if(!n) marks='<circle cx="100" cy="100" r="92" fill="var(--chip)"></circle>';
+  const svg='<svg viewBox="0 0 200 200" role="img" aria-label="Egresos por categoría" data-tipo="'+tipo+'">'+marks+'</svg>';
+  const legend=entries.map(([k,v],i)=>({color:col(i),label:k,amt:v,pct:total>0?v/total:0}));
   return {svg,legend,total};
 }
 function numOrNull(v){ return (typeof v==='number'&&isFinite(v))?v:null; }

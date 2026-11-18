@@ -26,7 +26,7 @@ const BV_SLIDES=[
    x:'Todo lo que anotas se cifra en tu teléfono antes de enviarse. Ni Google ni el creador de la app pueden leerlo. Además puedes bloquear la app con huella o PIN.'},
   {ico:'<path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.2"/>',
    t:'Menos escribir',
-   x:'Anota un gasto en segundos con el botón ＋. Sube la captura de un pago de Mercado Pago o Ualá, o la foto de un ticket del súper, y la app lee el monto por ti, dentro de tu teléfono.'},
+   x:'Anota un gasto en segundos con el botón ＋. Sube la captura de un pago de tu billetera virtual o de tu banco, o la foto de un ticket del súper, y la app lee el monto por ti, dentro de tu teléfono.'},
   {ico:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.8 3-5.5 6-5.5s5.5 1.7 6 5.5"/><circle cx="17.5" cy="9.5" r="2.4"/><path d="M16.5 14.8c2.6.1 4.1 1.5 4.5 4.2"/>',
    t:'En pareja y al día',
    x:'Invita a tu pareja con el código de tu hogar: los dos ven lo mismo, en vivo. En Resumen ves cómo vas con tu mes, tus metas y tus deudas.',

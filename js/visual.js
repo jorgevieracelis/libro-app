@@ -79,10 +79,19 @@ function renderGlance(){
 }
 
 /* ---------- Gráfico de categorías: toca una porción o una categoría para ver el detalle ---------- */
-let pieSel=-1, pieMes=null;
+let pieSel=-1, pieMes=null, pieTabPrev=null;
+/* Al cambiar de sección, el gráfico vuelve a su estado original: todos los colores y ninguna porción marcada. */
+function pieReiniciar(){
+  pieSel=-1;
+  const host=document.getElementById('pieWrap'); if(!host) return;
+  host.querySelectorAll('.gx.on,.pie-row.on').forEach(x=>x.classList.remove('on'));
+  const sv=host.querySelector('.pie-svg'); if(sv) sv.classList.remove('sel');
+  host.querySelectorAll('.pie-row').forEach(r=>r.setAttribute('aria-pressed','false'));
+  const det=host.querySelector('.pie-det'); if(det) det.textContent='Toca una porción o una categoría para ver el detalle.';
+}
 function pieInteractivo(host){
   const svg=host.querySelector('.pie-svg'); if(!svg) return;
-  const paths=[...svg.querySelectorAll('path')], rows=[...host.querySelectorAll('.pie-row')], det=host.querySelector('.pie-det');
+  const paths=[...svg.querySelectorAll('.gx')], rows=[...host.querySelectorAll('.pie-row')], det=host.querySelector('.pie-det');
   if(pieMes!==cur){ pieMes=cur; pieSel=-1; }
   const poner=i=>{
     pieSel=(i===pieSel)?-1:i;
@@ -142,6 +151,7 @@ function animarVista(id){
   setTimeout(()=>v.classList.remove('vistaNueva'),900);
 }
 
+try{ localStorage.removeItem('lfh.idioma'); }catch(e){}   /* el inglés se quitó: se limpia lo que haya quedado guardado */
 /* ---------- Apariencia: tema (automático, claro, oscuro) y color. Se guarda solo en este teléfono ---------- */
 const TEMAS=[['auto','Automático'],['claro','Claro'],['oscuro','Oscuro']];
 const ACENTOS=[['clasico','Clásico','#1b3f7a'],['azul','Azul','#14327a'],['celeste','Celeste','#1fa3e0'],['verde','Verde','#1e6b45'],['violeta','Violeta','#5b3fb0'],['rojo','Rojo','#c4262e'],['rosado','Rosado','#e0508a'],['naranja','Naranja','#d9761a'],['amarillo','Amarillo','#f2c200'],['negro','Negro','#2a2a2e']];
@@ -161,11 +171,10 @@ function buildApariencia(){
   TEMAS.forEach(([k,n])=>{ const o=el('option'); o.value=k; o.textContent=n; if(k===tema) o.selected=true; sel.append(o); });
   sel.addEventListener('change',()=>{ tema=sel.value; aparienciaGuardar(tema,acento); });
   const lt=el('label','planLbl'); const st=el('span','small'); st.textContent='Tema'; lt.append(st,sel); c.append(lt);
-  const sl=el('select'); sl.setAttribute('aria-label','Idioma');
-  [['es','Español'],['en','English']].forEach(([k,n])=>{ const o=el('option'); o.value=k; o.textContent=n; if(k===idiomaLeer()) o.selected=true; sl.append(o); });
-  sl.addEventListener('change',()=>idiomaGuardar(sl.value));
-  const ll=el('label','planLbl'); ll.style.marginTop='8px'; const sx=el('span','small'); sx.textContent='Idioma'; ll.append(sx,sl); c.append(ll);
-  const nt=el('p','hint'); nt.textContent='En English la pantalla se traduce; los versículos bíblicos y la guía en PDF siguen en español.'; nt.setAttribute('data-i18n-skip',''); c.append(nt);
+  const sg=el('select'); sg.setAttribute('aria-label','Tipo de gráfico');
+  GRAFICOS.forEach(([k,n])=>{ const o=el('option'); o.value=k; o.textContent=n; if(k===graficoTipo()) o.selected=true; sg.append(o); });
+  sg.addEventListener('change',()=>{ graficoGuardar(sg.value); pieSel=-1; if(cur&&months[cur]&&typeof renderPie==='function') renderPie(months[cur]); });
+  const lg=el('label','planLbl'); lg.style.marginTop='8px'; const sgt=el('span','small'); sgt.textContent='Gráfico de egresos por categoría'; lg.append(sgt,sg); c.append(lg);
   const sc=el('p','small'); sc.style.margin='12px 4px 6px'; sc.textContent='Color'; c.append(sc);
   const fila=el('div'); fila.style.cssText='display:flex; gap:10px; flex-wrap:wrap'; fila.setAttribute('role','group'); fila.setAttribute('aria-label','Color de la app');
   ACENTOS.forEach(([k,n,col])=>{
@@ -174,5 +183,17 @@ function buildApariencia(){
     b.addEventListener('click',()=>{ acento=k; aparienciaGuardar(tema,acento); fila.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); });
     fila.append(b);
   });
-  c.append(fila); return c;
+  c.append(fila);
+  /* Velocidad del último arranque (para saber dónde se va el tiempo) */
+  try{
+    const a=JSON.parse(localStorage.getItem('lfh.arranque')||'null');
+    if(a&&Array.isArray(a.m)&&a.m.length){
+      const det=el('details'); det.style.marginTop='14px'; const sm=el('summary'); sm.className='small'; sm.style.cursor='pointer';
+      const tot=a.m[a.m.length-1][1]; sm.textContent='Velocidad del último arranque: '+(tot/1000).toFixed(1).replace('.',',')+' s';
+      const p=el('p','hint'); p.style.whiteSpace='pre-line';
+      p.textContent=a.m.map((x,i)=>x[0]+': '+((x[1]-(i?a.m[i-1][1]:0))/1000).toFixed(2).replace('.',',')+' s').join('\n')+'\nSi te parece lento, cuéntale esto a quien te da soporte.';
+      det.append(sm,p); c.append(det);
+    }
+  }catch(e){}
+  return c;
 }
