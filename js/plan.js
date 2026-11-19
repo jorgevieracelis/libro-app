@@ -535,7 +535,7 @@ function renderHeader(){
   Object.keys(months).sort().reverse().forEach(id=>{
     const o=el('option'); o.value=id; o.textContent=monthLabel(id); if(id===cur) o.selected=true; sel.append(o);
   });
-  $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur; const fab=$('#fabRapido'); if(fab) fab.hidden=!cur;
+  $('#tabs').hidden=!cur; sel.hidden=!cur; $('#bottomNav').hidden=!cur; if(typeof sidebarMostrar==='function') sidebarMostrar(!!cur); const fab=$('#fabRapido'); if(fab) fab.hidden=!cur;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
 }
 function tabsValidas(){ return ['resumen',...QS.flatMap(q=>[q,'c'+q.slice(1)]),'anio','comp','precios','cal','plan','extra','herr','opc']; }
@@ -555,6 +555,7 @@ function renderTabs(){
   add('anio','Año'); add('comp','Comparativas'); add('precios','Precios'); add('cal','Calendario'); add('plan','Metas y deudas'); add('extra','Tarjeta y fondos'); add('herr','Herramientas'); add('opc','⚙ Opciones','Opciones','Opciones');
   nav.querySelectorAll('.tab').forEach(b=>{ const k=b.dataset.tab; if(PREMIUM_PAGINAS.includes(k)&&!puedeUsar(k)){ const l=el('span','lock'); l.textContent=' 🔒'; b.append(l); } });
   renderBottomNav();
+  if(typeof renderSidebar==='function') renderSidebar();
 }
 function showTab(){
   if(tab!==pieTabPrev){ pieTabPrev=tab; pieReiniciar(); }
@@ -572,6 +573,7 @@ function showTab(){
   { const vb=document.getElementById('view-bloqueo'); if(vb){ vb.hidden=!bloq; if(bloq) renderBloqueo(tab); } }
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
   marcarNav(); animarVista(tab);
+  if(typeof sidebarMarcar==='function') sidebarMarcar();
 }
 function render(){
   renderTabs(); renderHeader();

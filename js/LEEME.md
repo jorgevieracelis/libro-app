@@ -8,6 +8,7 @@
 4. `vistas.js` — filas editables y vistas principales
 5. `compras-calendario.js` — compras del súper, versículo del día y calendario
 6. `plan.js` — presupuesto, deudas, metas, repetidos, vista anual y reportes
+6e. `escritorio.js` — barra lateral plegable de escritorio (solo pantalla ancha con mouse); va después de `premium.js`
 6d. `premium.js` — versión completa por hogar (estructura preparada, INVISIBLE con `PREMIUM_ACTIVO=false`; ver `PREMIUM.md`); va después de `precios.js`
 6c. `precios.js` — evolución de precios (qué subió y qué bajó) y etiquetas ▲▼ en las líneas; va justo después de `comparativas.js`
 6b. `comparativas.js` — comparativas por período (mensual, trimestral, semestral y anual); va justo después de `plan.js`

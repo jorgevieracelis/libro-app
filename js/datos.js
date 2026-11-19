@@ -94,7 +94,7 @@ function setView(v){
   $('#nohogar').hidden=v!=='nohogar'; $('#verify').hidden=v!=='verify';
   document.body.classList.toggle('auth',v==='login'||v==='verify'||v==='nohogar');
   const app=v==='app'; $('#controls').hidden=!app; $('#main').hidden=!app; $('#versiculo').hidden=!app; $('#verFooter').hidden=!app;
-  $('#tabs').hidden=!(app&&cur); $('#bottomNav').hidden=!(app&&cur); { const fab=$('#fabRapido'); if(fab) fab.hidden=!(app&&cur); }
+  $('#tabs').hidden=!(app&&cur); $('#bottomNav').hidden=!(app&&cur); if(typeof sidebarMostrar==='function') sidebarMostrar(!!(app&&cur)); { const fab=$('#fabRapido'); if(fab) fab.hidden=!(app&&cur); }
 }
 
 /* ---------- Modelo de datos ---------- */

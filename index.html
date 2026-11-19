@@ -234,6 +234,52 @@ body.auth .loginbox .err{text-align:center}
 .premiumAcc{display:grid; gap:8px; max-width:420px; margin:0 auto}
 .premiumPlaca{display:block; width:100%; margin-top:16px; text-align:left; padding:14px 16px; color:var(--muted)}
 .tab .lock{font-size:11px}
+/* ---------- ESCRITORIO: barra lateral plegable. Solo pantalla ancha con mouse; el teléfono y la tablet no la ven ---------- */
+#sidebar{display:none}
+.secTit{display:none}
+@media (min-width:900px) and (hover:hover) and (pointer:fine){
+  :root{--sb-w:250px}
+  :root.sb-min{--sb-w:80px}
+  body.sbOn{padding-left:var(--sb-w); transition:padding-left .2s ease}
+  body.sbOn .tabs, body.sbOn .brand{display:none}
+  body.sbOn .top{padding-bottom:10px}
+  body.sbOn .secTit{display:block; font-size:21px; font-weight:800; color:var(--brand); letter-spacing:-.01em}
+  #sidebar:not([hidden]){display:flex; flex-direction:column; position:fixed; left:0; top:5px; bottom:0; width:var(--sb-w); z-index:30; background:var(--card); border-right:1px solid var(--line); padding:10px 10px 8px; overflow-y:auto; overflow-x:hidden; transition:width .2s ease; scrollbar-width:thin}
+  .sbLogo{display:flex; align-items:center; gap:10px; padding:4px 6px 8px; flex:none}
+  .sbLogo img{width:36px; height:36px; border-radius:10px; flex:none}
+  .sbLogoTx b{display:block; font-size:15.5px; color:var(--brand); line-height:1.1; letter-spacing:-.01em}
+  .sbLogoTx small{display:block; font-size:10.5px; color:var(--muted); line-height:1.25}
+  .sbGrp{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:9px 10px 2px; white-space:nowrap}
+  .sbIt{display:flex; align-items:center; gap:11px; width:100%; padding:4px 8px; border:0; background:transparent; border-radius:12px; color:var(--ink); font:inherit; font-weight:600; font-size:14px; text-align:left; cursor:pointer; position:relative}
+  .sbIt:hover{background:var(--chip)}
+  .sbIt .bub{width:30px; height:30px; border-radius:10px}
+  .sbIt .bub .ico{width:18px; height:18px}
+  .sbIt .sbN{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .sbIt .sbC{display:none}
+  .sbLock{font-size:12px; margin-left:auto}
+  .sbIt[aria-current="page"]{background:var(--soft); color:var(--brand)}
+  .sbIt[aria-current="page"] .bub{background:linear-gradient(180deg,color-mix(in srgb,var(--ring) 55%,#fff) 0%,color-mix(in srgb,var(--ring) 80%,#fff) 24%,var(--ring) 50%,color-mix(in srgb,var(--ring) 85%,#000) 52%,color-mix(in srgb,var(--ring) 92%,#fff) 100%); border-color:color-mix(in srgb,var(--ring) 60%,#000)}
+  .sbIt[aria-current="page"] .bub .ico{color:#1a1205!important}
+  .sbSub{display:none; margin:0 0 2px 52px; gap:1px}
+  .sbSub.abierto{display:grid}
+  .sbSub button{border:0; background:transparent; text-align:left; padding:5px 10px; border-radius:8px; font:inherit; font-size:13px; color:var(--muted); font-weight:500; cursor:pointer}
+  .sbSub button:hover{background:var(--chip)}
+  .sbSub button[aria-current="page"]{background:var(--soft); color:var(--brand); font-weight:700}
+  .sbPie{margin-top:auto; padding-top:6px; border-top:1px solid var(--line); flex:none; position:sticky; bottom:0; background:var(--card)}
+  .sbToggle{display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px; border:0; background:transparent; border-radius:10px; color:var(--muted); font:inherit; font-size:13px; font-weight:600; cursor:pointer}
+  .sbToggle:hover{background:var(--chip); color:var(--ink)}
+  .sbArrow{font-size:18px; width:24px; text-align:center}
+  /* plegada: columna de íconos con su nombre corto debajo */
+  :root.sb-min .sbLogoTx, :root.sb-min .sbN, :root.sb-min .sbSub, :root.sb-min .sbTgTx{display:none}
+  :root.sb-min .sbLogo{justify-content:center}
+  :root.sb-min .sbGrp{font-size:0; height:1px; background:var(--line); margin:6px 14px; padding:0}
+  :root.sb-min .sbIt{flex-direction:column; gap:1px; padding:3px 0; justify-content:center}
+  :root.sb-min .sbIt .sbC{display:block; font-size:10px; font-weight:600; line-height:1.1; color:var(--muted); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  :root.sb-min .sbIt[aria-current="page"] .sbC{color:var(--brand)}
+  :root.sb-min .sbLock{position:absolute; top:1px; right:12px; margin:0; font-size:10px}
+  :root.sb-min .sbToggle{justify-content:center}
+  :root.sb-min .sbIt .bub{width:28px; height:28px}
+}
 .pdelta{display:block; font-size:11px; font-weight:700; text-align:right; line-height:1.15; margin-top:2px; font-variant-numeric:tabular-nums}
 .pdelta[hidden]{display:none}
 .pdelta.up{color:var(--neg)} .pdelta.dn{color:var(--pos)}
@@ -835,6 +881,7 @@ body.modalOpen #fabRapido{display:none}
       <h1><span class="logos"><img src="icon-192.png" alt="" class="logo"></span>Libro de Finanzas</h1>
       <p>Un hogar organizado con propósito</p>
     </div>
+    <div class="secTit" id="secTit" aria-live="polite"></div>
     <div class="controls" id="controls" hidden>
       <select id="mes" aria-label="Mes"></select>
       <button class="btn" id="nuevoMes" type="button" title="Crear un mes nuevo" aria-label="Nuevo mes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">Nuevo mes</span></button>
@@ -847,6 +894,7 @@ body.modalOpen #fabRapido{display:none}
   <nav class="tabs" id="tabs" role="tablist" hidden></nav>
 </header>
 <nav id="bottomNav" aria-label="Secciones" hidden></nav>
+<aside id="sidebar" aria-label="Secciones" hidden></aside>
 <button type="button" id="fabRapido" aria-label="Agregar compra rápida" title="Compra rápida" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <aside id="authHero" aria-hidden="true">
@@ -1004,6 +1052,7 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/comparativas.js"></script>
 <script src="js/precios.js"></script>
 <script src="js/premium.js"></script>
+<script src="js/escritorio.js"></script>
 <script src="js/navegacion.js"></script>
 <script src="js/respaldo.js"></script>
 <script src="js/calculadoras.js"></script>

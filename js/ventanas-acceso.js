@@ -2,8 +2,11 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.12.0';
+const APP_VERSION='2.13.0';
 const NOVEDADES=[
+ {v:'2.13.0', fecha:'19 nov 2026', items:[
+  'Computador: nueva barra lateral a la izquierda, con las secciones en grupos (Principal, Análisis, Planificar y Más) y las quincenas debajo de Libro y Compras. Se puede plegar a una columna de íconos con «Plegar menú» y la app recuerda cómo la dejaste. En el teléfono no cambia nada'
+ ]},
  {v:'2.12.0', fecha:'19 nov 2026', items:[
   'Dos videos nuevos en Más → Videos de ayuda: «Herramientas útiles» (buscador, ahorro en dólares, calculadoras, importar y respaldar) y «Análisis y control» (Año, Comparativas, Evolución de precios, Metas y deudas, Tarjeta y fondos)'
  ]},
