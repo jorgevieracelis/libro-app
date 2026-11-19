@@ -553,18 +553,23 @@ function renderTabs(){
     add('c'+i,periodo==='semanal'?'Compras '+i:'Compras super/otros','Compras: '+qname(q),qname(q));
   });
   add('anio','Año'); add('comp','Comparativas'); add('precios','Precios'); add('cal','Calendario'); add('plan','Metas y deudas'); add('extra','Tarjeta y fondos'); add('herr','Herramientas'); add('opc','⚙ Opciones','Opciones','Opciones');
+  nav.querySelectorAll('.tab').forEach(b=>{ const k=b.dataset.tab; if(PREMIUM_PAGINAS.includes(k)&&!puedeUsar(k)){ const l=el('span','lock'); l.textContent=' 🔒'; b.append(l); } });
   renderBottomNav();
 }
 function showTab(){
   if(tab!==pieTabPrev){ pieTabPrev=tab; pieReiniciar(); }
   if(!tabsValidas().includes(tab)) tab='resumen';
   if(tab!=='resumen') consejosCerrar();
-  if(tab==='anio') renderAnio();
-  if(tab==='comp') renderComparativas();
-  if(tab==='precios') renderPrecios();
-  if(tab==='cal') renderCal();
-  if(tab==='plan') renderPlan();
-  tabsValidas().forEach(t=>{const v=document.getElementById('view-'+t); if(v) v.hidden=(t!==tab);});
+  const bloq=premiumBloqueaPagina(tab);      /* versión completa: si esta pestaña es de pago y el hogar no la tiene, se muestra la pantalla de bloqueo */
+  if(!bloq){
+    if(tab==='anio') renderAnio();
+    if(tab==='comp') renderComparativas();
+    if(tab==='precios') renderPrecios();
+    if(tab==='cal') renderCal();
+    if(tab==='plan') renderPlan();
+  }
+  tabsValidas().forEach(t=>{const v=document.getElementById('view-'+t); if(v) v.hidden=(t!==tab)||bloq;});
+  { const vb=document.getElementById('view-bloqueo'); if(vb){ vb.hidden=!bloq; if(bloq) renderBloqueo(tab); } }
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===tab)));
   marcarNav(); animarVista(tab);
 }
@@ -573,7 +578,7 @@ function render(){
   const main=$('#main'); main.replaceChildren();
   if(!cur||!months[cur]){ main.append(buildEmpty()); return; }
   const vh=buildHerramientas();
-  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildExtra(),buildAnio(),buildComp(),buildPrecios(),buildCal(),buildPlan(),vh,vh._opc);
+  main.append(buildResumen(),...QS.flatMap(q=>[buildQ(q),buildCompras(q)]),buildExtra(),buildAnio(),buildComp(),buildPrecios(),buildBloqueo(),buildCal(),buildPlan(),vh,vh._opc);
   QS.forEach(q=>SECS.forEach(sec=>renderList(q,sec)));
   QS.forEach(renderCompras);
   refreshComputed(); showTab();

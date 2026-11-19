@@ -524,5 +524,6 @@ function buildHerramientas(){
   vo.append(cuenta);
   { const imp=secDe('Herramientas'); if(imp){ const h2=imp.querySelector('h2'); h2.textContent='Importación'; } }
   v._opc=vo;
+  premiumProtegerHerramientas(v);
   return v;
 }

@@ -79,18 +79,19 @@ function marcarNav(){
 }
 function abrirMas(){
   const body=el('div'); body.className='masList';
-  const item=(ic,titulo,desc,fn)=>{
+  const item=(ic,titulo,desc,fn,clave)=>{
     const b=el('button','btn masItem'); b.type='button';
     b.innerHTML='<span class="bub">'+icono(ic)+'</span><span><b>'+titulo+'</b><small>'+desc+'</small></span>';
+    if(clave&&!puedeUsar(clave)) b.querySelector('b').append(' 🔒');      /* versión completa */
     b.addEventListener('click',()=>{ closeModal(); fn(); window.scrollTo(0,0); });
     body.append(b);
   };
-  item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); });
-  item('comp','Comparativas','Compara meses, trimestres, semestres o años',()=>{ tab='comp'; showTab(); });
-  item('precios','Evolución de precios','Qué subió y qué bajó: súper, alquiler y lo que cargues en egresos',()=>{ tab='precios'; showTab(); });
-  item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); });
-  item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); });
-  item('video','Videos de ayuda','Aprende la app en 7 videos cortos, con voz y subtítulos',abrirVideos);
+  item('anio','Año','Resumen del año, evolución y reporte en PDF',()=>{ tab='anio'; showTab(); },'anio');
+  item('comp','Comparativas','Compara meses, trimestres, semestres o años',()=>{ tab='comp'; showTab(); },'comp');
+  item('precios','Evolución de precios','Qué subió y qué bajó: súper, alquiler y lo que cargues en egresos',()=>{ tab='precios'; showTab(); },'precios');
+  item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); },'plan');
+  item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); },'extra');
+  item('video','Videos de ayuda','Aprende la app en 9 videos cortos, con voz y subtítulos',abrirVideos);
   item('herr','Herramientas','Buscador, ahorro en dólares, comercios, calculadoras, importación y respaldo',()=>{ tab='herr'; showTab(); });
   item('tuerca','Opciones','Tu hogar, cifrado, sesión, apariencia, moneda y modalidad de cobro',()=>{ tab='opc'; showTab(); });
   modal('Más',body,[{label:'Cerrar'}]);

@@ -69,6 +69,7 @@ function prBadge(sec,nombre,monto,mesId){
 /* Etiqueta junto al monto de una línea: ▲ rojo si subió, ▼ verde si bajó. */
 function prPintarDelta(host,sec,nombre,monto){
   host.className='pdelta'; host.textContent='';
+  if(typeof puedeUsar==='function'&&!puedeUsar('precios')){ host.hidden=true; return; }   /* versión completa */
   const b=prBadge(sec,nombre,monto);
   if(!b){ host.hidden=true; return; }
   host.hidden=false; host.classList.add(b.dir>0?'up':'dn');

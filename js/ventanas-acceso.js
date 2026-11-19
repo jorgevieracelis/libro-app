@@ -2,8 +2,11 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.11.0';
+const APP_VERSION='2.12.0';
 const NOVEDADES=[
+ {v:'2.12.0', fecha:'19 nov 2026', items:[
+  'Dos videos nuevos en Más → Videos de ayuda: «Herramientas útiles» (buscador, ahorro en dólares, calculadoras, importar y respaldar) y «Análisis y control» (Año, Comparativas, Evolución de precios, Metas y deudas, Tarjeta y fondos)'
+ ]},
  {v:'2.11.0', fecha:'18 nov 2026', items:[
   'Nueva herramienta «Evolución de precios» (Más → Evolución de precios): ve qué subió (▲ rojo) y qué bajó (▼ verde) entre un mes y otro en el súper, el alquiler, las plataformas y cualquier egreso; filtra, ordena, busca y toca un artículo para ver todo su historial',
   'Al escribir el monto de un egreso o una plataforma que ya existía en un mes anterior, aparece junto al monto cuánto cambió: ▲ rojo si subió, ▼ verde si bajó',

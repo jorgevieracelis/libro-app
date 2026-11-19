@@ -1,5 +1,5 @@
 'use strict';
-/* Videos de ayuda: 7 videos cortos con voz y subtítulos (carpeta videos/ del sitio). Se ven con el reproductor del teléfono;
+/* Videos de ayuda: 9 videos cortos con voz y subtítulos (carpeta videos/ del sitio). Se ven con el reproductor del teléfono;
    hace falta internet para verlos (no se guardan en el teléfono). Más → Videos de ayuda. */
 const VIDEOS=[
  {id:'por-que-libro-de-finanzas',t:'Lo mejor de la app (1 minuto)',d:'Un vistazo a lo que hace distinta a Libro de Finanzas.'},
@@ -8,7 +8,9 @@ const VIDEOS=[
  {id:'comprobantes-y-tickets',t:'3. Comprobantes y tickets',d:'Carga pagos de tu billetera virtual o banco y tickets del súper (foto o PDF).'},
  {id:'resumen-y-presupuesto',t:'4. Resumen, presupuesto y metas',d:'Entiende a dónde va tu dinero y ponle límites.'},
  {id:'calendario-y-ano',t:'5. Calendario y año',d:'Pagos que no se olvidan y tu año completo.'},
- {id:'seguridad-y-respaldo',t:'6. Seguridad y tu información',d:'Cifrado, bloqueo, respaldo y apariencia.'}
+ {id:'seguridad-y-respaldo',t:'6. Seguridad y tu información',d:'Cifrado, bloqueo, respaldo y apariencia.'},
+ {id:'herramientas',t:'7. Herramientas útiles',d:'Buscador, ahorro en dólares, calculadoras, importar y respaldar.'},
+ {id:'analisis-y-control',t:'8. Análisis y control',d:'Año, comparativas, evolución de precios, metas y deudas, tarjeta y fondos.'}
 ];
 const videoUrl=(id,ext)=>new URL('videos/'+id+'.'+ext,document.baseURI).href;
 function verVideo(i){
@@ -29,7 +31,7 @@ function verVideo(i){
 }
 function abrirVideos(){
   const body=el('div'); body.className='masList';
-  const intro=el('p','hint'); intro.textContent='Aprende a usar la app en 7 videos cortos, con voz y subtítulos (cada uno pesa unos 2 MB).'; body.append(intro);
+  const intro=el('p','hint'); intro.textContent='Aprende a usar la app en 9 videos cortos, con voz y subtítulos (cada uno pesa unos 2 MB).'; body.append(intro);
   VIDEOS.forEach((v,i)=>{
     const b=el('button','btn masItem'); b.type='button';
     b.innerHTML='<img alt="" width="56" height="56" loading="lazy" style="border-radius:12px; object-fit:cover; flex:none; background:var(--chip)" src="'+videoUrl(v.id,'jpg')+'"><span><b></b><small></small></span>';
@@ -43,7 +45,7 @@ function abrirVideos(){
 function buildVideosCard(){
   const c=el('section','card'); c.id='videosCard'; c.style.marginTop='16px';
   const h=el('header'); const t=el('h2'); t.textContent='Videos de ayuda'; h.append(t); c.append(h);
-  const p=el('p','hint'); p.textContent='Aprende a usar la app en 7 videos cortos, con voz y subtítulos. Necesitas internet para verlos.'; c.append(p);
+  const p=el('p','hint'); p.textContent='Aprende a usar la app en 9 videos cortos, con voz y subtítulos. Necesitas internet para verlos.'; c.append(p);
   const tools=el('div','tools'); const b=el('button','btn primary'); b.type='button'; b.textContent='▶ Ver los videos'; b.addEventListener('click',abrirVideos); tools.append(b); c.append(tools);
   return c;
 }
