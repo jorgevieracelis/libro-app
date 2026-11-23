@@ -280,6 +280,26 @@ body.auth .loginbox .err{text-align:center}
   :root.sb-min .sbToggle{justify-content:center}
   :root.sb-min .sbIt .bub{width:28px; height:28px}
 }
+/* ---------- ASISTENTES: 10 herramientas en una página ---------- */
+.kitGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:6px}
+@media (min-width:640px){.kitGrid{grid-template-columns:repeat(3,1fr)}}
+.kitTile{display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--card); color:var(--ink); font:inherit; cursor:pointer; min-height:128px}
+.kitTile:hover{background:var(--chip)}
+.kitTile .bub{margin-bottom:6px}
+.kitTile b{font-size:14.5px; line-height:1.2}
+.kitTile small{font-size:12px; color:var(--muted); line-height:1.25}
+.kitTile em{font-style:normal; font-size:12px; font-weight:700; color:var(--brand); margin-top:auto; padding-top:6px}
+.kitBar{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.kitBar h2{margin:0; font-size:16px; text-transform:none; letter-spacing:0}
+.kitBig{font-size:26px; font-weight:800; margin:6px 4px 2px; overflow-wrap:anywhere}
+.kitCols{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:8px}
+.kitMejor{border-color:var(--pos); box-shadow:0 0 0 1px var(--pos) inset}
+.kitAlto{border-color:var(--neg)}
+.kitChips{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0}
+.kitChip{display:inline-flex; align-items:center; gap:6px; padding:4px 6px 4px 12px; border-radius:99px; background:var(--chip); font-weight:600; font-size:14px}
+.kitChk{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line); border-radius:99px; font-size:14px}
+.kitChk input{width:18px; height:18px; flex:none}
+.kitEstado{font-size:12px; font-weight:700; white-space:nowrap}
 .pdelta{display:block; font-size:11px; font-weight:700; text-align:right; line-height:1.15; margin-top:2px; font-variant-numeric:tabular-nums}
 .pdelta[hidden]{display:none}
 .pdelta.up{color:var(--neg)} .pdelta.dn{color:var(--pos)}
@@ -1059,6 +1079,8 @@ const FB=new URL('vendor/firebase/',document.baseURI).href;
 <script src="js/comprobantes.js"></script>
 <script src="js/facturas.js"></script>
 <script src="js/visual.js"></script>
+<script src="js/asistentes-calculo.js"></script>
+<script src="js/asistentes.js"></script>
 <script src="js/videos.js"></script>
 <script src="js/ventanas-acceso.js"></script>
 <script src="js/bienvenida.js"></script>

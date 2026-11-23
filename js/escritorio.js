@@ -6,10 +6,10 @@
 const SB_GRUPOS=[
   {t:'Principal', items:[{k:'resumen',ic:'inicio',n:'Resumen',c:'Resumen'},{g:'libro',ic:'libro',n:'Libro',c:'Libro'},{g:'compras',ic:'compras',n:'Compras',c:'Compras'},{k:'cal',ic:'cal',n:'Calendario',c:'Calend.'}]},
   {t:'Análisis', items:[{k:'anio',ic:'anio',n:'Año',c:'Año'},{k:'comp',ic:'comp',n:'Comparativas',c:'Compar.'},{k:'precios',ic:'precios',n:'Precios',c:'Precios'}]},
-  {t:'Planificar', items:[{k:'plan',ic:'metas',n:'Metas y deudas',c:'Metas'},{k:'extra',ic:'tarjeta',n:'Tarjeta y fondos',c:'Tarjeta'}]},
+  {t:'Planificar', items:[{k:'plan',ic:'metas',n:'Metas y deudas',c:'Metas'},{k:'kit',ic:'idea',n:'Asistentes',c:'Asist.'},{k:'extra',ic:'tarjeta',n:'Tarjeta y fondos',c:'Tarjeta'}]},
   {t:'Más', items:[{k:'herr',ic:'herr',n:'Herramientas',c:'Herram.'},{v:1,ic:'video',n:'Videos de ayuda',c:'Videos'},{k:'opc',ic:'tuerca',n:'Opciones',c:'Opciones'}]}
 ];
-const SB_TITULOS={resumen:'Resumen',cal:'Calendario',anio:'Año',comp:'Comparativas',precios:'Evolución de precios',plan:'Metas y deudas',extra:'Tarjeta y fondos',herr:'Herramientas',opc:'Opciones'};
+const SB_TITULOS={resumen:'Resumen',cal:'Calendario',anio:'Año',comp:'Comparativas',precios:'Evolución de precios',plan:'Metas y deudas',kit:'Asistentes',extra:'Tarjeta y fondos',herr:'Herramientas',opc:'Opciones'};
 function sbPlegado(){ try{ return localStorage.getItem('lfh.sbMin')==='1'; }catch(e){ return false; } }
 function sbAplicarPlegado(){ document.documentElement.classList.toggle('sb-min',sbPlegado()); }
 sbAplicarPlegado();

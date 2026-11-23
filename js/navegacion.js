@@ -90,8 +90,9 @@ function abrirMas(){
   item('comp','Comparativas','Compara meses, trimestres, semestres o años',()=>{ tab='comp'; showTab(); },'comp');
   item('precios','Evolución de precios','Qué subió y qué bajó: súper, alquiler y lo que cargues en egresos',()=>{ tab='precios'; showTab(); },'precios');
   item('metas','Metas y deudas','Metas de ahorro y calculadora de deudas',()=>{ tab='plan'; showTab(); },'plan');
+  item('idea','Asistentes','Fondo de emergencia, sobres, simulador, gastos compartidos, suscripciones y más',()=>{ tab='kit'; showTab(); },'kit');
   item('tarjeta','Tarjeta y fondos','Tarjeta de crédito, retiro de efectivo por banco y fondo de emergencia',()=>{ tab='extra'; showTab(); },'extra');
-  item('video','Videos de ayuda','Aprende la app en 9 videos cortos, con voz y subtítulos',abrirVideos);
+  item('video','Videos de ayuda','Aprende la app en 10 videos cortos, con voz y subtítulos',abrirVideos);
   item('herr','Herramientas','Buscador, ahorro en dólares, comercios, calculadoras, importación y respaldo',()=>{ tab='herr'; showTab(); });
   item('tuerca','Opciones','Tu hogar, cifrado, sesión, apariencia, moneda y modalidad de cobro',()=>{ tab='opc'; showTab(); });
   modal('Más',body,[{label:'Cerrar'}]);

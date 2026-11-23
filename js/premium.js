@@ -15,10 +15,11 @@ const PREMIUM_FUNCIONES={
   precios:{n:'Evolución de precios', d:'Mira qué subió y qué bajó: súper, alquiler, suscripciones y cualquier egreso, con avisos mientras escribes.', video:'analisis-y-control'},
   plan:   {n:'Metas y deudas', d:'Metas de ahorro con su fecha, gastos recurrentes y un plan para salir de tus deudas.', video:'analisis-y-control'},
   extra:  {n:'Tarjeta y fondos', d:'Tarjeta de crédito con sus cuotas, retiro de efectivo por banco y fondo de emergencia.', video:'analisis-y-control'},
+  kit:    {n:'Asistentes', d:'Siete asistentes: fondo de emergencia, simulador «¿y si…?», gastos compartidos, suscripciones, reporte del mes, alertas de gasto y largo plazo.', video:'asistentes'},
   herr:   {n:'Herramientas', d:'Buscador en todos tus meses, ahorro en dólares, calculadoras, comercios recordados e importar gastos desde Excel.', video:'herramientas'}
 };
 /* Pestañas que se bloquean completas. Herramientas se bloquea por tarjetas (el respaldo y los videos quedan siempre libres). */
-const PREMIUM_PAGINAS=['anio','comp','precios','plan','extra'];
+const PREMIUM_PAGINAS=['anio','comp','precios','plan','kit','extra'];
 const PREMIUM_TARJETAS_HERR=['Buscador (en los meses)','Ahorro en dólares','Comercios recordados','Calculadora y conversor','Dividir un gasto','Calculadora de préstamo o cuotas','Importar gastos (Excel o CSV)'];
 
 function premiumModo(){ try{ return localStorage.getItem('lfh.premiumModo')||''; }catch(e){ return ''; } }

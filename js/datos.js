@@ -246,11 +246,11 @@ function mergeMes(base,local,server){
 }
 function mergeExtras(base,local,server){
   const o={...server};
-  ['deudas','metas','repetidos','comercios','ops','recurrentes'].forEach(k=>{ o[k]=mergeLista(base&&base[k],local[k]||[],server[k]||[]); });
+  ['deudas','metas','repetidos','comercios','ops','recurrentes','cpPersonas','cpGastos','cpPagos'].forEach(k=>{ o[k]=mergeLista(base&&base[k],local[k]||[],server[k]||[]); });
   const pb=(base&&base.presupuesto)||{}, pl=local.presupuesto||{}, p={...(server.presupuesto||{})};
   new Set([...Object.keys(pb),...Object.keys(pl)]).forEach(c=>{ if(!igualJ(pl[c],pb[c])){ if(pl[c]==null) delete p[c]; else p[c]=pl[c]; } });
   o.presupuesto=p;
-  ['extraDeuda','orden'].forEach(k=>{ if(!base||!igualJ(local[k],base[k])) o[k]=local[k]; });
+  ['extraDeuda','orden','feBase','feMeses'].forEach(k=>{ if(!base||!igualJ(local[k],base[k])) o[k]=local[k]; });
   return o;
 }
 function monthDiff(aId,bId){

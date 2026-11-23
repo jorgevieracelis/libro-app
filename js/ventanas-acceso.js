@@ -2,8 +2,14 @@
 /* Novedades, ventanas, instalación, ingreso y registro */
 /* ---------- Versión y novedades ---------- */
 /* Para cada mejora nueva: subir APP_VERSION, agregar una entrada ARRIBA de NOVEDADES y subir el service worker. */
-const APP_VERSION='2.13.0';
+const APP_VERSION='2.14.0';
 const NOVEDADES=[
+ {v:'2.14.0', fecha:'20 nov 2026', items:[
+  'Nueva sección «Asistentes» (Más → Asistentes) con 7 herramientas que usan lo que ya cargaste: Fondo de emergencia (cuántos meses de gastos tienes cubiertos), Simulador «¿y si…?», Gastos compartidos (quién le debe a quién), Suscripciones (todo lo que se cobra solo), Reporte del mes (PDF, imagen o texto), Alertas de gasto inusual y Largo plazo',
+  'Metas y deudas: cada meta dice si vas adelantado o atrasado y cuánto ahorrar por quincena; las deudas se comparan lado a lado (bola de nieve contra avalancha) y puedes elegir tu estrategia',
+  'Video nuevo «9. Asistentes» y videos actualizados (Conoce la app, Resumen y presupuesto, Seguridad, Análisis y control y Lo mejor de la app): ya son 10 videos cortos en Más → Videos de ayuda',
+  'Presupuesto por categoría: ahora muestra cuánto te queda en cada tope y cuánto puedes gastar por día, y un botón arma los topes con el promedio de tus últimos meses'
+ ]},
  {v:'2.13.0', fecha:'19 nov 2026', items:[
   'Computador: nueva barra lateral a la izquierda, con las secciones en grupos (Principal, Análisis, Planificar y Más) y las quincenas debajo de Libro y Compras. Se puede plegar a una columna de íconos con «Plegar menú» y la app recuerda cómo la dejaste. En el teléfono no cambia nada'
  ]},

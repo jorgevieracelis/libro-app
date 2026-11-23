@@ -51,7 +51,7 @@ function mostrarBienvenida(){
     const ic=document.createElementNS('http://www.w3.org/2000/svg','svg'); ic.setAttribute('viewBox','0 0 24 24'); ic.setAttribute('class','bvIco'); ic.setAttribute('aria-hidden','true'); ic.innerHTML=s.ico;
     const h=el('h3'); h.textContent=s.t; const p=el('p'); p.textContent=s.x;
     stage.append(ic,h,p);
-    if(s.video){ const v=el('button','btn'); v.type='button'; v.textContent='▶ Ver el video de 1 minuto'; v.style.marginTop='10px'; v.addEventListener('click',()=>{ cerrar(); try{ verVideo(0); }catch(e){} }); stage.append(v); }
+    if(s.video){ const v=el('button','btn'); v.type='button'; v.textContent='▶ Ver el video corto'; v.style.marginTop='10px'; v.addEventListener('click',()=>{ cerrar(); try{ verVideo(0); }catch(e){} }); stage.append(v); }
     dots.replaceChildren(); BV_SLIDES.forEach((_,k)=>{ const d=el('i'); if(k===i) d.className='on'; dots.append(d); });
     next.textContent=i===BV_SLIDES.length-1?'¡Empezar!':'Siguiente';
     skip.hidden=i===BV_SLIDES.length-1;
