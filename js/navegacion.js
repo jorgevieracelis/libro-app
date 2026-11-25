@@ -51,10 +51,15 @@ function grupoDe(k){
   return 'mas';
 }
 const ultimoGrupo={};
+/* La quincena (o semana) que corresponde a hoy; si se está mirando otro mes, la primera. */
+function qDeHoy(){
+  if(cur&&cur===currentMonthId()){ const q=qDeDia(new Date().getDate()); if(QS.includes(q)) return q; }
+  return QS[0];
+}
 function irAGrupo(g){
   if(g==='inicio') tab='resumen';
-  else if(g==='libro') tab=(ultimoGrupo.libro&&QS.includes(ultimoGrupo.libro))?ultimoGrupo.libro:QS[0];
-  else if(g==='compras'){ const u=ultimoGrupo.compras; tab=(u&&QS.includes('q'+u.slice(1)))?u:'c'+QS[0].slice(1); }
+  else if(g==='libro') tab=(ultimoGrupo.libro&&QS.includes(ultimoGrupo.libro))?ultimoGrupo.libro:qDeHoy();
+  else if(g==='compras'){ const u=ultimoGrupo.compras; tab=(u&&QS.includes('q'+u.slice(1)))?u:'c'+qDeHoy().slice(1); }
   else if(g==='cal') tab='cal';
   showTab(); window.scrollTo(0,0);
 }
